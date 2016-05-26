@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upgrader", "Upgrader\Upgrader.csproj", "{9048803A-8359-4CEF-B023-F33C31864578}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Upgrader.Test", "Upgrader.Test\Upgrader.Test.csproj", "{2DC905A6-7091-42F7-AD96-AD1F30A47D17}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9048803A-8359-4CEF-B023-F33C31864578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9048803A-8359-4CEF-B023-F33C31864578}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9048803A-8359-4CEF-B023-F33C31864578}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9048803A-8359-4CEF-B023-F33C31864578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DC905A6-7091-42F7-AD96-AD1F30A47D17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DC905A6-7091-42F7-AD96-AD1F30A47D17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DC905A6-7091-42F7-AD96-AD1F30A47D17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DC905A6-7091-42F7-AD96-AD1F30A47D17}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

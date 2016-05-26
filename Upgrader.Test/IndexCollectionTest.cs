@@ -1,0 +1,73 @@
+﻿using System.Linq;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Upgrader.Schema;
+
+namespace Upgrader.Test
+{
+    [TestClass]
+    public abstract class IndexCollectionTest
+    {
+        private readonly Database database;
+
+        protected IndexCollectionTest(Database database)
+        {
+            this.database = database;
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            database.Dispose();
+        }
+
+        [TestMethod]
+        public void AddAddsIndex()
+        {
+            database.Tables.Add("AddIndex", new [] { new Column("AddIndexId", "int") });
+            database.Tables["AddIndex"].Indexes.Add("AddIndexId", false);
+
+            Assert.IsNotNull(database.Tables["AddIndex"].Indexes.Single());
+        }
+
+
+        [TestMethod]
+        public void AddAddsIndexWithMultipleColumns()
+        {
+            database.Tables.Add("AddIndexMultiple", new[] { new Column("AddIndexMultipleId", "int"), new Column("Multiple", "int") });
+            database.Tables["AddIndexMultiple"].Indexes.Add(new[] { "AddIndexMultipleId", "Multiple" }, false);
+
+            CollectionAssert.AreEqual(new[] { "AddIndexMultipleId", "Multiple" }, database.Tables["AddIndexMultiple"].Indexes.Single().ColumnNames);
+        }
+
+        [TestMethod]
+        public void RemoveRemovesIndex()
+        {
+            database.Tables.Add("RemoveIndex", new[] { new Column("RemoveIndexId", "int") });
+            database.Tables["RemoveIndex"].Indexes.Add("RemoveIndexId", false);
+
+            database.Tables["RemoveIndex"].Indexes.Remove("IX_RemoveIndex_RemoveIndexId");
+            Assert.IsNull(database.Tables["RemoveIndex"].Indexes.SingleOrDefault());
+        }
+
+        [TestMethod]
+        public void IndexesCanBeEnumerated()
+        {
+            database.Tables.Add("EnumerateIndex", new[] { new Column("EnumerateIndexId", "int") });
+            database.Tables["EnumerateIndex"].Indexes.Add("EnumerateIndexId", false);
+
+            Assert.AreEqual("IX_EnumerateIndex_EnumerateIndexId", database.Tables["EnumerateIndex"].Indexes.Single().IndexName);
+        }
+
+        [TestMethod]
+        public void IndexesCanBeAccessedByName()
+        {
+            database.Tables.Add("AccessIndex", new[] { new Column("AccessIndexId", "int") });
+            database.Tables["AccessIndex"].Indexes.Add("AccessIndexId", false);
+
+            Assert.AreEqual("IX_AccessIndex_AccessIndexId", database.Tables["AccessIndex"].Indexes["IX_AccessIndex_AccessIndexId"].IndexName);
+        }
+
+    }
+}
