@@ -148,5 +148,9 @@ namespace Upgrader
         protected internal abstract string EscapeIdentifier(string identifier);
 
         protected internal abstract string GetSchema(string tableName);
+
+        protected internal abstract void RenameColumn(string tableName, string columnName, string newColumnName);
+
+        protected internal abstract void RenameTable(string tableName, string newTableName);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.SqlServer.Server;
 using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
@@ -63,6 +64,13 @@ namespace Upgrader.Schema
             }
 
             database.RemovePrimaryKey(TableName, constraintName);
+        }
+
+        public void Rename(string newTableName)
+        {
+            Validate.IsNotNullAndNotEmpty(newTableName, nameof(newTableName));
+
+            database.RenameTable(TableName, newTableName);
         }
     }
 }

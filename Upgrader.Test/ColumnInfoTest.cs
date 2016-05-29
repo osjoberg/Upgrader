@@ -80,5 +80,16 @@ namespace Upgrader.Test
             Assert.AreEqual("float", database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
             Assert.IsFalse(database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
         }
+
+
+        [TestMethod]
+        public void RenameRenamesColumn()
+        {
+            database.Tables.Add("RenameColumn", new[] { new Column("RenameColumnId", "int") });
+
+            database.Tables["RenameColumn"].Columns["RenameColumnId"].Rename("NewColumnNameId");
+
+            Assert.IsNotNull(database.Tables["RenameColumn"].Columns["NewColumnNameId"]);
+        }
     }
 }

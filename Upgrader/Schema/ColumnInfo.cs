@@ -34,5 +34,13 @@ namespace Upgrader.Schema
 
             database.ChangeColumn(TableName, ColumnName, type, nullable);
         }
+
+
+        public void Rename(string newColumnName)
+        {
+            Validate.IsNotNullAndNotEmpty(newColumnName, nameof(newColumnName));
+
+            database.RenameColumn(TableName, ColumnName, newColumnName);
+        }
     }
 }

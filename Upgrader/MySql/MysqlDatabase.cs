@@ -171,6 +171,27 @@ namespace Upgrader.MySql
             return Connection.Database;
         }
 
+        protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
+        {
+            var escapedTableName = EscapeIdentifier(tableName);
+            var escapedColumnName = EscapeIdentifier(columnName);
+            var escapedNewColumnName = EscapeIdentifier(newColumnName);
+
+            var dataType = GetColumnDataType(tableName, columnName);
+            var nullable = GetColumnNullable(tableName, columnName);
+            var nullableStatement = nullable ? "NULL" : "NOT NULL";
+
+            Dapper.Execute($"ALTER TABLE {escapedTableName} CHANGE COLUMN {escapedColumnName} {escapedNewColumnName} {dataType} {nullableStatement}");
+        }
+
+        protected internal override void RenameTable(string tableName, string newTableName)
+        {
+            var escapedTableName = EscapeIdentifier(tableName);
+            var escapedNewTableName = EscapeIdentifier(newTableName);
+
+            Dapper.Execute($"RENAME TABLE {escapedTableName} TO {escapedNewTableName}");
+        }
+
         protected internal override string EscapeIdentifier(string identifier)
         {
             return "`" + identifier.Replace("`", "``") + "`";

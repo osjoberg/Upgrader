@@ -57,5 +57,15 @@ namespace Upgrader.Test
 
             Assert.IsNull(Database.Tables["RemovePrimaryKey"].PrimaryKey);
         }
+
+        [TestMethod]
+        public void RenameRenamesTable()
+        {
+            Database.Tables.Add("RenameTable", new[] { new Column("RenameTableId", "int") });
+
+            Database.Tables["RenameTable"].Rename("NewTableName");
+
+            Assert.IsNotNull(Database.Tables["NewTableName"]);
+        }
     }
 }

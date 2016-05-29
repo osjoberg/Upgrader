@@ -26,6 +26,16 @@ namespace Upgrader.SqlServer
             return tableName.Split('.').Last();
         }
 
+        protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
+        {
+            Dapper.Execute($"sp_RENAME '{tableName}.{columnName}', '{newColumnName}', 'COLUMN'");
+        }
+
+        protected internal override void RenameTable(string tableName, string newTableName)
+        {
+            Dapper.Execute($"sp_RENAME '{tableName}', '{newTableName}'");
+        }
+
         protected internal override string EscapeIdentifier(string identifier)
         {
             return "[" + identifier.Replace("]", "]]") + "]";
