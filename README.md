@@ -58,10 +58,10 @@ public void AllForeignKeysAreNamedWithFK_Prefix()
 
 
 ## Supported operations
-Item | Create | Delete | Modify | Reflection
----- | ------ | ------ | ------ | ------
-Table | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-Column | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
-Primary key | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark:
-Foreign key | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark:
-Index | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark:
+Item | Create | Delete | Modify | Rename | Reflection
+---- | ------ | ------ | ------ | ------ | ----------
+Table | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
+Column | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
+Primary key | :white_check_mark: | :white_check_mark: | :x: | :x: | :white_check_mark:
+Foreign key | :white_check_mark: | :white_check_mark: | :x: | :x: | :white_check_mark:
+Index | :white_check_mark: | :white_check_mark: | :x: | :x: | :white_check_mark:
