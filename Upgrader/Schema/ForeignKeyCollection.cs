@@ -21,23 +21,35 @@ namespace Upgrader.Schema
             get
             {
                 Validate.IsNotNullAndNotEmpty(foreignKeyName, nameof(foreignKeyName));
+                Validate.MaxLength(foreignKeyName, nameof(foreignKeyName), database.MaxIdentifierLength);
 
                 return database.GetForeignKeyForeignTableName(tableName, foreignKeyName) != null ? new ForeignKeyInfo(database, tableName, foreignKeyName) : null;
             }
         }
 
-        public void Add(string columnName, string foreignTableName, string foreignColumn = null, string foreignKeyName = null)
+        public void Add(string columnName, string foreignTableName, string foreignColumnName = null, string foreignKeyName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-            Validate.IsNotEmpty(foreignColumn, nameof(foreignColumn));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
+            Validate.IsNotNullAndNotEmpty(foreignTableName, nameof(foreignTableName));
+            Validate.MaxLength(foreignTableName, nameof(foreignTableName), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(foreignColumnName, nameof(foreignColumnName));
+            Validate.MaxLength(foreignColumnName, nameof(foreignColumnName), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(foreignKeyName, nameof(foreignKeyName));
+            Validate.MaxLength(foreignKeyName, nameof(foreignKeyName), database.MaxIdentifierLength);
 
-            Add(new[] { columnName }, foreignTableName, new[] { foreignColumn ?? columnName }, foreignKeyName);
+            Add(new[] { columnName }, foreignTableName, new[] { foreignColumnName ?? columnName }, foreignKeyName);
         }
 
         public void Add(string[] columnNames, string foreignTableName, string[] foreignColumnNames = null, string foreignKeyName = null)
         {
             Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
-            Validate.IsNotNullAndNotEmpty(foreignTableName, nameof(tableName));
+            Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
+            Validate.IsNotNullAndNotEmpty(foreignTableName, nameof(foreignTableName));
+            Validate.MaxLength(foreignTableName, nameof(foreignTableName), database.MaxIdentifierLength);
+            Validate.MaxLength(foreignColumnNames, nameof(foreignColumnNames), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(foreignKeyName, nameof(foreignKeyName));
+            Validate.MaxLength(foreignKeyName, nameof(foreignKeyName), database.MaxIdentifierLength);
 
             var constaintName = foreignKeyName ?? database.NamingConvention.GetForeignKeyNamingConvention(tableName, columnNames, foreignTableName);
 
@@ -47,6 +59,7 @@ namespace Upgrader.Schema
         public void Remove(string foreignKeyName)
         {
             Validate.IsNotNullAndNotEmpty(foreignKeyName, nameof(foreignKeyName));
+            Validate.MaxLength(foreignKeyName, nameof(foreignKeyName), database.MaxIdentifierLength);
 
             database.RemoveForeignKey(tableName, foreignKeyName);
         }

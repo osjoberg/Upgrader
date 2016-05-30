@@ -21,6 +21,7 @@ namespace Upgrader.Schema
             get
             {
                 Validate.IsNotNullAndNotEmpty(indexName, nameof(indexName));
+                Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
                 return database.GetIndexColumnNames(tableName, indexName).Any() ? new IndexInfo(database, tableName, indexName) : null;
             }
@@ -29,6 +30,9 @@ namespace Upgrader.Schema
         public void Add(string columnName, bool unique, string indexName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(indexName, nameof(indexName));
+            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
             Add(new[] { columnName }, unique, indexName);
         }
@@ -36,6 +40,9 @@ namespace Upgrader.Schema
         public void Add(string[] columnNames, bool unique, string indexName = null)
         {
             Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
+            Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(indexName, nameof(indexName));
+            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
             indexName = indexName ?? database.NamingConvention.GetIndexNamingConvention(tableName, columnNames, unique);
             database.AddIndex(tableName, columnNames, unique, indexName);
@@ -44,6 +51,7 @@ namespace Upgrader.Schema
         public void Remove(string indexName)
         {
             Validate.IsNotNullAndNotEmpty(indexName, nameof(indexName));
+            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
             database.RemoveIndex(tableName, indexName);
         }

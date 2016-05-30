@@ -19,6 +19,7 @@ namespace Upgrader.Schema
             get
             {
                 Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
+                Validate.MaxLength(tableName, nameof(tableName), database.MaxIdentifierLength);
 
                 return database.GetColumnNames(tableName).Any() ? new TableInfo(database, tableName) : null;
             }
@@ -39,17 +40,18 @@ namespace Upgrader.Schema
 
         public void Add(string tableName, IEnumerable<Column> columns)
         {
-            var columnsShallowClone = columns.ToArray();
-
             Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
-            Validate.IsNotEmpty(columnsShallowClone, nameof(columns));
+            Validate.MaxLength(tableName, nameof(tableName), database.MaxIdentifierLength);
+            Validate.IsNotNullAndNotEmpty(columns, nameof(columns));
+            Validate.MaxLength(columns.Select(column => column.ColumnName), nameof(columns), database.MaxIdentifierLength);
 
-            database.AddTable(tableName, columnsShallowClone);
+            database.AddTable(tableName, columns);
         }
 
         public void Remove(string tableName)
         {
             Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
+            Validate.MaxLength(tableName, nameof(tableName), database.MaxIdentifierLength);
 
             database.RemoveTable(tableName);
         }

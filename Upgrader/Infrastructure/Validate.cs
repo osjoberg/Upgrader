@@ -7,7 +7,23 @@ namespace Upgrader.Infrastructure
 {
     internal static class Validate
     {
-        public static void IsTrue(bool argument, string argumentName, string message) 
+        public static void MaxLength(string argument, string argumentName, int maxLength)
+        {
+            if (argument != null && argument.Length >= maxLength)
+            {
+                throw new ArgumentException($"String cannot be longer than {maxLength} characters.", argumentName);
+            }
+        }
+
+        public static void MaxLength(IEnumerable<string> argument, string argumentName, int maxLength)
+        {
+            foreach (var item in argument)
+            {
+                MaxLength(item, argumentName, maxLength);
+            }
+        }
+
+        public static void IsTrue(bool argument, string argumentName, string message)
         {
             if (argument == false)
             {
@@ -47,7 +63,7 @@ namespace Upgrader.Infrastructure
             }
         }
 
-        public static void IsNotNull<T>(T argument, string argumentName) where T : class 
+        public static void IsNotNull<T>(T argument, string argumentName) where T : class
         {
             if (argument == null)
             {

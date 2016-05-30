@@ -10,6 +10,8 @@ namespace Upgrader.Schema
 
         public bool Nullable => database.GetColumnNullable(TableName, ColumnName);
 
+        public bool AutoIncrement => database.GetColumnAutoIncrement(TableName, ColumnName);
+
         public string ColumnName { get; }
 
         public string TableName { get; }
@@ -34,8 +36,7 @@ namespace Upgrader.Schema
 
             database.ChangeColumn(TableName, ColumnName, type, nullable);
         }
-
-
+           
         public void Rename(string newColumnName)
         {
             Validate.IsNotNullAndNotEmpty(newColumnName, nameof(newColumnName));

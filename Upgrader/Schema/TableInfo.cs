@@ -42,6 +42,9 @@ namespace Upgrader.Schema
         public void AddPrimaryKey(string columnName, string primaryKeyName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(primaryKeyName, nameof(primaryKeyName));
+            Validate.MaxLength(primaryKeyName, nameof(primaryKeyName), database.MaxIdentifierLength);
 
             AddPrimaryKey(new[] { columnName }, primaryKeyName);
         }
@@ -49,6 +52,9 @@ namespace Upgrader.Schema
         public void AddPrimaryKey(string[] columnNames, string primaryKeyName = null)
         {
             Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
+            Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(primaryKeyName, nameof(primaryKeyName));
+            Validate.MaxLength(primaryKeyName, nameof(primaryKeyName), database.MaxIdentifierLength);
 
             var constraintName = primaryKeyName ?? database.NamingConvention.GetPrimaryKeyNamingConvention(TableName, columnNames);
 
@@ -69,6 +75,7 @@ namespace Upgrader.Schema
         public void Rename(string newTableName)
         {
             Validate.IsNotNullAndNotEmpty(newTableName, nameof(newTableName));
+            Validate.MaxLength(newTableName, nameof(newTableName), database.MaxIdentifierLength);
 
             database.RenameTable(TableName, newTableName);
         }

@@ -190,11 +190,26 @@ namespace Upgrader.MySql
             Dapper.Execute($"RENAME TABLE {escapedTableName} TO {escapedNewTableName}");
         }
 
+        internal override bool GetColumnAutoIncrement(string tableName, string columnName)
+        {
+            return Dapper.ExecuteScalar<bool>(
+                @"
+                SELECT 
+                    EXTRA LIKE '%auto_increment%'
+                FROM INFORMATION_SCHEMA.COLUMNS WHERE
+                    TABLE_NAME = @tableName AND 
+                    COLUMN_NAME = @columnName
+                ",
+                new { tableName, columnName });
+        }
+
         protected internal override string EscapeIdentifier(string identifier)
         {
             return "`" + identifier.Replace("`", "``") + "`";
         }
 
         internal override string AutoIncrementStatement => "AUTO_INCREMENT";
+
+        internal override int MaxIdentifierLength => 64;
     }
 }

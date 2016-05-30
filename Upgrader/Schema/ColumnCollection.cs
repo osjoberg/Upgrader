@@ -21,6 +21,7 @@ namespace Upgrader.Schema
             get
             {
                 Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+                Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
 
                 return database.GetColumnDataType(tableName, columnName) != null ? new ColumnInfo(database, tableName, columnName) : null;
             }
@@ -42,6 +43,8 @@ namespace Upgrader.Schema
         public void AddNullable(string columnName, string dataType)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
+
             Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
 
             database.AddColumn(tableName, columnName, dataType, true);
@@ -50,6 +53,7 @@ namespace Upgrader.Schema
         public void Add(string columnName, string dataType, object initialValue = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
             Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
 
             if (initialValue == null)
@@ -66,6 +70,7 @@ namespace Upgrader.Schema
         public void Remove(string columnName)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
 
             database.RemoveColumn(tableName, columnName);
         }

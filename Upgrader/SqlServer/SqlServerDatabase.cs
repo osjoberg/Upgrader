@@ -34,12 +34,27 @@ namespace Upgrader.SqlServer
             Dapper.Execute($"sp_RENAME '{tableName}', '{newTableName}'");
         }
 
+        internal override bool GetColumnAutoIncrement(string tableName, string columnName)
+        {
+            return Dapper.ExecuteScalar<bool>(
+                @"
+                SELECT 
+                    is_identity
+                FROM sys.columns WHERE
+                    object_id = OBJECT_ID(@tableName) AND 
+                    name = @columnName
+                ",
+                new { tableName, columnName });
+        }
+
         protected internal override string EscapeIdentifier(string identifier)
         {
             return "[" + identifier.Replace("]", "]]") + "]";
         }
 
         internal override string AutoIncrementStatement => "IDENTITY";
+
+        internal override int MaxIdentifierLength => 128;
 
         internal override string[] GetIndexNames(string tableName)
         {
