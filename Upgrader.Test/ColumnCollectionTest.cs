@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Upgrader.Schema;
@@ -71,6 +72,25 @@ namespace Upgrader.Test
             database.Tables.Add("ContainsColumn", new[] { new Column("ContainsColumnId", "int") });
 
             Assert.IsNotNull(database.Tables["ContainsColumn"].Columns["ContainsColumnId"]);
+        }
+
+        [TestMethod]
+        public void CanAddNonNullColumn()
+        {
+            database.Tables.Add("CanAddNotNullColumn", new[] { new Column("CanAddNotNullColumnId", "int") });
+            database.Connection.Execute("INSERT INTO CanAddNotNullColumn VALUES (1)");
+            database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", 5);
+
+            Assert.IsFalse(database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);
+        }
+
+        [TestMethod]
+        public void AddNullableAddsNullableColumn()
+        {
+            database.Tables.Add("CanAddNullableColumn", new[] { new Column("CanAddNullableColumnId", "int") });
+            database.Tables["CanAddNullableColumn"].Columns.AddNullable("NullableColumn", "int");
+
+            Assert.IsTrue(database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Nullable);
         }
     }
 }

@@ -67,9 +67,9 @@ namespace Upgrader
             return informationSchema.GetColumnDataType(tableName, columnName);
         }
 
-        internal void AddColumn(string tableName, string columnName, string dataType, bool nullable, bool autoIncrement)
+        internal void AddColumn(string tableName, string columnName, string dataType, bool nullable)
         {
-            dataDefinitionLanguage.AddColumn(tableName, columnName, dataType, nullable, autoIncrement);
+            dataDefinitionLanguage.AddColumn(tableName, columnName, dataType, nullable);
         }
 
         internal virtual void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
@@ -152,5 +152,13 @@ namespace Upgrader
         protected internal abstract void RenameColumn(string tableName, string columnName, string newColumnName);
 
         protected internal abstract void RenameTable(string tableName, string newTableName);
+
+        internal void SetColumnValue(string tableName, string columnName, object value)
+        {
+            var escapedTableName = EscapeIdentifier(tableName);
+            var escapedColumnName = EscapeIdentifier(columnName);
+
+            Dapper.Execute($"UPDATE {escapedTableName} SET {escapedColumnName} = @value", new { value });
+        }
     }
 }

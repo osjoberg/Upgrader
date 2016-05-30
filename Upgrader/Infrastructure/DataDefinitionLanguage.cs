@@ -47,14 +47,13 @@ namespace Upgrader.Infrastructure
             Database.Dapper.Execute($"DROP TABLE {escapedTableName}");
         }
 
-        internal void AddColumn(string tableName, string columnName, string dataType, bool nullable, bool autoIncrement)
+        internal void AddColumn(string tableName, string columnName, string dataType, bool nullable)
         {
             var escapedTableName = Database.EscapeIdentifier(tableName);
             var escapedColumnName = Database.EscapeIdentifier(columnName);
             var nullableStatement = GetNullableStatement(nullable);
-            var autoIncrementStatement = autoIncrement ? Database.AutoIncrementStatement : "";
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD {escapedColumnName} {dataType} {nullableStatement} {autoIncrementStatement}");
+            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD {escapedColumnName} {dataType} {nullableStatement}");
         }
 
         internal void RemoveColumn(string tableName, string columnName)

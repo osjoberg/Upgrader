@@ -39,12 +39,28 @@ namespace Upgrader.Schema
             return GetEnumerator();
         }
 
-        public void Add(string columnName, string type, bool nullable = false, bool autoIncrement = false)
+        public void AddNullable(string columnName, string dataType)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-            Validate.IsNotNullAndNotEmpty(type, nameof(type));
+            Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
 
-            database.AddColumn(tableName, columnName, type, nullable, autoIncrement);            
+            database.AddColumn(tableName, columnName, dataType, true);
+        }
+
+        public void Add(string columnName, string dataType, object initialValue = null)
+        {
+            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
+
+            if (initialValue == null)
+            {
+                database.AddColumn(tableName, columnName, dataType, false);
+                return;
+            }
+
+            database.AddColumn(tableName, columnName, dataType, true);
+            database.SetColumnValue(tableName, columnName, initialValue);
+            database.ChangeColumn(tableName, columnName, dataType, false);
         }
 
         public void Remove(string columnName)

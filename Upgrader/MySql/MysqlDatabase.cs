@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Dapper;
 using Upgrader.Infrastructure;
 
 namespace Upgrader.MySql
@@ -14,7 +13,6 @@ namespace Upgrader.MySql
        
         public override sealed void Dispose()
         {
-            Connection.Execute("USE information_schema");
             Connection.Dispose();
         }
 

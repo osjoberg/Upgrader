@@ -1,6 +1,5 @@
 ﻿using System.Data.SqlClient;
 using System.Linq;
-using Dapper;
 
 namespace Upgrader.SqlServer
 {
@@ -12,7 +11,6 @@ namespace Upgrader.SqlServer
 
         public override sealed void Dispose()
         {
-            Connection.Execute("USE master");
             Connection.Dispose();
         }
 
