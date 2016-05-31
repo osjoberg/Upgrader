@@ -5,7 +5,7 @@
         <version>$version$</version>
         <title>$id$</title>
         <iconUrl>http://oskarsjoberg.se/LinqCache.png</iconUrl>
-        <authors>$author$</authors>
+        <authors>Oskar Sjöberg</authors>
         <owners />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <summary>Upgrader.</summary>
