@@ -1,5 +1,12 @@
 # Upgrader
-Upgrade your databases with ease.
+Upgrader keeps your database schema in sync with your code as your development project evolves. As new features are added in a development project, changes to the database schema are expressed as Upgrader Steps. Each Step that successfully have been deployed is tracked in a table.
+
+Features
+- Easy object model exposing most common DDL operations
+- Schema can be reflected
+- Dapper can used for complicated or non supported vendor specific DDL operations
+- Constraints are automaticaly named by convention
+- Easy to debug error schema changes
 
 ## Install via NuGet
 To install Upgrader, run the following command in the Package Manager Console:
