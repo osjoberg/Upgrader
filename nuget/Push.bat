@@ -1,0 +1,1 @@
+Nuget.exe push %1

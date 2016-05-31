@@ -17,7 +17,7 @@ namespace Upgrader
             Connection = connection;
             Dapper = new Infrastructure.Dapper(connection);
             Tables = new TableCollection(this);
-            NamingConvention = new NamingConvention();
+            NamingConvention = new NamingConvention(MaxIdentifierLength);
             dataDefinitionLanguage = new DataDefinitionLanguage(this);
             informationSchema = new InformationSchema(this);
         }

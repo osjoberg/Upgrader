@@ -1,0 +1,1 @@
+NuGet.exe pack ..\Upgrader.csproj -Build -Properties Configuration=Release

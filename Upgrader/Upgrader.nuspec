@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>$id$</id>
+        <version>$version$</version>
+        <title>$id$</title>
+        <iconUrl>http://oskarsjoberg.se/LinqCache.png</iconUrl>
+        <authors>$author$</authors>
+        <owners />
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <summary>Upgrader.</summary>
+		<description>$description$</description>
+		<licenseUrl>https://github.com/osjoberg/Upgrader/blob/master/License.txt</licenseUrl>
+		<projectUrl>https://github.com/osjoberg/Upgrader</projectUrl>
+		<tags>upgrader</tags>
+	</metadata>
+</package>
