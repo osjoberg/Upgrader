@@ -234,6 +234,6 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
-/Upgrader/nuget/Push.bat
-/Upgrader/nuget/Pack.bat
-/Upgrader/nuget/NuGet.exe
+/nuget/Push.bat
+/nuget/Pack.bat
+/nuget/NuGet.exe
