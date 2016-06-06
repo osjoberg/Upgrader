@@ -17,10 +17,6 @@ namespace Upgrader
         {
         }
 
-        public Step(string stepName, string sql) : this(stepName, database => database.Connection.Execute(sql))
-        {            
-        }
-
         protected Step(string stepName) : this(stepName, () => { throw new InvalidOperationException("Execute method needs to be overridden when type is inherited from Step."); })
         {            
         }
