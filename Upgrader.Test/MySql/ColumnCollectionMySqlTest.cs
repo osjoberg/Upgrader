@@ -4,9 +4,9 @@ using Upgrader.MySql;
 namespace Upgrader.Test.MySql
 {
     [TestClass]
-    public class ColumnCollectionMysqlTest : ColumnCollectionTest
+    public class ColumnCollectionMySqlTest : ColumnCollectionTest
     {
-        public ColumnCollectionMysqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
+        public ColumnCollectionMySqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
         {            
         }
     }

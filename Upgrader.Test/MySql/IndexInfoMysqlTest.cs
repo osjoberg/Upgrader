@@ -4,9 +4,9 @@ using Upgrader.MySql;
 namespace Upgrader.Test.MySql
 {
     [TestClass]
-    public class IndexInfoMysqlTest : IndexInfoTest
+    public class IndexInfoMySqlTest : IndexInfoTest
     {
-        public IndexInfoMysqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
+        public IndexInfoMySqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
         {            
         }
     }

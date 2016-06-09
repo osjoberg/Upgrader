@@ -5,9 +5,9 @@ using Upgrader.Schema;
 namespace Upgrader.Test.MySql
 {
     [TestClass]
-    public class PrimaryKeyInfoMysqlTest : PrimaryKeyInfoTest
+    public class PrimaryKeyInfoMySqlTest : PrimaryKeyInfoTest
     {
-        public PrimaryKeyInfoMysqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
+        public PrimaryKeyInfoMySqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
         {
         }
 
