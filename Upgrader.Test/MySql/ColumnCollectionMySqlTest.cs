@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Upgrader.MySql;
 
 namespace Upgrader.Test.MySql

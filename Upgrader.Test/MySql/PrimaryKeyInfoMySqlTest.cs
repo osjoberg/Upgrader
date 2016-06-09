@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Upgrader.MySql;
 using Upgrader.Schema;
 
@@ -15,7 +14,7 @@ namespace Upgrader.Test.MySql
         [TestMethod]
         public override void PrimaryKeyIsNamedAccordingToNamingConvention()
         {
-            Database.Tables.Add("PrimaryKeyName", new[] { new Column("PrimaryKeyNameId", "int") });
+            Database.Tables.Add("PrimaryKeyName", new Column("PrimaryKeyNameId", "int"));
             Database.Tables["PrimaryKeyName"].AddPrimaryKey("PrimaryKeyNameId");
 
             Assert.AreEqual("PRIMARY", Database.Tables["PrimaryKeyName"].PrimaryKey.PrimaryKeyName);

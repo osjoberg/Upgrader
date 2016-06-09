@@ -50,8 +50,7 @@ namespace Upgrader
             if (Database.Tables[ExecutedStepsTable] == null)
             {
                 Database.Tables.Add(
-                    ExecutedStepsTable, 
-                    new [] { new Column("Step", "NVARCHAR(100)"), new Column("ExecutedAt", "DATETIME") });
+                    ExecutedStepsTable, new Column("Step", "NVARCHAR(100)"), new Column("ExecutedAt", "DATETIME"));
             }
 
             var alreadyExecutedStepNames = new HashSet<string>(Database.Dapper.Query<string>($"SELECT Step FROM {ExecutedStepsTable}"));

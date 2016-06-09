@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Upgrader.Schema;
 
 namespace Upgrader.Test
@@ -27,8 +25,8 @@ namespace Upgrader.Test
         {
             if (database.Tables["ForeignTable"] == null)
             { 
-                database.Tables.Add("ForeignTable", new[] { new Column("ForeignTableId", "int", ColumnModifier.PrimaryKey) });
-                database.Tables.Add("ParentTable", new[] { new Column("ParentTableId", "int", ColumnModifier.PrimaryKey), new Column("ForeignTableId", "int") });
+                database.Tables.Add("ForeignTable", new Column("ForeignTableId", "int", ColumnModifier.PrimaryKey));
+                database.Tables.Add("ParentTable", new Column("ParentTableId", "int", ColumnModifier.PrimaryKey), new Column("ForeignTableId", "int"));
                 database.Tables["ParentTable"].ForeignKeys.Add("ForeignTableId", "ForeignTable");
             }
         }

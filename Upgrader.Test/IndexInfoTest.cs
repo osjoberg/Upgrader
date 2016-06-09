@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Upgrader.Schema;
 
 namespace Upgrader.Test
@@ -25,7 +23,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void TableNameMatchesTableName()
         {
-            database.Tables.Add("IndexInfoTableName", new [] { new Column("IndexInfoTableNameId",  "int") });
+            database.Tables.Add("IndexInfoTableName", new Column("IndexInfoTableNameId",  "int"));
             database.Tables["IndexInfoTableName"].Indexes.Add("IndexInfoTableNameId", false);            
 
             Assert.AreEqual("IndexInfoTableName", database.Tables["IndexInfoTableName"].Indexes.Single().TableName);
@@ -34,7 +32,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void IndexNameMatchesTableName()
         {
-            database.Tables.Add("IndexInfoIndexName", new[] { new Column("IndexInfoIndexNameId", "int") });
+            database.Tables.Add("IndexInfoIndexName", new Column("IndexInfoIndexNameId", "int"));
             database.Tables["IndexInfoIndexName"].Indexes.Add("IndexInfoIndexNameId", false);
 
             Assert.AreEqual("IX_IndexInfoIndexName_IndexInfoIndexNameId", database.Tables["IndexInfoIndexName"].Indexes.Single().IndexName);
@@ -43,7 +41,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void ColumnNamesMatchesColumnNames()
         {
-            database.Tables.Add("IndexInfoColumnNames", new[] { new Column("IndexInfoColumnNamesId", "int") });
+            database.Tables.Add("IndexInfoColumnNames", new Column("IndexInfoColumnNamesId", "int"));
             database.Tables["IndexInfoColumnNames"].Indexes.Add("IndexInfoColumnNamesId", false);
 
             Assert.AreEqual("IndexInfoColumnNamesId", database.Tables["IndexInfoColumnNames"].Indexes.Single().ColumnNames.Single());
@@ -52,7 +50,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void UniqueIsTrueForUniqueIndexes()
         {
-            database.Tables.Add("IndexInfoUniqueIndex", new[] { new Column("IndexInfoUniqueIndexId", "int") });
+            database.Tables.Add("IndexInfoUniqueIndex", new Column("IndexInfoUniqueIndexId", "int"));
             database.Tables["IndexInfoUniqueIndex"].Indexes.Add("IndexInfoUniqueIndexId", true);
 
             Assert.IsTrue(database.Tables["IndexInfoUniqueIndex"].Indexes.Single().Unique);
@@ -61,7 +59,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void UniqueIsFalseForNonUniqueIndexes()
         {
-            database.Tables.Add("IndexInfoNonUniqueIndex", new[] { new Column("IndexInfoNonUniqueIndexId", "int") });
+            database.Tables.Add("IndexInfoNonUniqueIndex", new Column("IndexInfoNonUniqueIndexId", "int"));
             database.Tables["IndexInfoNonUniqueIndex"].Indexes.Add("IndexInfoNonUniqueIndexId", false);
 
             Assert.IsFalse(database.Tables["IndexInfoNonUniqueIndex"].Indexes.Single().Unique);

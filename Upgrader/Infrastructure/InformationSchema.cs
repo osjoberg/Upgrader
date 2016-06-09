@@ -56,7 +56,7 @@ namespace Upgrader.Infrastructure
                     COLUMN_NAME = @columnName AND
                     TABLE_NAME = @tableName AND 
                         TABLE_SCHEMA = @schemaName
-                ",
+                ", 
                 new { tableName, schemaName, columnName }).SingleOrDefault();
         }
 
@@ -73,7 +73,7 @@ namespace Upgrader.Infrastructure
                     COLUMN_NAME = @columnName AND
                     TABLE_NAME = @tableName AND 
                         TABLE_SCHEMA = @schemaName
-                ",
+                ", 
                 new { tableName, schemaName, columnName }).Single() == "YES";
         }
 

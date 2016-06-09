@@ -102,7 +102,7 @@ namespace Upgrader.Test
                     "Atomic", 
                     () =>
                     {
-                        database.Tables.Add("AtomicTable", new[] { new Column("AtomicTableId", "int") });
+                        database.Tables.Add("AtomicTable", new Column("AtomicTableId", "int"));
                         throw new InvalidOperationException("Injected fault");                            
                     })
             };
@@ -124,17 +124,17 @@ namespace Upgrader.Test
             var database = new SqlServerDatabase("Server = (local); Integrated Security = true; Initial Catalog = UpgraderTest");
             var upgrade = new Upgrade<SqlServerDatabase>(database)
             {
-                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep",
+                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep", 
                 TransactionMode = TransactionMode.None               
             };
 
             var steps = new List<Step>
             {
                 new Step(
-                    "NonAtomic",
+                    "NonAtomic", 
                     () =>
                     {
-                        database.Tables.Add("NonAtomicTable", new[] { new Column("NonAtomicTableId", "int") });
+                        database.Tables.Add("NonAtomicTable", new Column("NonAtomicTableId", "int"));
                         throw new InvalidOperationException("Injected fault");
                     })
             };

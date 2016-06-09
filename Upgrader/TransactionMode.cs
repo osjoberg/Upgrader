@@ -2,7 +2,7 @@
 {
     public enum TransactionMode
     {
-        None,
+        None, 
         OneTransactionPerStep
     }
 }

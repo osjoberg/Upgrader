@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Upgrader.Schema;
 
 namespace Upgrader.Test
@@ -27,8 +25,8 @@ namespace Upgrader.Test
         {
             if (database.Tables["ForeignTable2"] == null)
             {
-                database.Tables.Add("ForeignTable2", new[] { new Column("ForeignTable2Id", "int", ColumnModifier.PrimaryKey) });
-                database.Tables.Add("ForeignTable2Child", new[] { new Column("ForeignTable2ChildId", "int", ColumnModifier.PrimaryKey) });
+                database.Tables.Add("ForeignTable2", new Column("ForeignTable2Id", "int", ColumnModifier.PrimaryKey));
+                database.Tables.Add("ForeignTable2Child", new Column("ForeignTable2ChildId", "int", ColumnModifier.PrimaryKey));
                 database.Tables["ForeignTable2Child"].ForeignKeys.Add("ForeignTable2ChildId", "ForeignTable2", "ForeignTable2Id");
             }
         }
@@ -37,7 +35,7 @@ namespace Upgrader.Test
         public void NameContainsTheForeignKeyConstraintName()
         {
             Assert.AreEqual(
-                "FK_ForeignTable2Child_ForeignTable2ChildId_ForeignTable2",
+                "FK_ForeignTable2Child_ForeignTable2ChildId_ForeignTable2", 
                 database.Tables["ForeignTable2Child"].ForeignKeys.Single().ForeignKeyName);
         }
 
