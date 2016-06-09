@@ -26,19 +26,19 @@ This example will intialize Upgader with one upgrade step named "CreateCustomerT
 var connectionString = "Server=(local); Integrated Security=true; Initial Catalog=Acme";
 
 using (var database = new SqlServerDatabase(connectionString))
-{ 
+{
 	var upgrade = new Upgrade<SqlServerDatabase>(database);
 
-	var steps = new List<Step>();
+	var steps = new StepCollection();
 
-	steps.Add(new Step("CreateCustomerTable", () => 
+	steps.Add("CreateCustomerTable", () =>
 	{
-		database.Tables.Add("Customers", new[]
-		{
-			new Column("CustomerId", "INT", ColumnModifier.AutoIncrementPrimaryKey), 
+		database.Tables.Add(
+			"Customers", 
+			new Column("CustomerId", "INT", ColumnModifier.AutoIncrementPrimaryKey),
 			new Column("Name", "VARCHAR(50)")
-		});                            
-	}));
+		);
+	});
 
 	// TODO: Add more steps here as you develop your system.
 
