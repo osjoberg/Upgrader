@@ -12,7 +12,7 @@ Features
 ## Install via NuGet
 To install Upgrader, run the following command in the Package Manager Console:
 
-```
+```cmd
 PM> Install-Package Upgrader
 ```
 
@@ -21,7 +21,7 @@ You can also view the package page on [Nuget](https://www.nuget.org/packages/Upg
 ## Example usage
 This example will intialize Upgader with one upgrade step named "CreateCustomerTable". When PerformUpgrade is invoked, Upgrader will check if the step have been executed previously. If the step have not been executed previously before, it will be executed and its execution is tracked. Tracking of which steps that have been executed is stored in the database, in a table called "ExecutedSteps". 
 
-```csharp
+```c#
 // TODO: Insert real connection string here.
 var connectionString = "Server=(local); Integrated Security=true; Initial Catalog=Acme";
 
@@ -46,29 +46,110 @@ using (var database = new SqlServerDatabase(connectionString))
 }
 ```
 
-## Example with schema query
-Upgrader have support for querying the database schema. This can be used for update steps where the target database may have subtle differences from installation to installation. The feature can also be used this to enforce schema conventions in unit-tests.
+## Table manipulation examples
 
-```csharp
-[TestMethod]
-public void AllForeignKeysAreNamedWithFK_Prefix()
+```c#
+// Check if a table named "Customer" exists.
+if (database.Tables["Customer"] != null)
 {
-    // TODO: Insert real connection string here.
-    var connectionString = "Server=(local); Integrated Security=true; Initial Catalog=Acme";
-    
-    var database = new SqlServerDatabase(connectionString);
-
-    var allForeignKeys = database.Tables.SelectMany(table => table.ForeignKeys);
-
-    foreach (var foreignKey in allForeignKeys)
-    {
-        var foreignKeyStartsWithFK_ = foreignKey.ForeignKeyName.StartsWith("FK_");
-
-        Assert.IsTrue(foreignKeyStartsWithFK_, $"Foreign key {foreignKey.ForeignKeyName} on table {foreignKey.TableName} does not start with \"FK_\".");
-    }
+	...
 }
+
+// Enumerate all table names.
+database.Tables.ToList().ForEach(table => Console.WriteLine(table.TableName));
+
+// Create a table named "Customer" with two columns.
+database.Tables.Add("Customer",
+	new Column("CustomerId", "int", ColumnModifier.AutoIncrementPrimaryKey),
+	new Column("Name", "varchar(50)"));
+	
+// Rename "Customer" table to "Customers".
+database.Tables["Customer"].Rename("Customers");
+
+// Remove table named "Customers".
+database.Tables.Remove("Customers");
 ```
 
+## Column manipulation examples
+```c#
+// Check if column "Name" exists in table "Customer".
+if (database.Tables["Customer"].Columns["Name"] != null)
+{
+	...
+}
+
+// Enumerate all columns in table "Customer".
+database.Tables["Customer"].Columns.ToList().ForEach(column => Console.WriteLine(column.ColumnName));
+
+// Add a nullable column named "Profit" to table "Customer".
+database.Tables["Customer"].Columns.AddNullable("Profit", "decimal");
+
+// Add a non-nullable column named "Status" to table "Customer", set value "0" in all existing rows.
+database.Tables["Customer"].Columns.Add("Status", "int", 0);
+
+// Change column "Name" in table "Customer" to data type "varchar(100)".
+database.Tables["Customer"].Columns["Name"].ChangeType("varchar(100)");
+
+// Rename column "Name" in table "Customer" to "CustomerName".
+database.Tables["Customer"].Columns["Name"].Rename("CustomerName");
+
+// Remove column "Profit" in table "Customer".
+database.Tables["Customer"].Columns.Remove("Profit");
+```
+
+## Primary key manipulation examples
+```c#
+// Check if primary key exists for table "Customer".
+if (database.Tables["Customer"].PrimaryKey != null)
+{
+	...
+}
+
+// Get primary key information for "Customer" table.
+database.Tables["Customer"].PrimaryKey.ColumnNames.ToList().ForEach(columnName => Console.WriteLine(columnName));
+
+// Add a primary key for table "Customer" on column "CustomerId".
+database.Tables["Customer"].AddPrimaryKey("CustomerId");
+
+// Remove primare key for table "Customer".
+database.Tables["Customer"].RemovePrimaryKey();
+```
+
+## Foreign key manipulation examples
+```c#
+// Check if foreign key "FK_Customer_Address" exists for table "Customer".
+if (database.Tables["Customer"].ForeignKeys["FK_Customer_CustomerId_Address"] != null)
+{
+	...
+}
+
+// Enumerate foreign keys for table "Customer".
+database.Tables["Customer"].ForeignKeys.ToList().ForEach(foreignKey => Console.WriteLine(foreignKey.ForeignTable));
+
+// Add a foreign key for table "Customer" on column "CustomerId" to column "CustomerId" in foreign table "Address".
+database.Tables["Customer"].ForeignKeys.Add("CustomerId", "Address");
+
+// Remove primare key for table "Customer".
+database.Tables["Customer"].ForeignKeys.Remove("FK_Customer_CustomerId_Address");
+```
+
+## Index manipulation examples
+```c#
+// Check if index named "IX_Customer_Profit" exists for table "Customer".
+if (database.Tables["Customer"].Indexes["IX_Customer_Profit"] != null)
+{
+	...
+}
+
+// Enumerate indexes for table "Customer".
+database.Tables["Customer"].Indexes.ToList().ForEach(index => Console.WriteLine(index.IndexName));
+
+// Add non-unique index on column "Profit" in table "Customer".
+database.Tables["Customer"].Indexes.Add("Profit", false);
+
+// Remove index "IX_Customer_Profit".
+database.Tables["Customer"].Indexes.Remove("IX_Customer_Profit");
+```
 
 ## Supported database management systems
 - SQL Server

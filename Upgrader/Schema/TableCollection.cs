@@ -38,7 +38,7 @@ namespace Upgrader.Schema
             return GetEnumerator();
         }
 
-        public void Add(string tableName, IEnumerable<Column> columns)
+        public void Add(string tableName, params Column[] columns)
         {
             Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
             Validate.MaxLength(tableName, nameof(tableName), database.MaxIdentifierLength);
