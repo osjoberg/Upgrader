@@ -6,12 +6,12 @@ namespace Upgrader.Test
     [TestClass]
     public abstract class PrimaryKeyInfoTest
     {
-        protected Database Database { get; }
-
         protected PrimaryKeyInfoTest(Database database)
         {
             this.Database = database;
         }
+
+        protected Database Database { get; }
 
         [TestCleanup]
         public void Cleanup()
@@ -27,12 +27,10 @@ namespace Upgrader.Test
             Assert.AreEqual("PrimaryKeyTableName", Database.Tables["PrimaryKeyTableName"].PrimaryKey.TableName);
         }
 
-
         [TestMethod]
         public virtual void PrimaryKeyIsNamedAccordingToNamingConvention()
         {
-            Database.Tables.Add("PrimaryKeyName", new Column("PrimaryKeyNameId", "int"));
-            Database.Tables["PrimaryKeyName"].AddPrimaryKey("PrimaryKeyNameId");
+            Database.Tables.Add("PrimaryKeyName", new Column("PrimaryKeyNameId", "int", ColumnModifier.PrimaryKey));
 
             Assert.AreEqual("PK_PrimaryKeyName_PrimaryKeyNameId", Database.Tables["PrimaryKeyName"].PrimaryKey.PrimaryKeyName);
         }

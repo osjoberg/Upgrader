@@ -79,7 +79,6 @@ namespace Upgrader.Test
             Assert.IsFalse(database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
         }
 
-
         [TestMethod]
         public virtual void RenameRenamesColumn()
         {
@@ -88,6 +87,22 @@ namespace Upgrader.Test
             database.Tables["RenameColumn"].Columns["RenameColumnId"].Rename("NewColumnNameId");
 
             Assert.IsNotNull(database.Tables["RenameColumn"].Columns["NewColumnNameId"]);
+        }
+
+        [TestMethod]
+        public void AutoIncrementIsTrueWhenColumnIsAutoIncrement()
+        {
+            database.Tables.Add("AutoIncrement", new Column("AutoIncrementId", "integer", ColumnModifier.AutoIncrementPrimaryKey));
+
+            Assert.IsTrue(database.Tables["AutoIncrement"].Columns["AutoIncrementId"].AutoIncrement);
+        }
+
+        [TestMethod]
+        public void AutoIncrementIsFalseWhenColumnIsNotAutoIncrement()
+        {
+            database.Tables.Add("NoAutoIncrement", new Column("NoAutoIncrementId", "integer"));
+
+            Assert.IsFalse(database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].AutoIncrement);
         }
     }
 }

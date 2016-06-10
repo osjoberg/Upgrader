@@ -26,8 +26,10 @@ namespace Upgrader.Test
             if (database.Tables["ForeignTable2"] == null)
             {
                 database.Tables.Add("ForeignTable2", new Column("ForeignTable2Id", "int", ColumnModifier.PrimaryKey));
-                database.Tables.Add("ForeignTable2Child", new Column("ForeignTable2ChildId", "int", ColumnModifier.PrimaryKey));
-                database.Tables["ForeignTable2Child"].ForeignKeys.Add("ForeignTable2ChildId", "ForeignTable2", "ForeignTable2Id");
+                database.Tables.Add(
+                    "ForeignTable2Child", 
+                    new[] { new Column("ForeignTable2ChildId", "int", ColumnModifier.PrimaryKey) }, 
+                    new[] { new ForeignKey("ForeignTable2ChildId", "ForeignTable2", "ForeignTable2Id") });
             }
         }
 

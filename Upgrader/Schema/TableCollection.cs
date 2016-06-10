@@ -38,14 +38,21 @@ namespace Upgrader.Schema
             return GetEnumerator();
         }
 
-        public void Add(string tableName, params Column[] columns)
+        public void Add(string tableName, Column[] columns, ForeignKey[] foreignKeys)
         {
             Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
             Validate.MaxLength(tableName, nameof(tableName), database.MaxIdentifierLength);
             Validate.IsNotNullAndNotEmpty(columns, nameof(columns));
             Validate.MaxLength(columns.Select(column => column.ColumnName), nameof(columns), database.MaxIdentifierLength);
+            Validate.IsNotNull(foreignKeys, nameof(foreignKeys));
+            Validate.MaxLength(foreignKeys.Select(foreignKey => foreignKey.ForeignKeyName), nameof(columns), database.MaxIdentifierLength);
 
-            database.AddTable(tableName, columns);
+            database.AddTable(tableName, columns, foreignKeys);
+        }
+
+        public void Add(string tableName, params Column[] columns)
+        {
+            Add(tableName, columns, new ForeignKey[] { });
         }
 
         public void Remove(string tableName)

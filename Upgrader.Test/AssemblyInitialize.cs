@@ -1,5 +1,7 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
+using System.Data.SQLite;
+using System.IO;
 using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
@@ -31,6 +33,8 @@ namespace Upgrader.Test
                 connection.Open();
                 connection.Execute("CREATE DATABASE UpgraderTest");
             }
+
+            SQLiteConnection.CreateFile("UpgraderTest.sqlite");
         }
 
         /*[AssemblyCleanup]*/
@@ -49,6 +53,11 @@ namespace Upgrader.Test
                 connection.Execute("USE master");
                 connection.Execute("DROP DATABASE UpgraderTest");
             }
+
+            if (File.Exists("UpgraderTest.sqlite") == false)
+            {
+                File.Delete("UpgraderTest.sqlite");
+            }            
         }
     }
 }

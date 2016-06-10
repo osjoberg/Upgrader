@@ -9,11 +9,6 @@ namespace Upgrader.SqlServer
         {
         }
 
-        public override sealed void Dispose()
-        {
-            Connection.Dispose();
-        }
-
         protected internal override string GetSchema(string tableName)
         {
             if (tableName == null || tableName.Contains('.') == false)
@@ -43,7 +38,7 @@ namespace Upgrader.SqlServer
                 FROM sys.columns WHERE
                     object_id = OBJECT_ID(@tableName) AND 
                     name = @columnName
-                ",
+                ", 
                 new { tableName, columnName });
         }
 

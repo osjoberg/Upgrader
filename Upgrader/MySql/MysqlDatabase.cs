@@ -5,17 +5,12 @@ namespace Upgrader.MySql
 {
     public class MySqlDatabase : Database
     {
-        private static readonly ConnectionFactory connectionFactory = new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection");
+        private static readonly ConnectionFactory ConnectionFactory = new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection");
 
-        public MySqlDatabase(string connectionString) : base(connectionFactory.CreateConnection(connectionString))
+        public MySqlDatabase(string connectionString) : base(ConnectionFactory.CreateConnection(connectionString))
         {
         }
        
-        public override sealed void Dispose()
-        {
-            Connection.Dispose();
-        }
-
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
             var escapedTableName = EscapeIdentifier(tableName);
@@ -66,7 +61,7 @@ namespace Upgrader.MySql
                     KCU1.TABLE_NAME = @tableName
 				ORDER BY 
                     KCU2.ORDINAL_POSITION
-                ",
+                ", 
                 new { constraintName, tableName, schemaName });
         }
 
@@ -95,7 +90,7 @@ namespace Upgrader.MySql
                     KCU1.TABLE_NAME = @tableName
 				ORDER BY 
                     KCU2.ORDINAL_POSITION
-                ",
+                ", 
                 new { constraintName, tableName, schemaName }).ToArray();
         }
 
@@ -199,7 +194,7 @@ namespace Upgrader.MySql
                 FROM INFORMATION_SCHEMA.COLUMNS WHERE
                     TABLE_NAME = @tableName AND 
                     COLUMN_NAME = @columnName
-                ",
+                ", 
                 new { tableName, columnName });
         }
 

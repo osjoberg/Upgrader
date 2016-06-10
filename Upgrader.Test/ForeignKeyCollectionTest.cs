@@ -26,8 +26,10 @@ namespace Upgrader.Test
             if (database.Tables["ForeignTable"] == null)
             { 
                 database.Tables.Add("ForeignTable", new Column("ForeignTableId", "int", ColumnModifier.PrimaryKey));
-                database.Tables.Add("ParentTable", new Column("ParentTableId", "int", ColumnModifier.PrimaryKey), new Column("ForeignTableId", "int"));
-                database.Tables["ParentTable"].ForeignKeys.Add("ForeignTableId", "ForeignTable");
+                database.Tables.Add(
+                    "ParentTable", 
+                    new[] { new Column("ParentTableId", "int", ColumnModifier.PrimaryKey), new Column("ForeignTableId", "int") }, 
+                    new[] { new ForeignKey("ForeignTableId", "ForeignTable") });
             }
         }
 
@@ -56,12 +58,16 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void RemoveRemovesForeignKey()
+        public virtual void RemoveRemovesForeignKey()
         {
-            database.Tables["ParentTable"].ForeignKeys.Add("ForeignTableId", "ForeignTable", foreignKeyName: "DuplicateFK");
-            database.Tables["ParentTable"].ForeignKeys.Remove("DuplicateFK");
+            database.Tables.Add(
+                "RemoveForeignKeyTable",
+                new[] { new Column("RemoveForeignKeyTableId", "int", ColumnModifier.PrimaryKey), new Column("ForeignTableId", "int") },
+                new[] { new ForeignKey("ForeignTableId", "ForeignTable", "ForeignTableId", "DuplicateFK") });
 
-            Assert.IsNull(database.Tables["ParentTable"].ForeignKeys["DuplicateFK"]);
+            database.Tables["RemoveForeignKeyTable"].ForeignKeys.Remove("DuplicateFK");
+
+            Assert.IsNull(database.Tables["RemoveForeignKeyTable"].ForeignKeys["DuplicateFK"]);
         }
     }
 }

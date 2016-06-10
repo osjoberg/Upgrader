@@ -36,17 +36,21 @@ namespace Upgrader
 
         internal Infrastructure.Dapper Dapper { get; }
 
-        [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This implementation is enough for now.")]
-        public abstract void Dispose();
+        [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", 
+            Justification = "This implementation is enough for now.")]
+        public void Dispose()
+        {
+            Connection.Dispose();
+        }
 
-        internal string[] GetTableNames()
+        internal virtual string[] GetTableNames()
         {
             return informationSchema.GetTableNames();
         }
 
-        internal void AddTable(string tableName, IEnumerable<Column> columns)
+        internal void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
-            dataDefinitionLanguage.AddTable(tableName, columns);
+            dataDefinitionLanguage.AddTable(tableName, columns, foreignKeys);
         }
 
         internal void RemoveTable(string tableName)
@@ -54,22 +58,22 @@ namespace Upgrader
             dataDefinitionLanguage.RemoveTable(tableName);
         }
 
-        internal string[] GetColumnNames(string tableName)
+        internal virtual string[] GetColumnNames(string tableName)
         {
             return informationSchema.GetColumnNames(tableName);
         }
 
-        internal bool GetColumnNullable(string tableName, string columnName)
+        internal virtual bool GetColumnNullable(string tableName, string columnName)
         {
             return informationSchema.GetColumnNullable(tableName, columnName);
         }
 
-        internal string GetColumnDataType(string tableName, string columnName)
+        internal virtual string GetColumnDataType(string tableName, string columnName)
         {
             return informationSchema.GetColumnDataType(tableName, columnName);
         }
 
-        internal void AddColumn(string tableName, string columnName, string dataType, bool nullable)
+        internal virtual void AddColumn(string tableName, string columnName, string dataType, bool nullable)
         {
             dataDefinitionLanguage.AddColumn(tableName, columnName, dataType, nullable);
         }
@@ -79,17 +83,17 @@ namespace Upgrader
             dataDefinitionLanguage.ChangeColumn(tableName, columnName, dataType, nullable);
         }
 
-        internal void RemoveColumn(string tableName, string columnName)
+        internal virtual void RemoveColumn(string tableName, string columnName)
         {
             dataDefinitionLanguage.RemoveColumn(tableName, columnName);
         }
 
-        internal string GetPrimaryKeyName(string tableName)
+        internal virtual string GetPrimaryKeyName(string tableName)
         {
             return informationSchema.GetPrimaryKeyName(tableName);
         }
 
-        internal string[] GetPrimaryKeyColumnNames(string tableName, string primaryKeyName)
+        internal virtual string[] GetPrimaryKeyColumnNames(string tableName, string primaryKeyName)
         {
             return informationSchema.GetPrimaryKeyColumnNames(tableName, primaryKeyName);
         }
@@ -104,7 +108,7 @@ namespace Upgrader
             dataDefinitionLanguage.RemovePrimaryKey(tableName, primaryKeyName);
         }
 
-        internal string[] GetForeignKeyNames(string tableName)
+        internal virtual string[] GetForeignKeyNames(string tableName)
         {
             return informationSchema.GetForeignKeyNames(tableName);
         }
@@ -114,7 +118,7 @@ namespace Upgrader
             return informationSchema.GetForeignKeyForeignTableName(tableName, foreignKeyName);
         }
 
-        internal string[] GetForeignKeyColumnNames(string tableName, string foreignKeyName)
+        internal virtual string[] GetForeignKeyColumnNames(string tableName, string foreignKeyName)
         {
             return informationSchema.GetForeignKeyColumnNames(tableName, foreignKeyName);
         }

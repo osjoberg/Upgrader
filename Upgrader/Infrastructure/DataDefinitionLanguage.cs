@@ -13,7 +13,7 @@ namespace Upgrader.Infrastructure
             Database = database;
         }
 
-        internal void AddTable(string tableName, IEnumerable<Column> columns)
+        internal void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
             var columnsShallowClone = columns.ToArray();
 
@@ -27,17 +27,32 @@ namespace Upgrader.Infrastructure
                 .Select(column => column.ColumnName)
                 .ToArray();
 
-            if (primaryKeyColumnNames.Any() == false)
-            {
-                Database.Dapper.Execute($"CREATE TABLE {escapedTableName} ({columnDefinitions})");
-                return;
+            var sql = $"CREATE TABLE {escapedTableName} ({columnDefinitions}";
+
+            if (primaryKeyColumnNames.Any())
+            {     
+                var escapedPrimaryKeyColumnNames = primaryKeyColumnNames.Select(identifier => Database.EscapeIdentifier(identifier)).ToArray();
+                var escapedCommaSeparatedPrimaryKeyColumnNames = string.Join(", ", escapedPrimaryKeyColumnNames);
+                var escapedPrimaryKeyConstraintName = Database.EscapeIdentifier(Database.NamingConvention.GetPrimaryKeyNamingConvention(tableName, primaryKeyColumnNames));
+
+                sql += $", CONSTRAINT {escapedPrimaryKeyConstraintName} PRIMARY KEY ({escapedCommaSeparatedPrimaryKeyColumnNames})";
             }
 
-            var escapedPrimaryKeyColumnNames = primaryKeyColumnNames.Select(identifier => Database.EscapeIdentifier(identifier)).ToArray();
-            var escapedCommaSeparatedPrimaryKeyColumnNames = string.Join(", ", escapedPrimaryKeyColumnNames);
-            var escapedPrimaryKeyConstraintName = Database.EscapeIdentifier(Database.NamingConvention.GetPrimaryKeyNamingConvention(tableName, primaryKeyColumnNames));
+            foreach (var foreignKey in foreignKeys)
+            {
+                var escapedForeignKeyName = Database.EscapeIdentifier(foreignKey.ForeignKeyName ?? Database.NamingConvention.GetForeignKeyNamingConvention(tableName, foreignKey.ColumnNames, foreignKey.ForeignTableName));
+                var escapedForeignTableName = Database.EscapeIdentifier(foreignKey.ForeignTableName);
+                var escapedColumnNames = foreignKey.ColumnNames.Select(columnName => Database.EscapeIdentifier(columnName));
+                var escapedCommaSeparatedColumnNames = string.Join(", ", escapedColumnNames);
+                var escapedForeignColumnNames = foreignKey.ForeignColumnNames.Select(foreignColumnName => Database.EscapeIdentifier(foreignColumnName));
+                var escapedForeignCommaSeparatedColumnNames = string.Join(", ", escapedForeignColumnNames);
 
-            Database.Dapper.Execute($"CREATE TABLE {escapedTableName} ({columnDefinitions}, CONSTRAINT {escapedPrimaryKeyConstraintName} PRIMARY KEY ({escapedCommaSeparatedPrimaryKeyColumnNames}))");
+                sql += $", CONSTRAINT {escapedForeignKeyName} FOREIGN KEY ({escapedCommaSeparatedColumnNames}) REFERENCES {escapedForeignTableName} ({escapedForeignCommaSeparatedColumnNames})";
+            }
+
+            sql += ")";
+
+            Database.Dapper.Execute(sql);
         }
 
         internal void RemoveTable(string tableName)

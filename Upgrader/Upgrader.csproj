@@ -47,11 +47,13 @@
     <Compile Include="Schema\ColumnInfo.cs" />
     <Compile Include="Schema\ColumnModifier.cs" />
     <Compile Include="Infrastructure\Dapper.cs" />
+    <Compile Include="Schema\ForeignKey.cs" />
     <Compile Include="Schema\ForeignKeyInfo.cs" />
     <Compile Include="Schema\IndexInfo.cs" />
     <Compile Include="NamingConvention.cs" />
     <Compile Include="Schema\PrimaryKeyInfo.cs" />
     <Compile Include="Schema\TableInfo.cs" />
+    <Compile Include="SqLite\SqliteDatabase.cs" />
     <Compile Include="StepCollection.cs" />
     <Compile Include="UpgraderException.cs" />
     <Compile Include="Infrastructure\Validate.cs" />
