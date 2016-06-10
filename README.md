@@ -145,7 +145,7 @@ if (database.Tables["Customer"].Indexes["IX_Customer_Profit"] != null)
 database.Tables["Customer"].Indexes.ToList().ForEach(index => Console.WriteLine(index.IndexName));
 
 // Add non-unique index on column "Profit" in table "Customer".
-database.Tables["Customer"].Indexes.Add("Profit", false);
+database.Tables["Customer"].Indexes.Add("Profit");
 
 // Remove index "IX_Customer_Profit".
 database.Tables["Customer"].Indexes.Remove("IX_Customer_Profit");

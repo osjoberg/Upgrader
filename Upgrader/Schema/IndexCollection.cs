@@ -27,17 +27,31 @@ namespace Upgrader.Schema
             }
         }
 
-        public void Add(string columnName, bool unique, string indexName = null)
+        public void Add(string columnName, string indexName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
-            Validate.IsNotEmpty(indexName, nameof(indexName));
-            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
-            Add(new[] { columnName }, unique, indexName);
+            Add(new[] { columnName }, false, indexName);
         }
 
-        public void Add(string[] columnNames, bool unique, string indexName = null)
+        public void Add(string[] columnNames, string indexName = null)
+        {
+            Add(columnNames, false, indexName);
+        }
+
+        public void AddUnique(string columnName, string indexName = null)
+        {
+            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+
+            Add(new[] { columnName }, true, indexName);
+        }
+
+        public void AddUnique(string[] columnNames, string indexName = null)
+        {
+            Add(columnNames, true, indexName);
+        }
+
+        private void Add(string[] columnNames, bool unique, string indexName = null)
         {
             Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
             Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);

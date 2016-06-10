@@ -24,7 +24,7 @@ namespace Upgrader.Test
         public void AddAddsIndex()
         {
             database.Tables.Add("AddIndex", new Column("AddIndexId", "int"));
-            database.Tables["AddIndex"].Indexes.Add("AddIndexId", false);
+            database.Tables["AddIndex"].Indexes.Add("AddIndexId");
 
             Assert.IsNotNull(database.Tables["AddIndex"].Indexes.Single());
         }
@@ -34,7 +34,7 @@ namespace Upgrader.Test
         public void AddAddsIndexWithMultipleColumns()
         {
             database.Tables.Add("AddIndexMultiple", new Column("AddIndexMultipleId", "int"), new Column("Multiple", "int"));
-            database.Tables["AddIndexMultiple"].Indexes.Add(new[] { "AddIndexMultipleId", "Multiple" }, false);
+            database.Tables["AddIndexMultiple"].Indexes.Add(new[] { "AddIndexMultipleId", "Multiple" });
 
             CollectionAssert.AreEqual(new[] { "AddIndexMultipleId", "Multiple" }, database.Tables["AddIndexMultiple"].Indexes.Single().ColumnNames);
         }
@@ -43,7 +43,7 @@ namespace Upgrader.Test
         public void RemoveRemovesIndex()
         {
             database.Tables.Add("RemoveIndex", new Column("RemoveIndexId", "int"));
-            database.Tables["RemoveIndex"].Indexes.Add("RemoveIndexId", false);
+            database.Tables["RemoveIndex"].Indexes.Add("RemoveIndexId");
 
             database.Tables["RemoveIndex"].Indexes.Remove("IX_RemoveIndex_RemoveIndexId");
             Assert.IsNull(database.Tables["RemoveIndex"].Indexes.SingleOrDefault());
@@ -53,7 +53,7 @@ namespace Upgrader.Test
         public void IndexesCanBeEnumerated()
         {
             database.Tables.Add("EnumerateIndex", new Column("EnumerateIndexId", "int"));
-            database.Tables["EnumerateIndex"].Indexes.Add("EnumerateIndexId", false);
+            database.Tables["EnumerateIndex"].Indexes.Add("EnumerateIndexId");
 
             Assert.AreEqual("IX_EnumerateIndex_EnumerateIndexId", database.Tables["EnumerateIndex"].Indexes.Single().IndexName);
         }
@@ -62,7 +62,7 @@ namespace Upgrader.Test
         public void IndexesCanBeAccessedByName()
         {
             database.Tables.Add("AccessIndex", new Column("AccessIndexId", "int"));
-            database.Tables["AccessIndex"].Indexes.Add("AccessIndexId", false);
+            database.Tables["AccessIndex"].Indexes.Add("AccessIndexId");
 
             Assert.AreEqual("IX_AccessIndex_AccessIndexId", database.Tables["AccessIndex"].Indexes["IX_AccessIndex_AccessIndexId"].IndexName);
         }
