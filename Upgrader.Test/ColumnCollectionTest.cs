@@ -8,88 +8,88 @@ namespace Upgrader.Test
     [TestClass]
     public abstract class ColumnCollectionTest
     {
-        private readonly Database database;
+        protected readonly Database Database;
 
         protected ColumnCollectionTest(Database database)
         {
-            this.database = database;
+            this.Database = database;
         }
 
         [TestCleanup]
         public void Cleanup()
         {
-            database.Dispose();
+            Database.Dispose();
         }
 
         [TestMethod]
         public virtual void AddAddsColumn()
         {
-            database.Tables.Add("AddColumn", new Column("AddColumnId", "int"));
+            Database.Tables.Add("AddColumn", new Column("AddColumnId", "int"));
 
-            database.Tables["AddColumn"].Columns.Add("AddedColumn", "int");
+            Database.Tables["AddColumn"].Columns.Add("AddedColumn", "int");
 
-            Assert.AreEqual(2, database.Tables["AddColumn"].Columns.Count());
+            Assert.AreEqual(2, Database.Tables["AddColumn"].Columns.Count());
         }
 
         [TestMethod]
         public virtual void RemoveDropsColumn()
         {
-            database.Tables.Add("RemoveColumn", new Column("RemoveColumnId", "int"), new Column("RemovedColumn", "int"));
+            Database.Tables.Add("RemoveColumn", new Column("RemoveColumnId", "int"), new Column("RemovedColumn", "int"));
 
-            database.Tables["RemoveColumn"].Columns.Remove("RemovedColumn");
+            Database.Tables["RemoveColumn"].Columns.Remove("RemovedColumn");
 
-            Assert.AreEqual(1, database.Tables["RemoveColumn"].Columns.Count());
+            Assert.AreEqual(1, Database.Tables["RemoveColumn"].Columns.Count());
         }
 
         [TestMethod]
         public void ColumnsCanBeEnumerated()
         {
-            database.Tables.Add("EnumerateColumn", new Column("EnumerateColumnId", "int"));
+            Database.Tables.Add("EnumerateColumn", new Column("EnumerateColumnId", "int"));
 
-            Assert.AreEqual(1, database.Tables["EnumerateColumn"].Columns.Count(column => column.ColumnName == "EnumerateColumnId"));
+            Assert.AreEqual(1, Database.Tables["EnumerateColumn"].Columns.Count(column => column.ColumnName == "EnumerateColumnId"));
         }
 
         [TestMethod]
         public void ColumnsCanBeAccessedByName()
         {
-            database.Tables.Add("SpecificColumn", new Column("SpecificColumnId", "int"));
+            Database.Tables.Add("SpecificColumn", new Column("SpecificColumnId", "int"));
 
-            Assert.AreEqual("SpecificColumnId", database.Tables["SpecificColumn"].Columns["SpecificColumnId"].ColumnName);
+            Assert.AreEqual("SpecificColumnId", Database.Tables["SpecificColumn"].Columns["SpecificColumnId"].ColumnName);
         }
 
         [TestMethod]
         public void ReturnsNullWhenColumnDoesNotExist()
         {
-            database.Tables.Add("DoesNotContainColumn", new Column("ContainsColumnId", "int"));
+            Database.Tables.Add("DoesNotContainColumn", new Column("ContainsColumnId", "int"));
 
-            Assert.IsNull(database.Tables["DoesNotContainColumn"].Columns["ContainsColumnId2"]);
+            Assert.IsNull(Database.Tables["DoesNotContainColumn"].Columns["ContainsColumnId2"]);
         }
 
         [TestMethod]
         public void ReturnsNotNullTrueWhenColumnDoesExist()
         {
-            database.Tables.Add("ContainsColumn", new Column("ContainsColumnId", "int"));
+            Database.Tables.Add("ContainsColumn", new Column("ContainsColumnId", "int"));
 
-            Assert.IsNotNull(database.Tables["ContainsColumn"].Columns["ContainsColumnId"]);
+            Assert.IsNotNull(Database.Tables["ContainsColumn"].Columns["ContainsColumnId"]);
         }
 
         [TestMethod]
         public virtual void CanAddNonNullColumn()
         {
-            database.Tables.Add("CanAddNotNullColumn", new Column("CanAddNotNullColumnId", "int"));
-            database.Connection.Execute("INSERT INTO CanAddNotNullColumn VALUES (1)");
-            database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", 5);
+            Database.Tables.Add("CanAddNotNullColumn", new Column("CanAddNotNullColumnId", "int"));
+            Database.Connection.Execute("INSERT INTO CanAddNotNullColumn VALUES (1)");
+            Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", 5);
 
-            Assert.IsFalse(database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);
+            Assert.IsFalse(Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);
         }
 
         [TestMethod]
         public void AddNullableAddsNullableColumn()
         {
-            database.Tables.Add("CanAddNullableColumn", new Column("CanAddNullableColumnId", "int"));
-            database.Tables["CanAddNullableColumn"].Columns.AddNullable("NullableColumn", "int");
+            Database.Tables.Add("CanAddNullableColumn", new Column("CanAddNullableColumnId", "int"));
+            Database.Tables["CanAddNullableColumn"].Columns.AddNullable("NullableColumn", "int");
 
-            Assert.IsTrue(database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Nullable);
+            Assert.IsTrue(Database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Nullable);
         }
     }
 }

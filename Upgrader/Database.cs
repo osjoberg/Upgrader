@@ -36,8 +36,7 @@ namespace Upgrader
 
         internal Infrastructure.Dapper Dapper { get; }
 
-        [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", 
-            Justification = "This implementation is enough for now.")]
+        [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This implementation is enough for now.")]
         public void Dispose()
         {
             Connection.Dispose();
@@ -48,7 +47,7 @@ namespace Upgrader
             return informationSchema.GetTableNames();
         }
 
-        internal void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
+        internal virtual void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
             dataDefinitionLanguage.AddTable(tableName, columns, foreignKeys);
         }
@@ -157,7 +156,10 @@ namespace Upgrader
 
         protected internal abstract void RenameColumn(string tableName, string columnName, string newColumnName);
 
-        protected internal abstract void RenameTable(string tableName, string newTableName);
+        protected internal virtual void RenameTable(string tableName, string newTableName)
+        {
+            dataDefinitionLanguage.RenameTable(tableName, newTableName);
+        }
 
         internal void SetColumnValue(string tableName, string columnName, object value)
         {
@@ -168,5 +170,10 @@ namespace Upgrader
         }
 
         internal abstract bool GetColumnAutoIncrement(string tableName, string columnName);
+
+        internal virtual string GetCatalog()
+        {
+            return Connection.Database;
+        }
     }
 }

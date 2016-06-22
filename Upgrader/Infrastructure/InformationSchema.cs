@@ -14,6 +14,7 @@ namespace Upgrader.Infrastructure
         internal string[] GetTableNames()
         {
             var schemaName = database.GetSchema(null);
+            var tableCatalog = database.GetCatalog();
 
             return database.Dapper.Query<string>(
                 @"
@@ -21,9 +22,10 @@ namespace Upgrader.Infrastructure
                     TABLE_NAME
                 FROM INFORMATION_SCHEMA.TABLES
                 WHERE 
-                    TABLE_SCHEMA = @schemaName
+                    TABLE_SCHEMA = @schemaName AND
+                    TABLE_CATALOG = @tableCatalog
                 ", 
-                new { schemaName }).ToArray();
+                new { schemaName, tableCatalog }).ToArray();
         }
 
         internal string[] GetColumnNames(string tableName)

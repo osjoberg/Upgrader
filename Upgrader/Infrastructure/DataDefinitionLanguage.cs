@@ -22,12 +22,12 @@ namespace Upgrader.Infrastructure
             var columnDefinitions = string.Join(", ", columnsShallowClone
                 .Select(column => $"{Database.EscapeIdentifier(column.ColumnName)} {column.DataType} {GetNullableStatement(column.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
 
+            var sql = $"CREATE TABLE {escapedTableName} ({columnDefinitions}";
+
             var primaryKeyColumnNames = columnsShallowClone
                 .Where(column => column.Modifier == ColumnModifier.PrimaryKey || column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)
                 .Select(column => column.ColumnName)
                 .ToArray();
-
-            var sql = $"CREATE TABLE {escapedTableName} ({columnDefinitions}";
 
             if (primaryKeyColumnNames.Any())
             {     
@@ -53,6 +53,14 @@ namespace Upgrader.Infrastructure
             sql += ")";
 
             Database.Dapper.Execute(sql);
+        }
+
+        public void RenameTable(string tableName, string newTableName)
+        {
+            var escapedTableName = Database.EscapeIdentifier(tableName);
+            var escapedNewTableName = Database.EscapeIdentifier(newTableName);
+
+            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME TO {escapedNewTableName}");
         }
 
         internal void RemoveTable(string tableName)

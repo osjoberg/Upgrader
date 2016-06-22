@@ -44,6 +44,7 @@
     <Compile Include="Infrastructure\ConnectionFactory.cs" />
     <Compile Include="Infrastructure\DataDefinitionLanguage.cs" />
     <Compile Include="Infrastructure\InformationSchema.cs" />
+    <Compile Include="PostgreSql\PostgreSqlDatabase.cs" />
     <Compile Include="Schema\ColumnInfo.cs" />
     <Compile Include="Schema\ColumnModifier.cs" />
     <Compile Include="Infrastructure\Dapper.cs" />
@@ -72,6 +73,9 @@
     <Compile Include="Upgrade.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Upgrader.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

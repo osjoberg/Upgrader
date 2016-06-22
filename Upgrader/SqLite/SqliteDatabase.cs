@@ -42,14 +42,6 @@ namespace Upgrader.SqLite
                 .ToArray();
         }
 
-        protected internal override void RenameTable(string tableName, string newTableName)
-        {
-            var escapedTableName = EscapeIdentifier(tableName);
-            var escapedNewTableName = EscapeIdentifier(newTableName);
-            
-            Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME TO {escapedNewTableName}");
-        }
-
         internal override string[] GetColumnNames(string tableName)
         {
             var escapedTableName = EscapeIdentifier(tableName);

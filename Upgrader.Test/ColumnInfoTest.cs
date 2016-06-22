@@ -7,102 +7,102 @@ namespace Upgrader.Test
     [TestClass]
     public abstract class ColumnInfoTest
     {
-        private readonly Database database;
+        protected readonly Database Database;
 
         protected ColumnInfoTest(Database database)
         {
-            this.database = database;
+            Database = database;
         }
 
         [TestCleanup]
         public void Cleanup()
         {
-            database.Dispose();
+            Database.Dispose();
         }
 
         [TestMethod]
         public void NullableIsTrueForNullableColumn()
         {
-            database.Tables.Add("NullableColumn", new Column("NullableColumnId", "int", true));
+            Database.Tables.Add("NullableColumn", new Column("NullableColumnId", "int", true));
 
-            Assert.IsTrue(database.Tables["NullableColumn"].Columns["NullableColumnId"].Nullable);
+            Assert.IsTrue(Database.Tables["NullableColumn"].Columns["NullableColumnId"].Nullable);
         }
 
         [TestMethod]
         public void TableNameReturnsTableName()
         {
-            database.Tables.Add("TableName", new Column("TableNameId", "int"));
+            Database.Tables.Add("TableName", new Column("TableNameId", "int"));
 
-            Assert.AreEqual("TableName", database.Tables["TableName"].Columns.Single().TableName);
+            Assert.AreEqual("TableName", Database.Tables["TableName"].Columns.Single().TableName);
         }
 
         [TestMethod]
         public void ColumnNameReturnsColumnName()
         {
-            database.Tables.Add("ColumnName", new Column("ColumnNameId", "int"));
+            Database.Tables.Add("ColumnName", new Column("ColumnNameId", "int"));
 
-            Assert.AreEqual("ColumnNameId", database.Tables["ColumnName"].Columns.Single().ColumnName);
+            Assert.AreEqual("ColumnNameId", Database.Tables["ColumnName"].Columns.Single().ColumnName);
         }
 
         [TestMethod]
         public void NullableIsFalseForNonNullableColumn()
         {
-            database.Tables.Add("NonNullableColumn", new Column("NonNullableColumnId", "int"));
+            Database.Tables.Add("NonNullableColumn", new Column("NonNullableColumnId", "int"));
 
-            Assert.IsFalse(database.Tables["NonNullableColumn"].Columns["NonNullableColumnId"].Nullable);
+            Assert.IsFalse(Database.Tables["NonNullableColumn"].Columns["NonNullableColumnId"].Nullable);
         }
 
         [TestMethod]
-        public void TypeIsIntForIntColumn()
+        public virtual void TypeIsIntForIntColumn()
         {
-            database.Tables.Add("TypeColumn", new Column("TypeColumnId", "int"));
+            Database.Tables.Add("TypeColumn", new Column("TypeColumnId", "int"));
 
-            Assert.AreEqual("int", database.Tables["TypeColumn"].Columns["TypeColumnId"].DataType);
+            Assert.AreEqual("int", Database.Tables["TypeColumn"].Columns["TypeColumnId"].DataType);
         }
 
         [TestMethod]
         public virtual void ChangeTypeChangesType()
         {
-            database.Tables.Add("ChangeType", new Column("ChangeTypeId", "int"));
-            database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("float", true);
+            Database.Tables.Add("ChangeType", new Column("ChangeTypeId", "int"));
+            Database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("float", true);
 
-            Assert.AreEqual("float", database.Tables["ChangeType"].Columns["ChangeTypeId"].DataType);
+            Assert.AreEqual("float", Database.Tables["ChangeType"].Columns["ChangeTypeId"].DataType);
         }
 
         [TestMethod]
         public virtual void ChangeTypeChangesTypePreservingNullability()
         {
-            database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
-            database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("float");
+            Database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
+            Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("float");
 
-            Assert.AreEqual("float", database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
-            Assert.IsFalse(database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
+            Assert.AreEqual("float", Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
+            Assert.IsFalse(Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
         }
 
         [TestMethod]
         public virtual void RenameRenamesColumn()
         {
-            database.Tables.Add("RenameColumn", new Column("RenameColumnId", "int"));
+            Database.Tables.Add("RenameColumn", new Column("RenameColumnId", "int"));
 
-            database.Tables["RenameColumn"].Columns["RenameColumnId"].Rename("NewColumnNameId");
+            Database.Tables["RenameColumn"].Columns["RenameColumnId"].Rename("NewColumnNameId");
 
-            Assert.IsNotNull(database.Tables["RenameColumn"].Columns["NewColumnNameId"]);
+            Assert.IsNotNull(Database.Tables["RenameColumn"].Columns["NewColumnNameId"]);
         }
 
         [TestMethod]
         public void AutoIncrementIsTrueWhenColumnIsAutoIncrement()
         {
-            database.Tables.Add("AutoIncrement", new Column("AutoIncrementId", "integer", ColumnModifier.AutoIncrementPrimaryKey));
+            Database.Tables.Add("auto_increment", new Column("auto_increment_id", "integer", ColumnModifier.AutoIncrementPrimaryKey));
 
-            Assert.IsTrue(database.Tables["AutoIncrement"].Columns["AutoIncrementId"].AutoIncrement);
+            Assert.IsTrue(Database.Tables["auto_increment"].Columns["auto_increment_id"].AutoIncrement);
         }
 
         [TestMethod]
         public void AutoIncrementIsFalseWhenColumnIsNotAutoIncrement()
         {
-            database.Tables.Add("NoAutoIncrement", new Column("NoAutoIncrementId", "integer"));
+            Database.Tables.Add("NoAutoIncrement", new Column("NoAutoIncrementId", "integer"));
 
-            Assert.IsFalse(database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].AutoIncrement);
+            Assert.IsFalse(Database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].AutoIncrement);
         }
     }
 }

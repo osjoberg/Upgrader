@@ -10,7 +10,7 @@ namespace Upgrader.Test
     {
         protected TableCollectionTest(Database database)
         {
-            this.Database = database;
+            Database = database;
         }
 
         protected Database Database { get; }
@@ -30,7 +30,7 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void AddWithAutoIncrementCreatesTableWithAutoIncrement()
+        public virtual void AddWithAutoIncrementCreatesTableWithAutoIncrement()
         {
             Database.Tables.Add("AddAutoIncrementTable", new Column("AddAutoIncrementTableId", "integer", ColumnModifier.AutoIncrementPrimaryKey), new Column("Data", "int"));
 

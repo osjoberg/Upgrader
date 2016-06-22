@@ -5,6 +5,7 @@ using System.IO;
 using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
+using Npgsql;
 
 namespace Upgrader.Test
 {
@@ -35,6 +36,12 @@ namespace Upgrader.Test
             }
 
             SQLiteConnection.CreateFile("UpgraderTest.sqlite");
+
+            using (var connection = new NpgsqlConnection("User ID=postgres;Password=postgres;Host=localhost;Port=5432;"))
+            {
+                connection.Open();
+                connection.Execute("CREATE DATABASE \"UpgraderTest\"");
+            }
         }
 
         /*[AssemblyCleanup]*/
@@ -57,7 +64,13 @@ namespace Upgrader.Test
             if (File.Exists("UpgraderTest.sqlite") == false)
             {
                 File.Delete("UpgraderTest.sqlite");
-            }            
+            }
+
+            using (var connection = new NpgsqlConnection("User ID=postgres;Password=postgres;Host=localhost;Port=5432"))
+            {
+                connection.Open();
+                connection.Execute("DROP DATABASE \"UpgraderTest\"");
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Upgrader.Test
     {
         protected PrimaryKeyInfoTest(Database database)
         {
-            this.Database = database;
+            Database = database;
         }
 
         protected Database Database { get; }

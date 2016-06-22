@@ -154,7 +154,8 @@ database.Tables["Customer"].Indexes.Remove("IX_Customer_Profit");
 ## Supported database management systems
 - SQL Server
 - MySql (probably MariaDb as well)
-- SQLite (not all features supported because of limitations in SQLite)
+- PostgreSql
+- SQLite (not all features supported because of DDL limitations in SQLite)
 
 
 

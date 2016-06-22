@@ -164,6 +164,11 @@ namespace Upgrader.MySql
             return Connection.Database;
         }
 
+        internal override string GetCatalog()
+        {
+            return "def";
+        }
+
         protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
             var escapedTableName = EscapeIdentifier(tableName);
