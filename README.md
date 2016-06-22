@@ -1,5 +1,5 @@
 # Upgrader
-Upgrader keeps your database schema in sync with your source code as your development project evolves. Changes to the database schema are expressed as Upgrader Steps. Each Step that successfully have been deployed is tracked in a table. Typically tou use Upgrader on application startup or in an installer.
+Upgrader keeps your database schema in sync with your source code as your development project evolves. Changes to the database schema are expressed as Upgrader Steps. Each Step that successfully have been deployed is tracked in a table. Typically you use Upgrader on application startup or in an installer.
 
 Features
 - Easy-to use object model exposing common DDL operations as methods and properties
