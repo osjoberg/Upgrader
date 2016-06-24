@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Upgrader.Infrastructure
 {
@@ -11,13 +13,19 @@ namespace Upgrader.Infrastructure
         public ConnectionFactory(string assemblyFileName, string connectionTypeName)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var mySqlAssembly = assemblies.SingleOrDefault(assembly => assembly.ManifestModule.Name == assemblyFileName);
-            if (mySqlAssembly == null)
+            
+            var adoProviderAssembly = assemblies.SingleOrDefault(assembly => assembly.ManifestModule.Name == assemblyFileName);
+            if (adoProviderAssembly == null && File.Exists(assemblyFileName))
+            {
+                adoProviderAssembly = Assembly.LoadFrom(assemblyFileName);
+            }
+
+            if (adoProviderAssembly == null)
             {
                 throw UpgraderException.CannotCreateInstance(connectionTypeName, assemblyFileName);
             }
 
-            connectionType = mySqlAssembly.GetType(connectionTypeName, false);
+            connectionType = adoProviderAssembly.GetType(connectionTypeName, false);
             if (connectionType == null)
             {
                 throw UpgraderException.CannotCreateInstance(connectionTypeName, assemblyFileName);
