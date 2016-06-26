@@ -37,5 +37,37 @@ namespace Upgrader.Test.PostgreSql
             Assert.AreEqual("real", Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
             Assert.IsFalse(Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
         }
+
+        [TestMethod]
+        public override void DataTypeIncludesLengthOnVarchar()
+        {
+            Database.Tables.Add("VarcharLength", new Column("VarcharLengthId", "character varying(10)"));
+
+            Assert.AreEqual("character varying(10)", Database.Tables["VarcharLength"].Columns["VarcharLengthId"].DataType);
+        }
+
+        [TestMethod]
+        public override void DataTypeIncludesPrecisionOnDecimal()
+        {
+            Database.Tables.Add("DecimalPrecision", new Column("DecimalPrecisionId", "numeric(9)"));
+
+            Assert.AreEqual("numeric(9)", Database.Tables["DecimalPrecision"].Columns["DecimalPrecisionId"].DataType);
+        }
+
+        [TestMethod]
+        public override void DataTypeIncludesPrecisionAndScaleOnDecimalIfSpecified()
+        {
+            Database.Tables.Add("DecimalPrecisionAndScale", new Column("DecimalPrecisionAndScaleId", "decimal(8,2)"));
+
+            Assert.AreEqual("numeric(8,2)", Database.Tables["DecimalPrecisionAndScale"].Columns["DecimalPrecisionAndScaleId"].DataType);
+        }
+
+        [TestMethod]
+        public override void DataTypeDoesNotIncludeLengthOnChar()
+        {
+            Database.Tables.Add("SingleChar", new Column("SingleCharId", "char"));
+
+            Assert.AreEqual("character", Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
+        }
     }
 }

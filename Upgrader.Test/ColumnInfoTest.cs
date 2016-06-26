@@ -104,5 +104,38 @@ namespace Upgrader.Test
 
             Assert.IsFalse(Database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].AutoIncrement);
         }
+
+        [TestMethod]
+        public virtual void DataTypeIncludesLengthOnVarchar()
+        {
+            Database.Tables.Add("VarcharLength", new Column("VarcharLengthId", "varchar(10)"));
+
+            Assert.AreEqual("varchar(10)", Database.Tables["VarcharLength"].Columns["VarcharLengthId"].DataType);
+        }
+
+        [TestMethod]
+        public virtual void DataTypeIncludesPrecisionOnDecimal()
+        {
+            Database.Tables.Add("DecimalPrecision", new Column("DecimalPrecisionId", "decimal(9)"));
+
+            Assert.AreEqual("decimal(9)", Database.Tables["DecimalPrecision"].Columns["DecimalPrecisionId"].DataType);
+        }
+
+        [TestMethod]
+        public virtual void DataTypeIncludesPrecisionAndScaleOnDecimalIfSpecified()
+        {
+            Database.Tables.Add("DecimalPrecisionAndScale", new Column("DecimalPrecisionAndScaleId", "decimal(8,2)"));
+
+            Assert.AreEqual("decimal(8,2)", Database.Tables["DecimalPrecisionAndScale"].Columns["DecimalPrecisionAndScaleId"].DataType);
+        }
+
+
+        [TestMethod]
+        public virtual void DataTypeDoesNotIncludeLengthOnChar()
+        {
+            Database.Tables.Add("SingleChar", new Column("SingleCharId", "char"));
+
+            Assert.AreEqual("char", Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
+        }
     }
 }

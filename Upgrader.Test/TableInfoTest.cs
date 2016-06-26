@@ -38,7 +38,6 @@ namespace Upgrader.Test
             CollectionAssert.AreEqual(new[] { "AddPrimaryKeyMultipleId", "Multiple" }, Database.Tables["AddPrimaryKeyMultiple"].PrimaryKey.ColumnNames);
         }
 
-
         [TestMethod]
         public void PrimaryKeyPropertyIsNullWhenNoPrimaryKeyIsPresent()
         {

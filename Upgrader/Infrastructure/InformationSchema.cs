@@ -49,17 +49,40 @@ namespace Upgrader.Infrastructure
         {
             var schemaName = database.GetSchema(tableName);
 
-            return database.Dapper.Query<string>(
+            var columnInformation = database.Dapper.Query<Column>(
                 @"
                 SELECT 
-                    DATA_TYPE
+                    DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE
                 FROM INFORMATION_SCHEMA.COLUMNS 
                 WHERE 
                     COLUMN_NAME = @columnName AND
                     TABLE_NAME = @tableName AND 
-                        TABLE_SCHEMA = @schemaName
+                    TABLE_SCHEMA = @schemaName
                 ", 
                 new { tableName, schemaName, columnName }).SingleOrDefault();
+
+            if (columnInformation == null)
+            {
+                return null;
+            }
+
+            if (columnInformation.character_maximum_length.HasValue && columnInformation.character_maximum_length.Value > 1)
+            {
+                return $"{columnInformation.data_type}({columnInformation.character_maximum_length.Value})";
+            }
+
+            var numericPrecisionTypeNames = new[] { "decimal", "numeric" };
+            if (numericPrecisionTypeNames.Contains(columnInformation.data_type) == false || columnInformation.numeric_scale.HasValue == false)
+            {
+                return columnInformation.data_type;
+            }
+
+            if (columnInformation.numeric_scale.Value > 0)
+            {
+                return $"{columnInformation.data_type}({columnInformation.numeric_precision},{columnInformation.numeric_scale})";
+            }
+
+            return $"{columnInformation.data_type}({columnInformation.numeric_precision})";
         }
 
         internal bool GetColumnNullable(string tableName, string columnName)
@@ -183,6 +206,17 @@ namespace Upgrader.Infrastructure
                     TABLE_SCHEMA = @schemaName
                 ", 
                 new { tableName, schemaName, constraintName }).ToArray();
+        }
+
+        private class Column
+        {
+            public string data_type { get; set; }
+
+            public int? character_maximum_length { get; set; }
+
+            public int? numeric_precision { get; set; }
+
+            public int? numeric_scale { get; set; }
         }
     }
 }
