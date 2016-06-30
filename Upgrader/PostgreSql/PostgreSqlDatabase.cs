@@ -123,6 +123,12 @@ namespace Upgrader.PostgreSql
 
         protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
+            var isColumnAutoIncrement = GetColumnAutoIncrement(tableName, columnName);
+            if (isColumnAutoIncrement)
+            {
+                throw new NotSupportedException("Renaming a serial column is not supported in PostgreSql.");
+            }
+
             var escapedTableName = EscapeIdentifier(tableName);
             var escapedColumnName = EscapeIdentifier(columnName);
             var escapedNewColumnName = EscapeIdentifier(newColumnName);

@@ -90,6 +90,25 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
+        public virtual void RenamePreservesAutoIncrementPrimaryKeyColumn()
+        {
+            Database.Tables.Add("RenameAutoIncrementPrimaryKeyColumn", new Column("id", "int", ColumnModifier.AutoIncrementPrimaryKey));
+            Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["id"].Rename("RenameAutoIncrementPrimaryKeyColumnId");
+
+            Assert.IsNotNull(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].PrimaryKey);
+            Assert.IsTrue(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["RenameAutoIncrementPrimaryKeyColumnId"].AutoIncrement);
+        }
+
+        [TestMethod]
+        public virtual void RenamePreservesPrimaryKeyColumn()
+        {
+            Database.Tables.Add("RenamePrimaryKeyColumn", new Column("id", "int", ColumnModifier.PrimaryKey));
+            Database.Tables["RenamePrimaryKeyColumn"].Columns["id"].Rename("RenamePrimaryKeyColumnId");
+
+            Assert.IsNotNull(Database.Tables["RenamePrimaryKeyColumn"].PrimaryKey);
+        }
+
+        [TestMethod]
         public void AutoIncrementIsTrueWhenColumnIsAutoIncrement()
         {
             Database.Tables.Add("auto_increment", new Column("auto_increment_id", "integer", ColumnModifier.AutoIncrementPrimaryKey));

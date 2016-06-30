@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Upgrader.Schema;
 using Upgrader.SqLite;
 
 namespace Upgrader.Test.SqLite
@@ -30,6 +31,20 @@ namespace Upgrader.Test.SqLite
         public override void RenameRenamesColumn()
         {
             base.RenameRenamesColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void RenamePreservesAutoIncrementPrimaryKeyColumn()
+        {
+            base.RenamePreservesAutoIncrementPrimaryKeyColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void RenamePreservesPrimaryKeyColumn()
+        {
+            base.RenamePreservesPrimaryKeyColumn();
         }
     }
 }

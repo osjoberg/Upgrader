@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.PostgreSql;
 using Upgrader.Schema;
 
@@ -68,6 +69,13 @@ namespace Upgrader.Test.PostgreSql
             Database.Tables.Add("SingleChar", new Column("SingleCharId", "char"));
 
             Assert.AreEqual("character", Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void RenamePreservesAutoIncrementPrimaryKeyColumn()
+        {
+            base.RenamePreservesAutoIncrementPrimaryKeyColumn();
         }
     }
 }

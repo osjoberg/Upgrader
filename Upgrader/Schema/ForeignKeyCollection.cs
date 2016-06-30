@@ -64,6 +64,14 @@ namespace Upgrader.Schema
             database.RemoveForeignKey(tableName, foreignKeyName);
         }
 
+        public void RemoveAll()
+        {
+            foreach (var foreignKey in this)
+            {
+                Remove(foreignKey.ForeignKeyName);
+            }
+        }
+
         public IEnumerator<ForeignKeyInfo> GetEnumerator()
         {
             return database

@@ -62,5 +62,18 @@ namespace Upgrader.Schema
 
             database.RemoveTable(tableName);
         }
+
+        public void RemoveAll()
+        {
+            foreach (var table in this)
+            {
+                table.ForeignKeys.RemoveAll();
+            }
+
+            foreach (var table in this)
+            {
+                Remove(table.TableName);
+            }
+        }
     }
 }

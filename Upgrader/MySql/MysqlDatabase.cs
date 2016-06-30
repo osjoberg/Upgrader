@@ -178,8 +178,9 @@ namespace Upgrader.MySql
             var dataType = GetColumnDataType(tableName, columnName);
             var nullable = GetColumnNullable(tableName, columnName);
             var nullableStatement = nullable ? "NULL" : "NOT NULL";
+            var autoIncrementStatement = GetColumnAutoIncrement(tableName, columnName) ? "AUTO_INCREMENT" : "";
 
-            Dapper.Execute($"ALTER TABLE {escapedTableName} CHANGE COLUMN {escapedColumnName} {escapedNewColumnName} {dataType} {nullableStatement}");
+            Dapper.Execute($"ALTER TABLE {escapedTableName} CHANGE COLUMN {escapedColumnName} {escapedNewColumnName} {dataType} {nullableStatement} {autoIncrementStatement}");
         }
 
         protected internal override void RenameTable(string tableName, string newTableName)

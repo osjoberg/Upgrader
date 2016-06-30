@@ -51,23 +51,20 @@ namespace Upgrader.Schema
             Add(columnNames, true, indexName);
         }
 
-        private void Add(string[] columnNames, bool unique, string indexName = null)
-        {
-            Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
-            Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
-            Validate.IsNotEmpty(indexName, nameof(indexName));
-            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
-
-            indexName = indexName ?? database.NamingConvention.GetIndexNamingConvention(tableName, columnNames, unique);
-            database.AddIndex(tableName, columnNames, unique, indexName);
-        }
-
         public void Remove(string indexName)
         {
             Validate.IsNotNullAndNotEmpty(indexName, nameof(indexName));
             Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
             database.RemoveIndex(tableName, indexName);
+        }
+
+        public void RemoveAll()
+        {
+            foreach (var index in this)
+            {
+                Remove(index.IndexName);
+            }
         }
 
         public IEnumerator<IndexInfo> GetEnumerator()
@@ -81,6 +78,17 @@ namespace Upgrader.Schema
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private void Add(string[] columnNames, bool unique, string indexName = null)
+        {
+            Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
+            Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(indexName, nameof(indexName));
+            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
+
+            indexName = indexName ?? database.NamingConvention.GetIndexNamingConvention(tableName, columnNames, unique);
+            database.AddIndex(tableName, columnNames, unique, indexName);
         }
     }
 }
