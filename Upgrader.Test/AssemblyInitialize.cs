@@ -1,11 +1,9 @@
-﻿using System.Data.Common;
-using System.Data.SqlClient;
-using System.Data.SQLite;
-using System.IO;
-using Dapper;
+﻿using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
-using Npgsql;
+using Upgrader.MySql;
+using Upgrader.PostgreSql;
+using Upgrader.SqlServer;
+using Upgrader.SqLite;
 
 namespace Upgrader.Test
 {
@@ -15,61 +13,36 @@ namespace Upgrader.Test
         [AssemblyInitialize]
         public static void Initialize(TestContext context)
         {
-            try
+            var databaseProviders = new Database[]
             {
-                Cleanup();
-            }
-            catch (DbException)
-            {
-            }
+                new SqlServerDatabase("SqlServer"),
+                new MySqlDatabase("MySql"), 
+                new PostgreSqlDatabase("PostgreSql"),
+                new SqLiteDatabase("SqLite") 
+            };
 
-            using (var connection = new MySqlConnection("Server=localhost;Uid=root;Pwd=;"))
+            foreach (var databaseProvider in databaseProviders)
             {
-                connection.Open();
-                connection.Execute("CREATE DATABASE UpgraderTest");
-            }
+                try
+                {
+                    databaseProvider.Remove();
+                }
+                catch
+                {                    
+                }
 
-            using (var connection = new SqlConnection("Server=(local);Integrated Security=true;"))
-            {
-                connection.Open();
-                connection.Execute("CREATE DATABASE UpgraderTest");
-            }
+                try
+                {
+                    databaseProvider.Create();
+                }
 
-            SQLiteConnection.CreateFile("UpgraderTest.sqlite");
-
-            using (var connection = new NpgsqlConnection("User ID=postgres;Password=postgres;Host=localhost;Port=5432;"))
-            {
-                connection.Open();
-                connection.Execute("CREATE DATABASE \"UpgraderTest\"");
-            }
-        }
-
-        /*[AssemblyCleanup]*/
-        public static void Cleanup()
-        {
-            using (var connection = new MySqlConnection("Server=localhost;Uid=root;Pwd=;"))
-            {
-                connection.Open();
-                connection.Execute("USE information_schema");
-                connection.Execute("DROP DATABASE UpgraderTest");
-            }
-
-            using (var connection = new SqlConnection("Server=(local);Integrated Security=true;"))
-            {
-                connection.Open();
-                connection.Execute("USE master");
-                connection.Execute("DROP DATABASE UpgraderTest");
-            }
-
-            if (File.Exists("UpgraderTest.sqlite") == false)
-            {
-                File.Delete("UpgraderTest.sqlite");
-            }
-
-            using (var connection = new NpgsqlConnection("User ID=postgres;Password=postgres;Host=localhost;Port=5432"))
-            {
-                connection.Open();
-                connection.Execute("DROP DATABASE \"UpgraderTest\"");
+                catch
+                {                    
+                }
+                finally
+                {
+                    databaseProvider.Dispose();
+                }
             }
         }
     }

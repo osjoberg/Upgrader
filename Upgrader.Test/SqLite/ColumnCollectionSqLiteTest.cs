@@ -7,7 +7,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class ColumnCollectionSqLiteTest : ColumnCollectionTest
     {
-        public ColumnCollectionSqLiteTest() : base(new SqLiteDatabase("Data Source=UpgraderTest.sqlite;Version=3;"))
+        public ColumnCollectionSqLiteTest() : base(new SqLiteDatabase("SqLite"))
         {            
         }
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Upgrader.Infrastructure;
@@ -12,7 +14,7 @@ namespace Upgrader.SqLite
 
         private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase);
 
-        public SqLiteDatabase(string connectionString) : base(ConnectionFactory.CreateConnection(connectionString))
+        public SqLiteDatabase(string connectionStringOrName) : base(ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)), null)
         {
         }
 
@@ -33,6 +35,18 @@ namespace Upgrader.SqLite
             }
 
             return tableName.Split('.').First();
+        }
+
+        public override void Create()
+        {
+            var databaseName = (string)new DbConnectionStringBuilder { ConnectionString = Connection.ConnectionString }["Data Source"];
+            File.WriteAllBytes(databaseName, new byte[0]);
+        }
+
+        public override void Remove()
+        {
+            var databaseName = (string)new DbConnectionStringBuilder { ConnectionString = Connection.ConnectionString }["Data Source"];
+            File.Delete(databaseName);
         }
 
         internal override string[] GetTableNames()

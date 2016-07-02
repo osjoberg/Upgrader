@@ -9,7 +9,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class TableCollectionMySqlTest : TableCollectionTest
     {
-        public TableCollectionMySqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
+        public TableCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
         {
         }
 

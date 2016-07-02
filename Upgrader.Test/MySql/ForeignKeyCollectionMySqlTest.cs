@@ -6,7 +6,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class ForeignKeyCollectionMySqlTest : ForeignKeyCollectionTest
     {
-        public ForeignKeyCollectionMySqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
+        public ForeignKeyCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
         {            
         }
     }

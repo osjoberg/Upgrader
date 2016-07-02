@@ -10,7 +10,9 @@ namespace Upgrader.PostgreSql
     {
         private static readonly ConnectionFactory ConnectionFactory = new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection");
 
-        public PostgreSqlDatabase(string connectionString) : base(ConnectionFactory.CreateConnection(connectionString))
+        public PostgreSqlDatabase(string connectionStringOrName) : base(
+            ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
+            ConnectionFactory.CreateConnection(GetMasterConnectionString(connectionStringOrName, "Database", "")))
         {
         }
 

@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class TableCollectionSqlServerTest : TableCollectionTest
     {
-        public TableCollectionSqlServerTest() : base(new SqlServerDatabase("Server=(local);Integrated Security=true;Initial Catalog=UpgraderTest"))
+        public TableCollectionSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
         {
         }
     }

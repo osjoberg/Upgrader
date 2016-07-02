@@ -7,7 +7,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class TableInfoSqLiteTest : TableInfoTest
     {
-        public TableInfoSqLiteTest() : base(new SqLiteDatabase("Data Source=UpgraderTest.sqlite;Version=3;"))
+        public TableInfoSqLiteTest() : base(new SqLiteDatabase("SqLite"))
         {
         }
 

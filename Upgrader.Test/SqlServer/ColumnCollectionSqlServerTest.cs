@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.SqlServer;
 
 namespace Upgrader.Test.SqlServer
@@ -6,7 +7,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class ColumnCollectionSqlServerTest : ColumnCollectionTest
     {
-        public ColumnCollectionSqlServerTest() : base(new SqlServerDatabase("Server=(local);Integrated Security=true;Initial Catalog=UpgraderTest"))
+        public ColumnCollectionSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
         {            
         }
     }

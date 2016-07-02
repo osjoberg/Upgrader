@@ -7,10 +7,12 @@ namespace Upgrader.MySql
     {
         private static readonly ConnectionFactory ConnectionFactory = new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection");
 
-        public MySqlDatabase(string connectionString) : base(ConnectionFactory.CreateConnection(connectionString))
+        public MySqlDatabase(string connectionStringOrName) : base(
+            ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
+            ConnectionFactory.CreateConnection(GetMasterConnectionString(connectionStringOrName, "Database", "")))
         {
         }
-       
+
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
             var escapedTableName = EscapeIdentifier(tableName);

@@ -8,7 +8,7 @@ namespace Upgrader.Test.PostgreSql
     [TestClass]
     public class TableCollectionPostgreSqlTest : TableCollectionTest
     {
-        public TableCollectionPostgreSqlTest() : base(new PostgreSqlDatabase("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=UpgraderTest;"))
+        public TableCollectionPostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"))
         {
         }
 

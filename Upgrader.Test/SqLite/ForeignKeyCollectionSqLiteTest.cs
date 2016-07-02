@@ -7,7 +7,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class ForeignKeyCollectionSqLiteTest : ForeignKeyCollectionTest
     {
-        public ForeignKeyCollectionSqLiteTest() : base(new SqLiteDatabase("Data Source=UpgraderTest.sqlite;Version=3;"))
+        public ForeignKeyCollectionSqLiteTest() : base(new SqLiteDatabase("SqLite"))
         {            
         }
 

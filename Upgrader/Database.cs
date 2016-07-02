@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using Upgrader.Infrastructure;
 using Upgrader.Schema;
@@ -12,17 +14,39 @@ namespace Upgrader
         private readonly DataDefinitionLanguage dataDefinitionLanguage;
         private readonly InformationSchema informationSchema;
 
-        protected Database(IDbConnection connection)
+        protected Database(IDbConnection connection, IDbConnection masterConnection)
         {
             Connection = connection;
+            MasterConnection = masterConnection;
             Dapper = new Infrastructure.Dapper(connection);
+            MasterDapper = new Infrastructure.Dapper(masterConnection);
             Tables = new TableCollection(this);
             NamingConvention = new NamingConvention(MaxIdentifierLength);
             dataDefinitionLanguage = new DataDefinitionLanguage(this);
             informationSchema = new InformationSchema(this);
         }
 
+        internal static string GetConnectionString(string connectionStringOrName)
+        {
+            return connectionStringOrName.Contains("=") ? connectionStringOrName : ConfigurationManager.ConnectionStrings[connectionStringOrName].ConnectionString;
+        }
+
+        internal static string GetMasterConnectionString(string connectionStringOrName, string keyword, string overrideDatabaseName)
+        {
+            var connectionString = GetConnectionString(connectionStringOrName);
+
+            var connectionStringBuilder = new DbConnectionStringBuilder
+            {
+                ConnectionString = connectionString,
+                [keyword] = overrideDatabaseName
+            };
+
+            return connectionStringBuilder.ToString();
+        }
+
         public IDbConnection Connection { get; }
+
+        public IDbConnection MasterConnection { get; }
 
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -36,10 +60,22 @@ namespace Upgrader
 
         internal Infrastructure.Dapper Dapper { get; }
 
+        internal Infrastructure.Dapper MasterDapper { get; }
+
         [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This implementation is enough for now.")]
         public void Dispose()
         {
             Connection.Dispose();
+        }
+
+        public virtual void Create()
+        {
+            dataDefinitionLanguage.CreateDatabase(Connection.Database);
+        }
+
+        public virtual void Remove()
+        {
+            dataDefinitionLanguage.RemoveDatabase(Connection.Database);
         }
 
         internal virtual string[] GetTableNames()

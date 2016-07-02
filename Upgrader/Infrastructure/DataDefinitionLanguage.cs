@@ -13,6 +13,20 @@ namespace Upgrader.Infrastructure
             Database = database;
         }
 
+        internal void CreateDatabase(string databaseName)
+        {
+            var escapedDatabaseName = Database.EscapeIdentifier(databaseName);
+
+            Database.MasterDapper.Execute($"CREATE DATABASE {escapedDatabaseName}");
+        }
+
+        internal void RemoveDatabase(string databaseName)
+        {
+            var escapedDatabaseName = Database.EscapeIdentifier(databaseName);
+
+            Database.MasterDapper.Execute($"DROP DATABASE {escapedDatabaseName}");
+        }
+
         internal void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
             var columnsShallowClone = columns.ToArray();

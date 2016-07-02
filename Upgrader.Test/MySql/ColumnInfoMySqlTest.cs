@@ -6,7 +6,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class ColumnInfoMySqlTest : ColumnInfoTest
     {
-        public ColumnInfoMySqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
+        public ColumnInfoMySqlTest() : base(new MySqlDatabase("MySql"))
         {
         }
     }

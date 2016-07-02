@@ -5,7 +5,9 @@ namespace Upgrader.SqlServer
 {
     public class SqlServerDatabase : Database
     {
-        public SqlServerDatabase(string connectionString) : base(new SqlConnection(connectionString))
+        public SqlServerDatabase(string connectionStringOrName) : base(
+            new SqlConnection(GetConnectionString(connectionStringOrName)),
+            new SqlConnection(GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master")))
         {
         }
 

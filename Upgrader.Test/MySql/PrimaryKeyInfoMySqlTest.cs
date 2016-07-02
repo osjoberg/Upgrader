@@ -7,7 +7,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class PrimaryKeyInfoMySqlTest : PrimaryKeyInfoTest
     {
-        public PrimaryKeyInfoMySqlTest() : base(new MySqlDatabase("Server=localhost;Database=UpgraderTest;Uid=root;Pwd=;"))
+        public PrimaryKeyInfoMySqlTest() : base(new MySqlDatabase("MySql"))
         {
         }
 

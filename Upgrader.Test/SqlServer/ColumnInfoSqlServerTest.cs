@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class ColumnInfoSqlServerTest : ColumnInfoTest
     {
-        public ColumnInfoSqlServerTest() : base(new SqlServerDatabase("Server=(local);Integrated Security=true;Initial Catalog=UpgraderTest"))
+        public ColumnInfoSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
         {            
         }
     }

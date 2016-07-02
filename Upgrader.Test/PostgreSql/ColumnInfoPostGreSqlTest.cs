@@ -8,7 +8,7 @@ namespace Upgrader.Test.PostgreSql
     [TestClass]
     public class ColumnInfoPostgreSqlTest : ColumnInfoTest
     {
-        public ColumnInfoPostgreSqlTest() : base(new PostgreSqlDatabase("User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=UpgraderTest;"))
+        public ColumnInfoPostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"))
         {
         }
 
