@@ -19,7 +19,7 @@ namespace Upgrader
 
         public string Sql { get; }
 
-        private UpgraderException(string sql, object parameters, Exception innerException) : base($"Error occured when attempting to execute statement \"{sql}\". See inner exception for more details.", innerException)
+        private UpgraderException(string sql, object parameters, Exception innerException) : base($"Error occurred when attempting to execute statement \"{sql}\". See inner exception for more details.", innerException)
         {
             Sql = sql;
             Parameters = parameters;          

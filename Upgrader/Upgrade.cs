@@ -37,7 +37,7 @@ namespace Upgrader
             var firstTooLongStepName = stepNames
                 .FirstOrDefault(stepName => stepName.Length > 100);
 
-            Validate.IsTrue(firstTooLongStepName == null, nameof(steps), $"Step names must be 100 charactes or less,  \"{firstTooLongStepName}\" is {firstTooLongStepName?.Length} characters long.");
+            Validate.IsTrue(firstTooLongStepName == null, nameof(steps), $"Step names must be 100 characters or less,  \"{firstTooLongStepName}\" is {firstTooLongStepName?.Length} characters long.");
 
             var firstDuplicateStepName = stepNames
                 .GroupBy(stepName => stepName)

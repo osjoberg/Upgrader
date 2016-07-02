@@ -113,17 +113,17 @@ namespace Upgrader.PostgreSql
             Dapper.Execute($"DROP INDEX {escapedIndexName}");
         }
 
-        protected internal override string EscapeIdentifier(string identifier)
+        internal override string EscapeIdentifier(string identifier)
         {
             return "\"" + identifier.Replace("\"", "\"\"") + "\"";
         }
 
-        protected internal override string GetSchema(string tableName)
+        internal override string GetSchema(string tableName)
         {
             return "public";
         }
 
-        protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
+        internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
             var isColumnAutoIncrement = GetColumnAutoIncrement(tableName, columnName);
             if (isColumnAutoIncrement)

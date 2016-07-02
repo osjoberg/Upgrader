@@ -11,7 +11,7 @@ namespace Upgrader.SqlServer
         {
         }
 
-        protected internal override string GetSchema(string tableName)
+        internal override string GetSchema(string tableName)
         {
             if (tableName == null || tableName.Contains('.') == false)
             {
@@ -21,12 +21,12 @@ namespace Upgrader.SqlServer
             return tableName.Split('.').Last();
         }
 
-        protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
+        internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
             Dapper.Execute($"sp_RENAME '{tableName}.{columnName}', '{newColumnName}', 'COLUMN'");
         }
 
-        protected internal override void RenameTable(string tableName, string newTableName)
+        internal override void RenameTable(string tableName, string newTableName)
         {
             Dapper.Execute($"sp_RENAME '{tableName}', '{newTableName}'");
         }
@@ -44,7 +44,7 @@ namespace Upgrader.SqlServer
                 new { tableName, columnName });
         }
 
-        protected internal override string EscapeIdentifier(string identifier)
+        internal override string EscapeIdentifier(string identifier)
         {
             return "[" + identifier.Replace("]", "]]") + "]";
         }
