@@ -22,12 +22,12 @@ namespace Upgrader.SqLite
 
         internal override int MaxIdentifierLength => 64;
 
-        protected internal override string EscapeIdentifier(string identifier)
+        internal override string EscapeIdentifier(string identifier)
         {
             return "\"" + identifier.Replace("\"", "\"\"") + "\"";
         }
 
-        protected internal override string GetSchema(string tableName)
+        internal override string GetSchema(string tableName)
         {
             if (tableName == null || tableName.Contains(".") == false)
             {
@@ -95,7 +95,7 @@ namespace Upgrader.SqLite
         internal override bool GetColumnAutoIncrement(string tableName, string columnName)
         {
             var dataType = GetColumnDataType(tableName, columnName);
-            if (string.Equals(dataType, "INTEGER", StringComparison.InvariantCultureIgnoreCase) == false)
+            if (string.Equals(dataType, "INTEGER", StringComparison.OrdinalIgnoreCase) == false)
             {
                 return false;
             }
@@ -120,7 +120,7 @@ namespace Upgrader.SqLite
             throw new NotSupportedException("Modifying column properties is not supported in SQLite.");
         }
 
-        protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
+        internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
             throw new NotSupportedException("Renaming columns is not supported in SQLite.");
         }
@@ -261,7 +261,7 @@ namespace Upgrader.SqLite
             Dapper.Execute($"DROP INDEX {escapedSchemaName}.{escapedIndexName}");
         }
 
-        private string UnescapeIdentifier(string identifier)
+        private static string UnescapeIdentifier(string identifier)
         {
             if (identifier.StartsWith("\"") == false)
             {

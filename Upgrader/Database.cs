@@ -14,7 +14,7 @@ namespace Upgrader
         private readonly DataDefinitionLanguage dataDefinitionLanguage;
         private readonly InformationSchema informationSchema;
 
-        protected Database(IDbConnection connection, IDbConnection masterConnection)
+        internal Database(IDbConnection connection, IDbConnection masterConnection)
         {
             Connection = connection;
             MasterConnection = masterConnection;
@@ -186,13 +186,13 @@ namespace Upgrader
 
         internal abstract void RemoveIndex(string tableName, string indexName);
 
-        protected internal abstract string EscapeIdentifier(string identifier);
+        internal abstract string EscapeIdentifier(string identifier);
 
-        protected internal abstract string GetSchema(string tableName);
+        internal abstract string GetSchema(string tableName);
 
-        protected internal abstract void RenameColumn(string tableName, string columnName, string newColumnName);
+        internal abstract void RenameColumn(string tableName, string columnName, string newColumnName);
 
-        protected internal virtual void RenameTable(string tableName, string newTableName)
+        internal virtual void RenameTable(string tableName, string newTableName)
         {
             dataDefinitionLanguage.RenameTable(tableName, newTableName);
         }

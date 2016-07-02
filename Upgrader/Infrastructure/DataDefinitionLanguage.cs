@@ -6,35 +6,35 @@ namespace Upgrader.Infrastructure
 {
     internal class DataDefinitionLanguage
     {
-        private readonly Database Database;
+        private readonly Database database;
 
         public DataDefinitionLanguage(Database database)
         {
-            Database = database;
+            this.database = database;
         }
 
         internal void CreateDatabase(string databaseName)
         {
-            var escapedDatabaseName = Database.EscapeIdentifier(databaseName);
+            var escapedDatabaseName = database.EscapeIdentifier(databaseName);
 
-            Database.MasterDapper.Execute($"CREATE DATABASE {escapedDatabaseName}");
+            database.MasterDapper.Execute($"CREATE DATABASE {escapedDatabaseName}");
         }
 
         internal void RemoveDatabase(string databaseName)
         {
-            var escapedDatabaseName = Database.EscapeIdentifier(databaseName);
+            var escapedDatabaseName = database.EscapeIdentifier(databaseName);
 
-            Database.MasterDapper.Execute($"DROP DATABASE {escapedDatabaseName}");
+            database.MasterDapper.Execute($"DROP DATABASE {escapedDatabaseName}");
         }
 
         internal void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
             var columnsShallowClone = columns.ToArray();
 
-            var escapedTableName = Database.EscapeIdentifier(tableName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
 
             var columnDefinitions = string.Join(", ", columnsShallowClone
-                .Select(column => $"{Database.EscapeIdentifier(column.ColumnName)} {column.DataType} {GetNullableStatement(column.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
+                .Select(column => $"{database.EscapeIdentifier(column.ColumnName)} {column.DataType} {GetNullableStatement(column.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
 
             var sql = $"CREATE TABLE {escapedTableName} ({columnDefinitions}";
 
@@ -45,20 +45,20 @@ namespace Upgrader.Infrastructure
 
             if (primaryKeyColumnNames.Any())
             {     
-                var escapedPrimaryKeyColumnNames = primaryKeyColumnNames.Select(identifier => Database.EscapeIdentifier(identifier)).ToArray();
+                var escapedPrimaryKeyColumnNames = primaryKeyColumnNames.Select(identifier => database.EscapeIdentifier(identifier)).ToArray();
                 var escapedCommaSeparatedPrimaryKeyColumnNames = string.Join(", ", escapedPrimaryKeyColumnNames);
-                var escapedPrimaryKeyConstraintName = Database.EscapeIdentifier(Database.NamingConvention.GetPrimaryKeyNamingConvention(tableName, primaryKeyColumnNames));
+                var escapedPrimaryKeyConstraintName = database.EscapeIdentifier(database.NamingConvention.GetPrimaryKeyNamingConvention(tableName, primaryKeyColumnNames));
 
                 sql += $", CONSTRAINT {escapedPrimaryKeyConstraintName} PRIMARY KEY ({escapedCommaSeparatedPrimaryKeyColumnNames})";
             }
 
             foreach (var foreignKey in foreignKeys)
             {
-                var escapedForeignKeyName = Database.EscapeIdentifier(foreignKey.ForeignKeyName ?? Database.NamingConvention.GetForeignKeyNamingConvention(tableName, foreignKey.ColumnNames, foreignKey.ForeignTableName));
-                var escapedForeignTableName = Database.EscapeIdentifier(foreignKey.ForeignTableName);
-                var escapedColumnNames = foreignKey.ColumnNames.Select(columnName => Database.EscapeIdentifier(columnName));
+                var escapedForeignKeyName = database.EscapeIdentifier(foreignKey.ForeignKeyName ?? database.NamingConvention.GetForeignKeyNamingConvention(tableName, foreignKey.ColumnNames, foreignKey.ForeignTableName));
+                var escapedForeignTableName = database.EscapeIdentifier(foreignKey.ForeignTableName);
+                var escapedColumnNames = foreignKey.ColumnNames.Select(columnName => database.EscapeIdentifier(columnName));
                 var escapedCommaSeparatedColumnNames = string.Join(", ", escapedColumnNames);
-                var escapedForeignColumnNames = foreignKey.ForeignColumnNames.Select(foreignColumnName => Database.EscapeIdentifier(foreignColumnName));
+                var escapedForeignColumnNames = foreignKey.ForeignColumnNames.Select(foreignColumnName => database.EscapeIdentifier(foreignColumnName));
                 var escapedForeignCommaSeparatedColumnNames = string.Join(", ", escapedForeignColumnNames);
 
                 sql += $", CONSTRAINT {escapedForeignKeyName} FOREIGN KEY ({escapedCommaSeparatedColumnNames}) REFERENCES {escapedForeignTableName} ({escapedForeignCommaSeparatedColumnNames})";
@@ -66,96 +66,96 @@ namespace Upgrader.Infrastructure
 
             sql += ")";
 
-            Database.Dapper.Execute(sql);
+            database.Dapper.Execute(sql);
         }
 
         public void RenameTable(string tableName, string newTableName)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedNewTableName = Database.EscapeIdentifier(newTableName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedNewTableName = database.EscapeIdentifier(newTableName);
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME TO {escapedNewTableName}");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME TO {escapedNewTableName}");
         }
 
         internal void RemoveTable(string tableName)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
 
-            Database.Dapper.Execute($"DROP TABLE {escapedTableName}");
+            database.Dapper.Execute($"DROP TABLE {escapedTableName}");
         }
 
         internal void AddColumn(string tableName, string columnName, string dataType, bool nullable)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedColumnName = Database.EscapeIdentifier(columnName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedColumnName = database.EscapeIdentifier(columnName);
             var nullableStatement = GetNullableStatement(nullable);
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD {escapedColumnName} {dataType} {nullableStatement}");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD {escapedColumnName} {dataType} {nullableStatement}");
         }
 
         internal void RemoveColumn(string tableName, string columnName)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedColumnName = Database.EscapeIdentifier(columnName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedColumnName = database.EscapeIdentifier(columnName);
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} DROP COLUMN {escapedColumnName}");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} DROP COLUMN {escapedColumnName}");
         }
 
         internal void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedColumnName = Database.EscapeIdentifier(columnName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedColumnName = database.EscapeIdentifier(columnName);
             var nullableStatement = GetNullableStatement(nullable);
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} ALTER COLUMN {escapedColumnName} {dataType} {nullableStatement}");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} ALTER COLUMN {escapedColumnName} {dataType} {nullableStatement}");
         }
 
         internal void AddPrimaryKey(string tableName, string[] columnNames, string primaryKeyName)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedPrimaryKeyName = Database.EscapeIdentifier(primaryKeyName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedPrimaryKeyName = database.EscapeIdentifier(primaryKeyName);
 
-            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(identifier => Database.EscapeIdentifier(identifier)));
+            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(identifier => database.EscapeIdentifier(identifier)));
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD CONSTRAINT {escapedPrimaryKeyName} PRIMARY KEY ({escapedCommaSeparatedColumnNames})");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD CONSTRAINT {escapedPrimaryKeyName} PRIMARY KEY ({escapedCommaSeparatedColumnNames})");
         }
 
         internal void RemovePrimaryKey(string tableName, string primaryKeyName)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedPrimaryKeyName = Database.EscapeIdentifier(primaryKeyName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedPrimaryKeyName = database.EscapeIdentifier(primaryKeyName);
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} DROP CONSTRAINT {escapedPrimaryKeyName}");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} DROP CONSTRAINT {escapedPrimaryKeyName}");
         }
 
         internal void AddForeignKey(string tableName, string[] columnNames, string foreignTableName, string[] foreignColumnNames, string foreignKeyName)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedPrimaryKeyName = Database.EscapeIdentifier(foreignKeyName);
-            var escapedForeignTableName = Database.EscapeIdentifier(foreignTableName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedPrimaryKeyName = database.EscapeIdentifier(foreignKeyName);
+            var escapedForeignTableName = database.EscapeIdentifier(foreignTableName);
 
-            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(identifier => Database.EscapeIdentifier(identifier)));
-            var escapedCommaSeparatedForeignColumnNames = string.Join(", ", foreignColumnNames.Select(identifier1 => Database.EscapeIdentifier(identifier1)));
+            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(identifier => database.EscapeIdentifier(identifier)));
+            var escapedCommaSeparatedForeignColumnNames = string.Join(", ", foreignColumnNames.Select(identifier1 => database.EscapeIdentifier(identifier1)));
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD CONSTRAINT {escapedPrimaryKeyName} FOREIGN KEY ({escapedCommaSeparatedColumnNames}) REFERENCES {escapedForeignTableName} ({escapedCommaSeparatedForeignColumnNames})");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD CONSTRAINT {escapedPrimaryKeyName} FOREIGN KEY ({escapedCommaSeparatedColumnNames}) REFERENCES {escapedForeignTableName} ({escapedCommaSeparatedForeignColumnNames})");
         }
 
         internal void RemoveForeignKey(string tableName, string foreignKeyName)
         {
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedForeignKeyName = Database.EscapeIdentifier(foreignKeyName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedForeignKeyName = database.EscapeIdentifier(foreignKeyName);
 
-            Database.Dapper.Execute($"ALTER TABLE {escapedTableName} DROP CONSTRAINT {escapedForeignKeyName}");
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} DROP CONSTRAINT {escapedForeignKeyName}");
         }
 
         internal void AddIndex(string tableName, string[] columnNames, bool unique, string indexName)
         {
             var uniqueStatement = unique ? "UNIQUE " : "";
-            var escapedIndexName = Database.EscapeIdentifier(indexName);
-            var escapedTableName = Database.EscapeIdentifier(tableName);
-            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(identifier => Database.EscapeIdentifier(identifier)));
+            var escapedIndexName = database.EscapeIdentifier(indexName);
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(identifier => database.EscapeIdentifier(identifier)));
 
-            Database.Dapper.Execute($"CREATE {uniqueStatement}INDEX {escapedIndexName} ON {escapedTableName} ({escapedCommaSeparatedColumnNames})");
+            database.Dapper.Execute($"CREATE {uniqueStatement}INDEX {escapedIndexName} ON {escapedTableName} ({escapedCommaSeparatedColumnNames})");
         }
 
         private static string GetNullableStatement(bool nullable)
@@ -165,7 +165,7 @@ namespace Upgrader.Infrastructure
 
         private string GetAutoIncrementStatement(bool autoIncrement)
         {
-            return autoIncrement ? Database.AutoIncrementStatement : "";
+            return autoIncrement ? database.AutoIncrementStatement : "";
         }
     }
 }

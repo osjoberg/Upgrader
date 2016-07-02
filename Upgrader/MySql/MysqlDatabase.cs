@@ -26,7 +26,7 @@ namespace Upgrader.MySql
         {
             var isSupportedConstraintName = constraintName == "PRIMARY" || constraintName == NamingConvention.GetPrimaryKeyNamingConvention(tableName, columnNames);
 
-            Validate.IsTrue(isSupportedConstraintName, nameof(constraintName), "MySql only spports primary key constraints named \"PRIMARY\".");
+            Validate.IsTrue(isSupportedConstraintName, nameof(constraintName), "MySql only supports primary key constraints named \"PRIMARY\".");
 
             base.AddPrimaryKey(tableName, columnNames, constraintName);
         }
@@ -161,7 +161,7 @@ namespace Upgrader.MySql
             Dapper.Execute($"ALTER TABLE {escapedTableName} DROP INDEX {escapedIndexName}");
         }
 
-        protected internal override string GetSchema(string tableName)
+        internal override string GetSchema(string tableName)
         {
             return Connection.Database;
         }
@@ -171,7 +171,7 @@ namespace Upgrader.MySql
             return "def";
         }
 
-        protected internal override void RenameColumn(string tableName, string columnName, string newColumnName)
+        internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
             var escapedTableName = EscapeIdentifier(tableName);
             var escapedColumnName = EscapeIdentifier(columnName);
@@ -185,7 +185,7 @@ namespace Upgrader.MySql
             Dapper.Execute($"ALTER TABLE {escapedTableName} CHANGE COLUMN {escapedColumnName} {escapedNewColumnName} {dataType} {nullableStatement} {autoIncrementStatement}");
         }
 
-        protected internal override void RenameTable(string tableName, string newTableName)
+        internal override void RenameTable(string tableName, string newTableName)
         {
             var escapedTableName = EscapeIdentifier(tableName);
             var escapedNewTableName = EscapeIdentifier(newTableName);
@@ -206,7 +206,7 @@ namespace Upgrader.MySql
                 new { tableName, columnName });
         }
 
-        protected internal override string EscapeIdentifier(string identifier)
+        internal override string EscapeIdentifier(string identifier)
         {
             return "`" + identifier.Replace("`", "``") + "`";
         }

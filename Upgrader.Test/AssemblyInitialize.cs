@@ -1,9 +1,8 @@
-﻿using System.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.MySql;
 using Upgrader.PostgreSql;
-using Upgrader.SqlServer;
 using Upgrader.SqLite;
+using Upgrader.SqlServer;
 
 namespace Upgrader.Test
 {
