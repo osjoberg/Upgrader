@@ -111,9 +111,9 @@ namespace Upgrader.Test
         [TestMethod]
         public void AutoIncrementIsTrueWhenColumnIsAutoIncrement()
         {
-            Database.Tables.Add("auto_increment", new Column("auto_increment_id", "integer", ColumnModifier.AutoIncrementPrimaryKey));
+            Database.Tables.Add("AutoIncrement", new Column("AutoIncrementId", "integer", ColumnModifier.AutoIncrementPrimaryKey));
 
-            Assert.IsTrue(Database.Tables["auto_increment"].Columns["auto_increment_id"].AutoIncrement);
+            Assert.IsTrue(Database.Tables["AutoIncrement"].Columns["AutoIncrementId"].AutoIncrement);
         }
 
         [TestMethod]

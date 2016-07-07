@@ -17,14 +17,14 @@ namespace Upgrader.Infrastructure
         {
             var escapedDatabaseName = database.EscapeIdentifier(databaseName);
 
-            database.MasterDapper.Execute($"CREATE DATABASE {escapedDatabaseName}");
+            database.Dapper.Execute($"CREATE DATABASE {escapedDatabaseName}");
         }
 
         internal void RemoveDatabase(string databaseName)
         {
             var escapedDatabaseName = database.EscapeIdentifier(databaseName);
 
-            database.MasterDapper.Execute($"DROP DATABASE {escapedDatabaseName}");
+            database.Dapper.Execute($"DROP DATABASE {escapedDatabaseName}");
         }
 
         internal void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)

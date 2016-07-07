@@ -12,9 +12,21 @@ namespace Upgrader.PostgreSql
 
         public PostgreSqlDatabase(string connectionStringOrName) : base(
             ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
-            ConnectionFactory.CreateConnection(GetMasterConnectionString(connectionStringOrName, "Database", "")))
+            GetMasterConnectionString(connectionStringOrName, "Database", "postgres")
+            )
         {
         }
+
+        public override bool Exists
+        {
+            get
+            {
+                UseMainDatabase();
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM pg_database WHERE datistemplate = false AND datname = @databaseName", new { databaseName });
+                UseConnectedDatabase();
+                return exists;
+            }
+        } 
 
         internal override string AutoIncrementStatement => "";
 

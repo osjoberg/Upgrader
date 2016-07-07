@@ -43,9 +43,24 @@ namespace Upgrader
                 .GroupBy(stepName => stepName)
                 .Where(step => step.Count() > 1)
                 .Select(step => step.Key)
-                .SingleOrDefault();
+                .FirstOrDefault();
 
             Validate.IsTrue(firstDuplicateStepName == null, nameof(steps), $"Step names must be unique, \"{firstDuplicateStepName}\" occurs more than once.");
+
+            bool? databaseExists;
+            try
+            {
+                databaseExists = Database.Exists;
+            }
+            catch (UpgraderException)
+            {
+                databaseExists = null;
+            }
+
+            if (databaseExists == false)
+            {
+                Database.Create();
+            }
 
             if (Database.Tables[ExecutedStepsTable] == null)
             {

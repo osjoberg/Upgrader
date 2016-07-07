@@ -12,7 +12,7 @@ namespace Upgrader.Test
         [AssemblyInitialize]
         public static void Initialize(TestContext context)
         {
-            var databaseProviders = new Database[]
+            var databases = new Database[]
             {
                 new SqlServerDatabase("SqlServer"),
                 new MySqlDatabase("MySql"), 
@@ -20,27 +20,20 @@ namespace Upgrader.Test
                 new SqLiteDatabase("SqLite") 
             };
 
-            foreach (var databaseProvider in databaseProviders)
-            {
+            foreach (var database in databases)
+            {                
                 try
                 {
-                    databaseProvider.Remove();
-                }
-                catch
-                {                    
-                }
+                    if (database.Exists)
+                    {
+                        database.Remove();
+                    }
 
-                try
-                {
-                    databaseProvider.Create();
-                }
-
-                catch
-                {                    
+                    database.Create();
                 }
                 finally
                 {
-                    databaseProvider.Dispose();
+                    database.Dispose();
                 }
             }
         }

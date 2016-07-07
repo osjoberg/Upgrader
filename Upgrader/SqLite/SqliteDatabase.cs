@@ -14,9 +14,15 @@ namespace Upgrader.SqLite
 
         private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase);
 
-        public SqLiteDatabase(string connectionStringOrName) : base(ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)), null)
+        public SqLiteDatabase(string connectionStringOrName) : base(
+            ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
+            null,
+            (string)new DbConnectionStringBuilder { ConnectionString = GetConnectionString(connectionStringOrName) }["Data Source"]
+            )
         {
         }
+
+        public override bool Exists => File.Exists(databaseName);
 
         internal override string AutoIncrementStatement => "";
 
@@ -39,13 +45,11 @@ namespace Upgrader.SqLite
 
         public override void Create()
         {
-            var databaseName = (string)new DbConnectionStringBuilder { ConnectionString = Connection.ConnectionString }["Data Source"];
             File.WriteAllBytes(databaseName, new byte[0]);
         }
 
         public override void Remove()
         {
-            var databaseName = (string)new DbConnectionStringBuilder { ConnectionString = Connection.ConnectionString }["Data Source"];
             File.Delete(databaseName);
         }
 

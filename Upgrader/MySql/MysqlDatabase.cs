@@ -9,9 +9,21 @@ namespace Upgrader.MySql
 
         public MySqlDatabase(string connectionStringOrName) : base(
             ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
-            ConnectionFactory.CreateConnection(GetMasterConnectionString(connectionStringOrName, "Database", "")))
+            GetMasterConnectionString(connectionStringOrName, "Database", "mysql"))
         {
         }
+
+        public override bool Exists
+        {
+            get
+            {
+                UseMainDatabase();
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @databaseName", new { databaseName });
+                UseConnectedDatabase();
+                return exists;
+
+            }
+        } 
 
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {

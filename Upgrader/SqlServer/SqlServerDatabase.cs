@@ -1,14 +1,45 @@
 ﻿using System.Data.SqlClient;
 using System.Linq;
+using System.Data;
+using Dapper;
 
 namespace Upgrader.SqlServer
 {
+
     public class SqlServerDatabase : Database
     {
         public SqlServerDatabase(string connectionStringOrName) : base(
             new SqlConnection(GetConnectionString(connectionStringOrName)),
-            new SqlConnection(GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master")))
+            GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
         {
+        }
+
+        public override bool Exists
+        {
+            get
+            {
+                UseMainDatabase();
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM sysdatabases WHERE name = @databaseName", new { databaseName });
+
+                UseConnectedDatabase();
+
+                if (exists)
+                {
+                    Connection.Open();
+                }
+
+                return exists;
+            }
+        }
+
+        internal override void UseMainDatabase()
+        {
+            if (Connection.State == ConnectionState.Open)
+            {
+               Connection.Execute("USE master");
+            }
+            
+            base.UseMainDatabase();
         }
 
         internal override string GetSchema(string tableName)

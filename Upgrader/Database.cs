@@ -14,12 +14,18 @@ namespace Upgrader
         private readonly DataDefinitionLanguage dataDefinitionLanguage;
         private readonly InformationSchema informationSchema;
 
-        internal Database(IDbConnection connection, IDbConnection masterConnection)
+        internal readonly string databaseName;
+        private readonly string connectionString;
+        private readonly string mainConnectionString;
+
+        internal Database(IDbConnection connection, string mainConnectionString, string databaseName = null)
         {
             Connection = connection;
-            MasterConnection = masterConnection;
+            this.mainConnectionString = mainConnectionString;
+            connectionString = connection.ConnectionString;
+            this.databaseName = databaseName ?? connection.Database;
+            
             Dapper = new Infrastructure.Dapper(connection);
-            MasterDapper = new Infrastructure.Dapper(masterConnection);
             Tables = new TableCollection(this);
             NamingConvention = new NamingConvention(MaxIdentifierLength);
             dataDefinitionLanguage = new DataDefinitionLanguage(this);
@@ -46,8 +52,6 @@ namespace Upgrader
 
         public IDbConnection Connection { get; }
 
-        public IDbConnection MasterConnection { get; }
-
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
         public NamingConvention NamingConvention { get; set; }
@@ -60,22 +64,41 @@ namespace Upgrader
 
         internal Infrastructure.Dapper Dapper { get; }
 
-        internal Infrastructure.Dapper MasterDapper { get; }
-
         [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This implementation is enough for now.")]
         public void Dispose()
         {
             Connection.Dispose();
         }
 
+        public abstract bool Exists
+        {
+            get;
+        }
+
         public virtual void Create()
         {
-            dataDefinitionLanguage.CreateDatabase(Connection.Database);
+            UseMainDatabase();
+            dataDefinitionLanguage.CreateDatabase(databaseName);
+            UseConnectedDatabase();
         }
 
         public virtual void Remove()
         {
-            dataDefinitionLanguage.RemoveDatabase(Connection.Database);
+            UseMainDatabase();
+            dataDefinitionLanguage.RemoveDatabase(databaseName);
+            UseConnectedDatabase();
+        }
+
+        internal virtual void UseMainDatabase()
+        {
+            Connection.Close();
+            Connection.ConnectionString = this.mainConnectionString;
+        }
+
+        internal virtual void UseConnectedDatabase()
+        {
+            Connection.Close();
+            Connection.ConnectionString = connectionString;
         }
 
         internal virtual string[] GetTableNames()
