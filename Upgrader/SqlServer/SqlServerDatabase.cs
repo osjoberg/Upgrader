@@ -19,7 +19,7 @@ namespace Upgrader.SqlServer
             get
             {
                 UseMainDatabase();
-                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM sysdatabases WHERE name = @databaseName", new { databaseName });
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM sysdatabases WHERE name = @databaseName", new { databaseName = this.DatabaseName });
 
                 UseConnectedDatabase();
 

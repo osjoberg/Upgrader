@@ -22,7 +22,7 @@ namespace Upgrader.PostgreSql
             get
             {
                 UseMainDatabase();
-                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM pg_database WHERE datistemplate = false AND datname = @databaseName", new { databaseName });
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM pg_database WHERE datistemplate = false AND datname = @databaseName", new { databaseName = this.DatabaseName });
                 UseConnectedDatabase();
                 return exists;
             }

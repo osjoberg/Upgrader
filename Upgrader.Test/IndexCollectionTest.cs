@@ -29,7 +29,6 @@ namespace Upgrader.Test
             Assert.IsNotNull(database.Tables["AddIndex"].Indexes.Single());
         }
 
-
         [TestMethod]
         public void AddAddsIndexWithMultipleColumns()
         {
@@ -52,7 +51,14 @@ namespace Upgrader.Test
         [TestMethod]
         public void IndexesCanBeEnumerated()
         {
-            database.Tables.Add("EnumerateIndex", new Column("EnumerateIndexId", "int"));
+            database.Tables.Add("EnumerateIndexParent", new Column("EnumerateIndexParentId", "int", ColumnModifier.AutoIncrementPrimaryKey));
+            database.Tables["EnumerateIndexParent"].Indexes.AddUnique("EnumerateIndexParentId");
+
+            database.Tables.Add(
+                "EnumerateIndex", 
+                new[] { new Column("EnumerateIndexId", "int"), new Column("EnumerateIndexParentId", "int") },
+                new[] { new ForeignKey("EnumerateIndexParentId", "EnumerateIndexParent") });
+
             database.Tables["EnumerateIndex"].Indexes.Add("EnumerateIndexId");
 
             Assert.AreEqual("IX_EnumerateIndex_EnumerateIndexId", database.Tables["EnumerateIndex"].Indexes.Single().IndexName);
@@ -66,6 +72,5 @@ namespace Upgrader.Test
 
             Assert.AreEqual("IX_AccessIndex_AccessIndexId", database.Tables["AccessIndex"].Indexes["IX_AccessIndex_AccessIndexId"].IndexName);
         }
-
     }
 }

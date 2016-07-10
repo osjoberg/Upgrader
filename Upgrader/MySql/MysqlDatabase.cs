@@ -18,7 +18,7 @@ namespace Upgrader.MySql
             get
             {
                 UseMainDatabase();
-                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @databaseName", new { databaseName });
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @databaseName", new { databaseName = this.DatabaseName });
                 UseConnectedDatabase();
                 return exists;
 
@@ -130,7 +130,9 @@ namespace Upgrader.MySql
                     TABLE_SCHEMA = @schemaName AND
                     INDEX_NAME <> 'PRIMARY'
                 ", 
-                new { tableName, schemaName }).ToArray();
+                new { tableName, schemaName })
+                .Except(GetForeignKeyNames(tableName))
+                .ToArray();
         }
 
         internal override bool GetIndexType(string tableName, string indexName)

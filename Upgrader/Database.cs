@@ -14,7 +14,7 @@ namespace Upgrader
         private readonly DataDefinitionLanguage dataDefinitionLanguage;
         private readonly InformationSchema informationSchema;
 
-        internal readonly string databaseName;
+        internal readonly string DatabaseName;
         private readonly string connectionString;
         private readonly string mainConnectionString;
 
@@ -23,7 +23,7 @@ namespace Upgrader
             Connection = connection;
             this.mainConnectionString = mainConnectionString;
             connectionString = connection.ConnectionString;
-            this.databaseName = databaseName ?? connection.Database;
+            this.DatabaseName = databaseName ?? connection.Database;
             
             Dapper = new Infrastructure.Dapper(connection);
             Tables = new TableCollection(this);
@@ -78,14 +78,14 @@ namespace Upgrader
         public virtual void Create()
         {
             UseMainDatabase();
-            dataDefinitionLanguage.CreateDatabase(databaseName);
+            dataDefinitionLanguage.CreateDatabase(this.DatabaseName);
             UseConnectedDatabase();
         }
 
         public virtual void Remove()
         {
             UseMainDatabase();
-            dataDefinitionLanguage.RemoveDatabase(databaseName);
+            dataDefinitionLanguage.RemoveDatabase(this.DatabaseName);
             UseConnectedDatabase();
         }
 
@@ -186,7 +186,7 @@ namespace Upgrader
             return informationSchema.GetForeignKeyForeignColumnNames(tableName, foreignKeyName);
         }
 
-        internal void AddForeignKey(string tableName, string[] columnNames, string foreignTableName, string[] foreignColumnNames, string foreignKeyName)
+        internal virtual void AddForeignKey(string tableName, string[] columnNames, string foreignTableName, string[] foreignColumnNames, string foreignKeyName)
         {
             dataDefinitionLanguage.AddForeignKey(tableName, columnNames, foreignTableName, foreignColumnNames, foreignKeyName);
         }

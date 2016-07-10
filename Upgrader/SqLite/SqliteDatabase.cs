@@ -22,7 +22,7 @@ namespace Upgrader.SqLite
         {
         }
 
-        public override bool Exists => File.Exists(databaseName);
+        public override bool Exists => File.Exists(this.DatabaseName);
 
         internal override string AutoIncrementStatement => "";
 
@@ -45,12 +45,12 @@ namespace Upgrader.SqLite
 
         public override void Create()
         {
-            File.WriteAllBytes(databaseName, new byte[0]);
+            File.WriteAllBytes(this.DatabaseName, new byte[0]);
         }
 
         public override void Remove()
         {
-            File.Delete(databaseName);
+            File.Delete(this.DatabaseName);
         }
 
         internal override string[] GetTableNames()
@@ -214,6 +214,12 @@ namespace Upgrader.SqLite
                 .SelectMany(match => match.Groups[4].Value.Split(',').Select(columnName => UnescapeIdentifier(columnName.Trim())))
                 .ToArray();
         }
+
+        internal override void AddForeignKey(string tableName, string[] columnNames, string foreignTableName, string[] foreignColumnNames, string foreignKeyName)
+        {
+            throw new NotSupportedException("Adding foreign key after table creation is not supported in SQLite");
+        }
+
 
         internal override void RemoveForeignKey(string tableName, string foreignKeyName)
         {

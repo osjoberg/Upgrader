@@ -151,17 +151,26 @@ database.Tables["Customer"].Indexes.Add("Profit");
 database.Tables["Customer"].Indexes.Remove("IX_Customer_Profit");
 ```
 
+
+## Configration options
+```c#
+// Change table used for tracking executed steps to "Executed" (default is "ExecutedSteps").
+upgrade.ExecutedStepsTable = "Executed";
+
+// Change transaction mode for upgrade to "None" (default is "TransactionMode.OneTransactionPerStep")
+upgrade.TransactionMode = TransactionMode.None;
+```
+
 ## Supported database management systems
 - SQL Server
 - MySql (probably MariaDb as well)
 - PostgreSql
 - SQLite (not all features supported because of DDL limitations in SQLite)
 
-
-
 ## Supported operations
 Item | Create | Delete | Modify | Rename | Reflection
 ---- | ------ | ------ | ------ | ------ | ----------
+Database | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark:
 Table | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
 Column | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:
 Primary key | :white_check_mark: | :white_check_mark: | :x: | :x: | :white_check_mark:
