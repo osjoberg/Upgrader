@@ -2,6 +2,8 @@
 
 namespace Upgrader.Schema
 {
+    using System.Linq;
+
     /// <summary>
     /// Column information and modification.
     /// </summary>
@@ -15,14 +17,26 @@ namespace Upgrader.Schema
         public string DataType => database.GetColumnDataType(TableName, ColumnName);
 
         /// <summary>
-        /// Gets if column is nullable.
+        /// Gets column modifier.
         /// </summary>
-        public bool Nullable => database.GetColumnNullable(TableName, ColumnName);
+        public ColumnModifier Modifier
+        {
+            get
+            {
+                if (database.GetColumnNullable(TableName, ColumnName))
+                {
+                    return ColumnModifier.Nullable;
+                }
 
-        /// <summary>
-        /// Gets if column is configured to auto increment.
-        /// </summary>
-        public bool AutoIncrement => database.GetColumnAutoIncrement(TableName, ColumnName);
+                var primaryKeyName = database.GetPrimaryKeyName(TableName);
+                if (primaryKeyName != null && database.GetPrimaryKeyColumnNames(TableName, primaryKeyName).Contains(ColumnName))
+                {
+                    return database.GetColumnAutoIncrement(TableName, ColumnName) ? ColumnModifier.AutoIncrementPrimaryKey : ColumnModifier.PrimaryKey;
+                }
+
+                return ColumnModifier.None;
+            }
+        }
 
         /// <summary>
         /// Gets column name.
@@ -44,24 +58,32 @@ namespace Upgrader.Schema
         /// <summary>
         /// Change type of column.
         /// </summary>
-        /// <param name="type">SQL data type.</param>
-        public void ChangeType(string type)
+        /// <param name="newDataType">New SQL data type.</param>
+        public void ChangeType(string newDataType)
         {
-            Validate.IsNotNullAndNotEmpty(type, nameof(type));
-
-            database.ChangeColumn(TableName, ColumnName, type, Nullable);
+            ChangeType(newDataType, Modifier);
         }
 
         /// <summary>
         /// Change type of column.
         /// </summary>
-        /// <param name="type">SQL data type.</param>
-        /// <param name="nullable">True if columns is allowed to be null.</param>
-        public void ChangeType(string type, bool nullable)
+        /// <param name="modifier">New modifier. Only ColumnModifier.None and ColumnModifier.Nullable are valid.</param>
+        public void ChangeType(ColumnModifier modifier)
         {
-            Validate.IsNotNullAndNotEmpty(type, nameof(type));
+            ChangeType(DataType, modifier);
+        }
 
-            database.ChangeColumn(TableName, ColumnName, type, nullable);
+        /// <summary>
+        /// Change type of column.
+        /// </summary>
+        /// <param name="newDataType">New SQL data type.</param>
+        /// <param name="modifier">New modifier. Only ColumnModifier.None and ColumnModifier.Nullable are valid.</param>
+        public void ChangeType(string newDataType, ColumnModifier modifier)
+        {
+            Validate.IsNotNullAndNotEmpty(newDataType, nameof(newDataType));
+            Validate.IsTrue(modifier == ColumnModifier.None || modifier == ColumnModifier.Nullable, nameof(modifier), "Only ColumnModifier.None and ColumnModifier.Nullable is allowed.");
+
+            database.ChangeColumn(TableName, ColumnName, newDataType, modifier == ColumnModifier.Nullable);
         }
 
         /// <summary>

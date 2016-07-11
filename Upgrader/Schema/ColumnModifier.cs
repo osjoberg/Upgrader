@@ -18,6 +18,11 @@
         /// <summary>
         /// Column is an auto incrementing primary key.
         /// </summary>
-        AutoIncrementPrimaryKey = 2
+        AutoIncrementPrimaryKey = 2,
+
+        /// <summary>
+        /// Collum is defined as nullable.
+        /// </summary>
+        Nullable = 3
     }
 }

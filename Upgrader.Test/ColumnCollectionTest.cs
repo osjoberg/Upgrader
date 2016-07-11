@@ -80,7 +80,7 @@ namespace Upgrader.Test
             Database.Connection.Execute("INSERT INTO CanAddNotNullColumn VALUES (1)");
             Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", 5);
 
-            Assert.IsFalse(Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);
+            Assert.AreEqual(ColumnModifier.None, Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Modifier);
         }
 
         [TestMethod]
@@ -89,7 +89,7 @@ namespace Upgrader.Test
             Database.Tables.Add("CanAddNullableColumn", new Column("CanAddNullableColumnId", "int"));
             Database.Tables["CanAddNullableColumn"].Columns.AddNullable("NullableColumn", "int");
 
-            Assert.IsTrue(Database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Nullable);
+            Assert.AreEqual(ColumnModifier.Nullable, Database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Modifier);
         }
     }
 }

@@ -14,9 +14,9 @@ namespace Upgrader.Test.SqLite
 
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
-        public override void ChangeTypeChangesTypePreservingNullable()
+        public override void ChangeTypeChangesTypePreservingModifier()
         {
-            base.ChangeTypeChangesTypePreservingNullable();
+            base.ChangeTypeChangesTypePreservingModifier();
         }
 
         [TestMethod]

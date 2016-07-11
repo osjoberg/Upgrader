@@ -45,11 +45,11 @@ namespace Upgrader.PostgreSql
                 {
                     if (column.DataType.Equals("integer", StringComparison.InvariantCultureIgnoreCase) || column.DataType.Equals("int", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        modifiedColumns.Add(new Column(column.ColumnName, "serial", column.Nullable));
+                        modifiedColumns.Add(new Column(column.ColumnName, "serial", ColumnModifier.PrimaryKey));
                     }
                     else if (column.DataType.Equals("bigint", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        modifiedColumns.Add(new Column(column.ColumnName, "bigserial", column.Nullable));
+                        modifiedColumns.Add(new Column(column.ColumnName, "bigserial", ColumnModifier.PrimaryKey));
                     }
                     else
                     {
