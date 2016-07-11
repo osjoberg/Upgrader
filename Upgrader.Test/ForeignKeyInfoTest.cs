@@ -50,7 +50,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void ForeignTableContainsTheForeignTableName()
         {
-            Assert.AreEqual("ForeignTable2", database.Tables["ForeignTable2Child"].ForeignKeys.Single().ForeignTable, true);
+            Assert.AreEqual("ForeignTable2", database.Tables["ForeignTable2Child"].ForeignKeys.Single().ForeignTableName, true);
         }
 
         [TestMethod]

@@ -5,6 +5,9 @@ using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
 {
+    /// <summary>
+    /// Collection of all indexes in the specified table.
+    /// </summary>
     public class IndexCollection : IEnumerable<IndexInfo>
     {
         private readonly Database database;
@@ -16,6 +19,11 @@ namespace Upgrader.Schema
             this.tableName = tableName;
         }
 
+        /// <summary>
+        /// Gets index information for the specified index. Returns null if the specified index name does not exist.
+        /// </summary>
+        /// <param name="indexName">Index name.</param>
+        /// <returns>Index information.</returns>
         public IndexInfo this[string indexName]
         {
             get
@@ -27,6 +35,11 @@ namespace Upgrader.Schema
             }
         }
 
+        /// <summary>
+        /// Adds an index to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
         public void Add(string columnName, string indexName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
@@ -34,11 +47,21 @@ namespace Upgrader.Schema
             Add(new[] { columnName }, false, indexName);
         }
 
+        /// <summary>
+        /// Adds an index to the table.
+        /// </summary>
+        /// <param name="columnNames">Column names.</param>
+        /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
         public void Add(string[] columnNames, string indexName = null)
         {
             Add(columnNames, false, indexName);
         }
 
+        /// <summary>
+        /// Adds a unique index to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
         public void AddUnique(string columnName, string indexName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
@@ -46,11 +69,20 @@ namespace Upgrader.Schema
             Add(new[] { columnName }, true, indexName);
         }
 
+        /// <summary>
+        /// Adds a unique index to the table.
+        /// </summary>
+        /// <param name="columnNames">Column names.</param>
+        /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
         public void AddUnique(string[] columnNames, string indexName = null)
         {
             Add(columnNames, true, indexName);
         }
 
+        /// <summary>
+        /// Removes an index from the table.
+        /// </summary>
+        /// <param name="indexName">Index name.</param>
         public void Remove(string indexName)
         {
             Validate.IsNotNullAndNotEmpty(indexName, nameof(indexName));
@@ -59,6 +91,9 @@ namespace Upgrader.Schema
             database.RemoveIndex(tableName, indexName);
         }
 
+        /// <summary>
+        /// Removes all indexes from the table.
+        /// </summary>
         public void RemoveAll()
         {
             foreach (var index in this)
@@ -67,6 +102,10 @@ namespace Upgrader.Schema
             }
         }
 
+        /// <summary>
+        /// Gets an IEnumerator of all indexes.
+        /// </summary>
+        /// <returns>IEnumerator of all indexes.</returns>
         public IEnumerator<IndexInfo> GetEnumerator()
         {
             return database
@@ -75,6 +114,10 @@ namespace Upgrader.Schema
                 .GetEnumerator();
         }
 
+        /// <summary>
+        /// Gets an IEnumerator of all indexes.
+        /// </summary>
+        /// <returns>IEnumerator of all indexes.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

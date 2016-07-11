@@ -10,6 +10,10 @@ namespace Upgrader.PostgreSql
     {
         private static readonly ConnectionFactory ConnectionFactory = new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection");
 
+        /// <summary>
+        /// Creates an instance of the PostgreSqlDatabase.
+        /// </summary>
+        /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public PostgreSqlDatabase(string connectionStringOrName) : base(
             ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
             GetMasterConnectionString(connectionStringOrName, "Database", "postgres")

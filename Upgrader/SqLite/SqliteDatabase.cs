@@ -14,6 +14,10 @@ namespace Upgrader.SqLite
 
         private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase);
 
+        /// <summary>
+        /// Creates an instance of the SqlLiteDatabase.
+        /// </summary>
+        /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public SqLiteDatabase(string connectionStringOrName) : base(
             ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
             null,

@@ -70,7 +70,7 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public virtual void ChangeTypeChangesTypePreservingNullability()
+        public virtual void ChangeTypeChangesTypePreservingNullable()
         {
             Database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
             Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("float");

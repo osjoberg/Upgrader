@@ -3,6 +3,9 @@ using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
 {
+    /// <summary>
+    /// Table information and modification.
+    /// </summary>
     public class TableInfo
     {
         private readonly Database database;
@@ -16,14 +19,29 @@ namespace Upgrader.Schema
             Indexes = new IndexCollection(database, tableName);
         }
 
+        /// <summary>
+        /// Gets collection of columns in table.
+        /// </summary>
         public ColumnCollection Columns { get; }
 
+        /// <summary>
+        /// Gets collection of foreign keys in table.
+        /// </summary>
         public ForeignKeyCollection ForeignKeys { get; }
 
+        /// <summary>
+        /// Gets collection of indexes in table.
+        /// </summary>
         public IndexCollection Indexes { get; }
 
+        /// <summary>
+        /// Gets table name.
+        /// </summary>
         public string TableName { get; }
 
+        /// <summary>
+        /// Gets primary key information. Returns null if no primary key is present.
+        /// </summary>
         public PrimaryKeyInfo PrimaryKey
         {
             get
@@ -38,6 +56,11 @@ namespace Upgrader.Schema
             }
         }
 
+        /// <summary>
+        /// Add a primary key to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="primaryKeyName">Primary key name. If not name is given, name is set by convention.</param>
         public void AddPrimaryKey(string columnName, string primaryKeyName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
@@ -48,6 +71,11 @@ namespace Upgrader.Schema
             AddPrimaryKey(new[] { columnName }, primaryKeyName);
         }
 
+        /// <summary>
+        /// Add a primary key to the table.
+        /// </summary>
+        /// <param name="columnNames">Column names.</param>
+        /// <param name="primaryKeyName">Primary key name. If not name is given, name is set by convention.</param>
         public void AddPrimaryKey(string[] columnNames, string primaryKeyName = null)
         {
             Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
@@ -60,6 +88,9 @@ namespace Upgrader.Schema
             database.AddPrimaryKey(TableName, columnNames, constraintName);
         }
 
+        /// <summary>
+        /// Remove the primary key.
+        /// </summary>
         public void RemovePrimaryKey()
         {
             var constraintName = database.GetPrimaryKeyName(TableName);
@@ -71,6 +102,10 @@ namespace Upgrader.Schema
             database.RemovePrimaryKey(TableName, constraintName);
         }
 
+        /// <summary>
+        /// Rename the table.
+        /// </summary>
+        /// <param name="newTableName">New table name.</param>
         public void Rename(string newTableName)
         {
             Validate.IsNotNullAndNotEmpty(newTableName, nameof(newTableName));

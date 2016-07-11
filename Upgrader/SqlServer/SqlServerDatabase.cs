@@ -5,9 +5,12 @@ using Dapper;
 
 namespace Upgrader.SqlServer
 {
-
     public class SqlServerDatabase : Database
     {
+        /// <summary>
+        /// Creates an instance of the SqlServerDatabase.
+        /// </summary>
+        /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public SqlServerDatabase(string connectionStringOrName) : base(
             new SqlConnection(GetConnectionString(connectionStringOrName)),
             GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))

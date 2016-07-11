@@ -9,6 +9,9 @@ using Upgrader.Schema;
 
 namespace Upgrader
 {
+    /// <summary>
+    /// Encapsulates high-level data definition language functionality as well as the possibility to reflect on the underlying database.
+    /// </summary>
     public abstract class Database : IDisposable
     {
         private readonly DataDefinitionLanguage dataDefinitionLanguage;
@@ -50,12 +53,19 @@ namespace Upgrader
             return connectionStringBuilder.ToString();
         }
 
+        /// <summary>
+        /// Underlying ADO.NET connection to the database.
+        /// </summary>
         public IDbConnection Connection { get; }
 
-        // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+        /// <summary>
+        /// Gets or sets the naming convention for this instance.
+        /// </summary>
         public NamingConvention NamingConvention { get; set; }
 
+        /// <summary>
+        /// Collection of tables in the connected database.
+        /// </summary>
         public TableCollection Tables { get; }
 
         internal abstract string AutoIncrementStatement { get; }
@@ -70,11 +80,17 @@ namespace Upgrader
             Connection.Dispose();
         }
 
+        /// <summary>
+        /// Gets if the database exists or not.
+        /// </summary>
         public abstract bool Exists
         {
             get;
         }
 
+        /// <summary>
+        /// Create database.
+        /// </summary>
         public virtual void Create()
         {
             UseMainDatabase();
@@ -82,6 +98,9 @@ namespace Upgrader
             UseConnectedDatabase();
         }
 
+        /// <summary>
+        /// Remove database.
+        /// </summary>
         public virtual void Remove()
         {
             UseMainDatabase();

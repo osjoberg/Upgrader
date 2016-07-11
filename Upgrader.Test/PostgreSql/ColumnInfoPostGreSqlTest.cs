@@ -30,7 +30,7 @@ namespace Upgrader.Test.PostgreSql
         }
 
         [TestMethod]
-        public override void ChangeTypeChangesTypePreservingNullability()
+        public override void ChangeTypeChangesTypePreservingNullable()
         {
             Database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
             Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("real");

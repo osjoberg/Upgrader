@@ -5,6 +5,9 @@ using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
 {
+    /// <summary>
+    /// Collection of all tables in the connected database.
+    /// </summary>
     public class TableCollection : IEnumerable<TableInfo>
     {
         private readonly Database database;
@@ -14,6 +17,11 @@ namespace Upgrader.Schema
             this.database = database;
         }
 
+        /// <summary>
+        /// Gets table information for the specified table. Returns null if the specified table does not exist.
+        /// </summary>
+        /// <param name="tableName">Table name.</param>
+        /// <returns>Table information.</returns>
         public TableInfo this[string tableName]
         {
             get
@@ -25,6 +33,10 @@ namespace Upgrader.Schema
             }
         }
 
+        /// <summary>
+        /// Gets an IEnumerator of all tables.
+        /// </summary>
+        /// <returns>IEnumerator of all tables.</returns>
         public IEnumerator<TableInfo> GetEnumerator()
         {
             return database
@@ -33,11 +45,21 @@ namespace Upgrader.Schema
                 .GetEnumerator();
         }
 
+        /// <summary>
+        /// Gets an IEnumerator of all tables.
+        /// </summary>
+        /// <returns>IEnumerator of all tables.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Adds a table to the database.
+        /// </summary>
+        /// <param name="tableName">Table names.</param>
+        /// <param name="columns">Column definitions. At least one column definition needs to be specified.</param>
+        /// <param name="foreignKeys">Foreign key definitions.</param>
         public void Add(string tableName, Column[] columns, ForeignKey[] foreignKeys)
         {
             Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
@@ -50,11 +72,20 @@ namespace Upgrader.Schema
             database.AddTable(tableName, columns, foreignKeys);
         }
 
+        /// <summary>
+        /// Adds a table to the database.
+        /// </summary>
+        /// <param name="tableName">Table names.</param>
+        /// <param name="columns">Column definitions. At least one column definition needs to be specified.</param>
         public void Add(string tableName, params Column[] columns)
         {
             Add(tableName, columns, new ForeignKey[] { });
         }
 
+        /// <summary>
+        /// Removes a table from the database.
+        /// </summary>
+        /// <param name="tableName">Table name.</param>
         public void Remove(string tableName)
         {
             Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
@@ -63,6 +94,9 @@ namespace Upgrader.Schema
             database.RemoveTable(tableName);
         }
 
+        /// <summary>
+        /// Removes all tables from the database.
+        /// </summary>
         public void RemoveAll()
         {
             foreach (var table in this)

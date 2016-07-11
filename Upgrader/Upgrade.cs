@@ -10,12 +10,25 @@ namespace Upgrader
 {
     public class Upgrade<TDatabase> where TDatabase : Database
     {
+        /// <summary>
+        /// Geta or seta the table name used for tracking executed steps.
+        /// </summary>
         public string ExecutedStepsTable { get; set; } = "ExecutedSteps";
 
+        /// <summary>
+        /// Gets the current database instance in use.
+        /// </summary>
         public TDatabase Database { get; }
 
+        /// <summary>
+        /// Gets or sets the Transaction Mode to use when migrating.
+        /// </summary>
         public TransactionMode TransactionMode { get; set; } = TransactionMode.OneTransactionPerStep;
 
+        /// <summary>
+        /// Create a new instance of the Upgrade engine.
+        /// </summary>
+        /// <param name="database">Database instance to use for upgrades.</param>
         public Upgrade(TDatabase database)
         {
             Validate.IsNotNull(database, nameof(database));
@@ -23,6 +36,10 @@ namespace Upgrader
             Database = database;
         }
 
+        /// <summary>
+        /// Perform database schema upgrade. Will only execute steps that are not already executed on the target database.
+        /// </summary>
+        /// <param name="steps">Steps to evaluate and execute if not already executed.</param>
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public void PerformUpgrade(IEnumerable<IStep> steps)
         {

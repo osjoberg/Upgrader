@@ -5,6 +5,9 @@ using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
 {
+    /// <summary>
+    /// Collection of all foreign keys in the specified table.
+    /// </summary>
     public class ForeignKeyCollection : IEnumerable<ForeignKeyInfo>
     {
         private readonly Database database;
@@ -16,6 +19,11 @@ namespace Upgrader.Schema
             this.tableName = tableName;
         }
 
+        /// <summary>
+        /// Gets foreign key information for the specified foreign key. Returns null if the specified foreign key does not exist.
+        /// </summary>
+        /// <param name="foreignKeyName">Foreign key name.</param>
+        /// <returns>Foreign key information.</returns>
         public ForeignKeyInfo this[string foreignKeyName]
         {
             get
@@ -27,6 +35,13 @@ namespace Upgrader.Schema
             }
         }
 
+        /// <summary>
+        /// Adds a foreign key to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="foreignTableName">Foreign table name.</param>
+        /// <param name="foreignColumnName">Foreign column name. If no foreign column name is set, the <see cref="columnName"/> will be used.</param>
+        /// <param name="foreignKeyName">Foreign key name. If not name is given, name is set by convention.</param>
         public void Add(string columnName, string foreignTableName, string foreignColumnName = null, string foreignKeyName = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
@@ -41,6 +56,13 @@ namespace Upgrader.Schema
             Add(new[] { columnName }, foreignTableName, new[] { foreignColumnName ?? columnName }, foreignKeyName);
         }
 
+        /// <summary>
+        /// Adds a foreign key to the table.
+        /// </summary>
+        /// <param name="columnNames">Column names.</param>
+        /// <param name="foreignTableName">Foreign table name.</param>
+        /// <param name="foreignColumnNames">Foreign column names. If no foreign column names is set, the <see cref="columnNames"/> will be used.</param>
+        /// <param name="foreignKeyName">Foreign key name. If not name is given, name is set by convention.</param>
         public void Add(string[] columnNames, string foreignTableName, string[] foreignColumnNames = null, string foreignKeyName = null)
         {
             Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
@@ -56,6 +78,10 @@ namespace Upgrader.Schema
             database.AddForeignKey(tableName, columnNames, foreignTableName, foreignColumnNames ?? columnNames, constaintName);
         }
 
+        /// <summary>
+        /// Removes a foreign key from the table.
+        /// </summary>
+        /// <param name="foreignKeyName">Foreign key name.</param>
         public void Remove(string foreignKeyName)
         {
             Validate.IsNotNullAndNotEmpty(foreignKeyName, nameof(foreignKeyName));
@@ -64,6 +90,9 @@ namespace Upgrader.Schema
             database.RemoveForeignKey(tableName, foreignKeyName);
         }
 
+        /// <summary>
+        /// Removes all foreign keys from the table.
+        /// </summary>
         public void RemoveAll()
         {
             foreach (var foreignKey in this)
@@ -72,6 +101,10 @@ namespace Upgrader.Schema
             }
         }
 
+        /// <summary>
+        /// Gets an IEnumerator of all foreign keys.
+        /// </summary>
+        /// <returns>IEnumerator of all foreign keys.</returns>
         public IEnumerator<ForeignKeyInfo> GetEnumerator()
         {
             return database
@@ -80,6 +113,10 @@ namespace Upgrader.Schema
                 .GetEnumerator();
         }
 
+        /// <summary>
+        /// Gets an IEnumerator of all foreign keys.
+        /// </summary>
+        /// <returns>IEnumerator of all foreign keys.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
