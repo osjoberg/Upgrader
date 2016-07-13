@@ -34,7 +34,7 @@ namespace Upgrader.Infrastructure
             var escapedTableName = database.EscapeIdentifier(tableName);
 
             var columnDefinitions = string.Join(", ", columnsShallowClone
-                .Select(column => $"{database.EscapeIdentifier(column.ColumnName)} {column.DataType} {GetNullableStatement(column.Modifier == ColumnModifier.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
+                .Select(column => $"{database.EscapeIdentifier(column.ColumnName)} {column.DataType} {GetNullableStatement(column.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
 
             var sql = $"CREATE TABLE {escapedTableName} ({columnDefinitions}";
 

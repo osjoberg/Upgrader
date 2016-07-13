@@ -24,19 +24,19 @@ namespace Upgrader.Test.PostgreSql
         public override void ChangeTypeChangesType()
         {
             Database.Tables.Add("ChangeType", new Column("ChangeTypeId", "int"));
-            Database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("real", ColumnModifier.Nullable);
+            Database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("real", true);
 
             Assert.AreEqual("real", Database.Tables["ChangeType"].Columns["ChangeTypeId"].DataType);
         }
 
         [TestMethod]
-        public override void ChangeTypeChangesTypePreservingModifier()
+        public override void ChangeTypeChangesTypePreservingNullable()
         {
             Database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
             Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("real");
 
             Assert.AreEqual("real", Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
-            Assert.AreEqual(ColumnModifier.None, Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Modifier);
+            Assert.IsFalse(Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
         }
 
         [TestMethod]

@@ -19,7 +19,8 @@ namespace Upgrader.Test.PostgreSql
             Database.Connection.Execute("INSERT INTO \"CanAddNotNullColumn\" VALUES (1)");
             Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", 5);
 
-            Assert.AreEqual(ColumnModifier.None, Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Modifier);
+            Assert.IsFalse(Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);
         }
+
     }
 }

@@ -21,11 +21,11 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void ModifierIsNullableForNullableColumn()
+        public void NullableIsTrueForNullableColumn()
         {
-            Database.Tables.Add("NullableColumn", new Column("NullableColumnId", "int", ColumnModifier.Nullable));
+            Database.Tables.Add("NullableColumn", new Column("NullableColumnId", "int", true));
 
-            Assert.AreEqual(ColumnModifier.Nullable, Database.Tables["NullableColumn"].Columns["NullableColumnId"].Modifier);
+            Assert.IsTrue(Database.Tables["NullableColumn"].Columns["NullableColumnId"].Nullable);
         }
 
         [TestMethod]
@@ -45,11 +45,11 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void ModifierIsNoneForNonNullableColumn()
+        public void NullableIsFalseForNonNullableColumn()
         {
             Database.Tables.Add("NonNullableColumn", new Column("NonNullableColumnId", "int"));
 
-            Assert.AreEqual(ColumnModifier.None, Database.Tables["NonNullableColumn"].Columns["NonNullableColumnId"].Modifier);
+            Assert.IsFalse(Database.Tables["NonNullableColumn"].Columns["NonNullableColumnId"].Nullable);
         }
 
         [TestMethod]
@@ -64,19 +64,19 @@ namespace Upgrader.Test
         public virtual void ChangeTypeChangesType()
         {
             Database.Tables.Add("ChangeType", new Column("ChangeTypeId", "int"));
-            Database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("float", ColumnModifier.Nullable);
+            Database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("float", true);
 
             Assert.AreEqual("float", Database.Tables["ChangeType"].Columns["ChangeTypeId"].DataType);
         }
 
         [TestMethod]
-        public virtual void ChangeTypeChangesTypePreservingModifier()
+        public virtual void ChangeTypeChangesTypePreservingNullable()
         {
             Database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
             Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("float");
 
             Assert.AreEqual("float", Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
-            Assert.AreEqual(ColumnModifier.None, Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Modifier);
+            Assert.IsFalse(Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
         }
 
         [TestMethod]
@@ -96,7 +96,7 @@ namespace Upgrader.Test
             Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["id"].Rename("RenameAutoIncrementPrimaryKeyColumnId");
 
             Assert.IsNotNull(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].PrimaryKey);
-            Assert.AreEqual(ColumnModifier.AutoIncrementPrimaryKey, Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["RenameAutoIncrementPrimaryKeyColumnId"].Modifier);
+            Assert.IsTrue(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["RenameAutoIncrementPrimaryKeyColumnId"].AutoIncrement);
         }
 
         [TestMethod]
@@ -109,19 +109,19 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void ModifierIsAutoIncrementPrimaryKeyWhenColumnIsAutoIncrementPrimaryKey()
+        public void AutoIncrementIsTrueWhenColumnIsAutoIncrement()
         {
             Database.Tables.Add("AutoIncrement", new Column("AutoIncrementId", "integer", ColumnModifier.AutoIncrementPrimaryKey));
 
-            Assert.AreEqual(ColumnModifier.AutoIncrementPrimaryKey, Database.Tables["AutoIncrement"].Columns["AutoIncrementId"].Modifier);
+            Assert.IsTrue(Database.Tables["AutoIncrement"].Columns["AutoIncrementId"].AutoIncrement);
         }
 
         [TestMethod]
-        public void ModifierIsNoneWhenColumnIsNotAutoIncrement()
+        public void AutoIncrementIsFalseWhenColumnIsNotAutoIncrement()
         {
             Database.Tables.Add("NoAutoIncrement", new Column("NoAutoIncrementId", "integer"));
 
-            Assert.AreEqual(ColumnModifier.None, Database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].Modifier);
+            Assert.IsFalse(Database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].AutoIncrement);
         }
 
         [TestMethod]
@@ -147,6 +147,7 @@ namespace Upgrader.Test
 
             Assert.AreEqual("decimal(8,2)", Database.Tables["DecimalPrecisionAndScale"].Columns["DecimalPrecisionAndScaleId"].DataType);
         }
+
 
         [TestMethod]
         public virtual void DataTypeDoesNotIncludeLengthOnChar()
