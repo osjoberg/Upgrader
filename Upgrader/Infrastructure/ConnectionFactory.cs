@@ -22,10 +22,10 @@ namespace Upgrader.Infrastructure
 
             if (adoProviderAssembly == null)
             {
-                throw UpgraderException.CannotCreateInstance(connectionTypeName, assemblyFileName);
+                throw UpgraderException.CannotFindAssembly(assemblyFileName);
             }
 
-            connectionType = adoProviderAssembly.GetType(connectionTypeName, false);
+            connectionType = adoProviderAssembly.GetTypes().SingleOrDefault(type => type.Name == connectionTypeName);
             if (connectionType == null)
             {
                 throw UpgraderException.CannotCreateInstance(connectionTypeName, assemblyFileName);

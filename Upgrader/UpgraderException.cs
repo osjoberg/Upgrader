@@ -13,6 +13,12 @@ namespace Upgrader
             return new UpgraderException($"Cannot create instance of type \"{typeName}\". Make sure \"{assembly}\" is loaded in the app domain.");            
         }
 
+        internal static UpgraderException CannotFindAssembly(string assembly)
+        {
+            return new UpgraderException($"Cannot find asssembly named \"{assembly}\".");
+        }
+
+
         internal static UpgraderException CannotExecuteStatement(string sql, object parameters, Exception innerException)
         {
             return new UpgraderException(sql, parameters, innerException);

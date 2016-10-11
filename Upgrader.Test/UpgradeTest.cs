@@ -167,5 +167,12 @@ namespace Upgrader.Test
 
             Assert.IsNotNull(database.Tables["NonAtomicTable"]);
         }
+
+        [TestMethod]
+        public void ConnectionIsOpenAfterInstanceIsCreated()
+        {
+            var database = new SqlServerDatabase("SqlServer");
+            database.Connection.Execute("SELECT 1");
+        }
     }
 }
