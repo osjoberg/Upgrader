@@ -25,7 +25,7 @@ namespace Upgrader.Infrastructure
                 throw UpgraderException.CannotFindAssembly(assemblyFileName);
             }
 
-            connectionType = adoProviderAssembly.GetTypes().SingleOrDefault(type => type.Name == connectionTypeName);
+            connectionType = adoProviderAssembly.GetTypes().SingleOrDefault(type => type.Namespace + "." + type.Name == connectionTypeName);
             if (connectionType == null)
             {
                 throw UpgraderException.CannotCreateInstance(connectionTypeName, assemblyFileName);
