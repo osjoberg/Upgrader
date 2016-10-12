@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Upgrader.Infrastructure;
 
 namespace Upgrader.MySql
@@ -6,14 +7,14 @@ namespace Upgrader.MySql
 
     public class MySqlDatabase : Database
     {
-        private static readonly ConnectionFactory ConnectionFactory = new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection");
+        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection"));
 
         /// <summary>
         /// Creates an instance of the MySqlDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public MySqlDatabase(string connectionStringOrName) : base(
-            ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
+            ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)),
             GetMasterConnectionString(connectionStringOrName, "Database", "mysql"))
         {
         }

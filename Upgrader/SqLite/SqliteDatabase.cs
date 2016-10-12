@@ -10,7 +10,7 @@ namespace Upgrader.SqLite
 {
     public class SqLiteDatabase : Database
     {
-        private static readonly ConnectionFactory ConnectionFactory = new ConnectionFactory("System.Data.SQLite.dll", "System.Data.SQLite.SQLiteConnection");
+        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("System.Data.SQLite.dll", "System.Data.SQLite.SQLiteConnection"));
 
         private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase);
 
@@ -19,7 +19,7 @@ namespace Upgrader.SqLite
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public SqLiteDatabase(string connectionStringOrName) : base(
-            ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
+            ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)),
             null,
             (string)new DbConnectionStringBuilder { ConnectionString = GetConnectionString(connectionStringOrName) }["Data Source"]
             )

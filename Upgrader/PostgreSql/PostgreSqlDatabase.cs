@@ -8,14 +8,14 @@ namespace Upgrader.PostgreSql
 {
     public class PostgreSqlDatabase : Database
     {
-        private static readonly ConnectionFactory ConnectionFactory = new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection");
+        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() =>new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection"));
 
         /// <summary>
         /// Creates an instance of the PostgreSqlDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public PostgreSqlDatabase(string connectionStringOrName) : base(
-            ConnectionFactory.CreateConnection(GetConnectionString(connectionStringOrName)),
+            ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)),
             GetMasterConnectionString(connectionStringOrName, "Database", "postgres")
             )
         {
