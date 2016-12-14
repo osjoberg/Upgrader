@@ -55,6 +55,7 @@
     <Compile Include="Infrastructure\ConnectionFactory.cs" />
     <Compile Include="Infrastructure\DataDefinitionLanguage.cs" />
     <Compile Include="Infrastructure\InformationSchema.cs" />
+    <Compile Include="MutexScope.cs" />
     <Compile Include="PostgreSql\PostgreSqlDatabase.cs" />
     <Compile Include="Schema\ColumnInfo.cs" />
     <Compile Include="Schema\ColumnModifier.cs" />

@@ -64,40 +64,43 @@ namespace Upgrader
 
             Validate.IsTrue(firstDuplicateStepName == null, nameof(steps), $"Step names must be unique, \"{firstDuplicateStepName}\" occurs more than once.");
 
-            bool? databaseExists;
-            try
+            using (new MutexScope("PeformUpgrade" + Database.DatabaseName.ToLowerInvariant()))
             {
-                databaseExists = Database.Exists;
-            }
-            catch (UpgraderException)
-            {
-                databaseExists = null;
-            }
-
-            if (databaseExists == false)
-            {
-                Database.Create();
-            }
-
-            if (Database.Tables[ExecutedStepsTable] == null)
-            {
-                Database.Tables.Add(
-                    ExecutedStepsTable, new Column("Step", "NVARCHAR(100)"), new Column("ExecutedAt", "DATETIME"));
-            }
-
-            var alreadyExecutedStepNames = new HashSet<string>(Database.Dapper.Query<string>($"SELECT Step FROM {ExecutedStepsTable}"));
-
-            var notExecutedSteps = stepsShallowClone.Where(step => alreadyExecutedStepNames.Contains(step.StepName) == false).ToArray();
-            foreach (var step in notExecutedSteps)
-            {
-                if (TransactionMode == TransactionMode.OneTransactionPerStep) 
+                bool? databaseExists;
+                try
                 {
-                   ExecuteTransactionStep(Database, ExecutedStepsTable, step);   
+                    databaseExists = Database.Exists;
                 }
-                else
+                catch (UpgraderException)
                 {
-                    ExecuteStep(Database, ExecutedStepsTable, step);
-                }                
+                    databaseExists = null;
+                }
+
+                if (databaseExists == false)
+                {
+                    Database.Create();
+                }
+
+                if (Database.Tables[ExecutedStepsTable] == null)
+                {
+                    Database.Tables.Add(
+                        ExecutedStepsTable, new Column("Step", "NVARCHAR(100)"), new Column("ExecutedAt", "DATETIME"));
+                }
+
+                var alreadyExecutedStepNames = new HashSet<string>(Database.Dapper.Query<string>($"SELECT Step FROM {ExecutedStepsTable}"));
+
+                var notExecutedSteps = stepsShallowClone.Where(step => alreadyExecutedStepNames.Contains(step.StepName) == false).ToArray();
+                foreach (var step in notExecutedSteps)
+                {
+                    if (TransactionMode == TransactionMode.OneTransactionPerStep)
+                    {
+                        ExecuteTransactionStep(Database, ExecutedStepsTable, step);
+                    }
+                    else
+                    {
+                        ExecuteStep(Database, ExecutedStepsTable, step);
+                    }
+                }
             }
         }
 
