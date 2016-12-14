@@ -64,7 +64,7 @@ database.Tables.Add("Customer",
 	new Column("Name", "varchar(50)"));
 	
 // Rename "Customer" table to "Customers".
-database.Tables["Customer"].Rename("Customers");
+database.Tables.Rename("Customer", "Customers");
 
 // Remove table named "Customers".
 database.Tables.Remove("Customers");
@@ -91,7 +91,7 @@ database.Tables["Customer"].Columns.Add("Status", "int", 0);
 database.Tables["Customer"].Columns["Name"].ChangeType("varchar(100)");
 
 // Rename column "Name" in table "Customer" to "CustomerName".
-database.Tables["Customer"].Columns["Name"].Rename("CustomerName");
+database.Tables["Customer"].Columns.Rename("Name", "CustomerName");
 
 // Remove column "Profit" in table "Customer".
 database.Tables["Customer"].Columns.Remove("Profit");
