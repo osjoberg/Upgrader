@@ -32,6 +32,16 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
+        public virtual void RenameRenamesColumn()
+        {
+            Database.Tables.Add("RenameColumn", new Column("RenameColumnId", "int"));
+
+            Database.Tables["RenameColumn"].Columns.Rename("RenameColumnId", "NewColumnNameId");
+
+            Assert.IsNotNull(Database.Tables["RenameColumn"].Columns["NewColumnNameId"]);
+        }
+
+        [TestMethod]
         public virtual void RemoveDropsColumn()
         {
             Database.Tables.Add("RemoveColumn", new Column("RemoveColumnId", "int"), new Column("RemovedColumn", "int"));

@@ -80,20 +80,10 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public virtual void RenameRenamesColumn()
-        {
-            Database.Tables.Add("RenameColumn", new Column("RenameColumnId", "int"));
-
-            Database.Tables["RenameColumn"].Columns["RenameColumnId"].Rename("NewColumnNameId");
-
-            Assert.IsNotNull(Database.Tables["RenameColumn"].Columns["NewColumnNameId"]);
-        }
-
-        [TestMethod]
         public virtual void RenamePreservesAutoIncrementPrimaryKeyColumn()
         {
             Database.Tables.Add("RenameAutoIncrementPrimaryKeyColumn", new Column("id", "int", ColumnModifier.AutoIncrementPrimaryKey));
-            Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["id"].Rename("RenameAutoIncrementPrimaryKeyColumnId");
+            Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns.Rename("id", "RenameAutoIncrementPrimaryKeyColumnId");
 
             Assert.IsNotNull(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].PrimaryKey);
             Assert.IsTrue(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["RenameAutoIncrementPrimaryKeyColumnId"].AutoIncrement);
@@ -103,7 +93,7 @@ namespace Upgrader.Test
         public virtual void RenamePreservesPrimaryKeyColumn()
         {
             Database.Tables.Add("RenamePrimaryKeyColumn", new Column("id", "int", ColumnModifier.PrimaryKey));
-            Database.Tables["RenamePrimaryKeyColumn"].Columns["id"].Rename("RenamePrimaryKeyColumnId");
+            Database.Tables["RenamePrimaryKeyColumn"].Columns.Rename("id", "RenamePrimaryKeyColumnId");
 
             Assert.IsNotNull(Database.Tables["RenamePrimaryKeyColumn"].PrimaryKey);
         }

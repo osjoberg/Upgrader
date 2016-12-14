@@ -101,17 +101,5 @@ namespace Upgrader.Schema
 
             database.RemovePrimaryKey(TableName, constraintName);
         }
-
-        /// <summary>
-        /// Rename the table.
-        /// </summary>
-        /// <param name="newTableName">New table name.</param>
-        public void Rename(string newTableName)
-        {
-            Validate.IsNotNullAndNotEmpty(newTableName, nameof(newTableName));
-            Validate.MaxLength(newTableName, nameof(newTableName), database.MaxIdentifierLength);
-
-            database.RenameTable(TableName, newTableName);
-        }
     }
 }

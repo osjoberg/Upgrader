@@ -61,7 +61,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("RenameTable", new Column("RenameTableId", "int"));
 
-            Database.Tables["RenameTable"].Rename("NewTableName");
+            Database.Tables.Rename("RenameTable", "NewTableName");
 
             Assert.IsNotNull(Database.Tables["NewTableName"]);
         }

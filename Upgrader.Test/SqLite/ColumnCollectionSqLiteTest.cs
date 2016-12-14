@@ -20,6 +20,13 @@ namespace Upgrader.Test.SqLite
 
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
+        public override void RenameRenamesColumn()
+        {
+            base.RenameRenamesColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
         public override void CanAddNonNullColumn()
         {
             base.CanAddNonNullColumn();

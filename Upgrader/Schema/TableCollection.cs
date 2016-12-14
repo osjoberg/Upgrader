@@ -73,6 +73,19 @@ namespace Upgrader.Schema
         }
 
         /// <summary>
+        /// Rename table.
+        /// </summary>
+        /// <param name="currentTableName">Current table name.</param>
+        /// <param name="newTableName">New table name.</param>
+        public void Rename(string currentTableName, string newTableName)
+        {
+            Validate.IsNotNullAndNotEmpty(newTableName, nameof(newTableName));
+            Validate.MaxLength(newTableName, nameof(newTableName), database.MaxIdentifierLength);
+
+            database.RenameTable(currentTableName, newTableName);
+        }
+
+        /// <summary>
         /// Adds a table to the database.
         /// </summary>
         /// <param name="tableName">Table names.</param>

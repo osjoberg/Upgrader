@@ -95,6 +95,18 @@ namespace Upgrader.Schema
         }
 
         /// <summary>
+        /// Rename a column in the table.
+        /// </summary>
+        /// <param name="currentColumnName">Current name of column.</param>
+        /// <param name="newColumnName">New name of column.</param>
+        public void Rename(string currentColumnName, string newColumnName)
+        {
+            Validate.IsNotNullAndNotEmpty(newColumnName, nameof(newColumnName));
+
+            database.RenameColumn(tableName, currentColumnName, newColumnName);
+        }
+
+        /// <summary>
         /// Removes a column from the table.
         /// </summary>
         /// <param name="columnName">Column name.</param>
