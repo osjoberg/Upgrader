@@ -30,13 +30,13 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public virtual void AddWithAutoIncrementCreatesTableWithAutoIncrement()
+        public void AddWithAutoIncrementCreatesTableWithAutoIncrement()
         {
             Database.Tables.Add("AddAutoIncrementTable", new Column("AddAutoIncrementTableId", "integer", ColumnModifier.AutoIncrementPrimaryKey), new Column("Data", "int"));
 
-            Database.Connection.Execute("INSERT INTO AddAutoIncrementTable (Data) VALUES (12345)");
+            Database.Connection.Execute($"INSERT INTO {Database.EscapeIdentifier("AddAutoIncrementTable")}  ({Database.EscapeIdentifier("Data")}) VALUES (12345)");
 
-            Assert.AreEqual(1, Database.Connection.ExecuteScalar<int>("SELECT AddAutoIncrementTableId FROM AddAutoIncrementTable"));
+            Assert.AreEqual(1, Database.Tables["AddAutoIncrementTable"].Rows.Query().Single().AddAutoIncrementTableId);
         }
 
         [TestMethod]

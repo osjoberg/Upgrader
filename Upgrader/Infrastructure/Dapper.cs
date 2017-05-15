@@ -26,6 +26,18 @@ namespace Upgrader.Infrastructure
             }
         }
 
+        public object ExecuteScalar(string sql, object parameters = null)
+        {
+            try
+            {
+                return connection.ExecuteScalar(sql, parameters);
+            }
+            catch (DbException exception)
+            {
+                throw UpgraderException.CannotExecuteStatement(sql, parameters, exception);
+            }
+        }
+
         public T ExecuteScalar<T>(string sql, object parameters = null)
         {
             try
@@ -43,6 +55,18 @@ namespace Upgrader.Infrastructure
             try
             {
                 return connection.Query<T>(sql, parameters);
+            }
+            catch (DbException exception)
+            {
+                throw UpgraderException.CannotExecuteStatement(sql, parameters, exception);
+            }
+        }
+
+        public IEnumerable<dynamic> Query(string sql, object parameters = null)
+        {
+            try
+            {
+                return connection.Query(sql, parameters);
             }
             catch (DbException exception)
             {

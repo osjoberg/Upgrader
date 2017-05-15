@@ -4,7 +4,6 @@ using Upgrader.Infrastructure;
 
 namespace Upgrader.MySql
 {
-
     public class MySqlDatabase : Database
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection"));
@@ -13,9 +12,7 @@ namespace Upgrader.MySql
         /// Creates an instance of the MySqlDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public MySqlDatabase(string connectionStringOrName) : base(
-            ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)),
-            GetMasterConnectionString(connectionStringOrName, "Database", "mysql"))
+        public MySqlDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Database", "mysql"))
         {
         }
 
@@ -24,12 +21,15 @@ namespace Upgrader.MySql
             get
             {
                 UseMainDatabase();
-                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @databaseName", new { databaseName = this.DatabaseName });
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = @databaseName", new { databaseName = DatabaseName });
                 UseConnectedDatabase();
                 return exists;
-
             }
-        } 
+        }
+
+        internal override int MaxIdentifierLength => 64;
+
+        internal override string AutoIncrementStatement => "AUTO_INCREMENT";
 
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
@@ -231,8 +231,9 @@ namespace Upgrader.MySql
             return "`" + identifier.Replace("`", "``") + "`";
         }
 
-        internal override string AutoIncrementStatement => "AUTO_INCREMENT";
-
-        internal override int MaxIdentifierLength => 64;
+        internal override string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName)
+        {
+            return ";SELECT LAST_INSERT_ID()";
+        }
     }
 }

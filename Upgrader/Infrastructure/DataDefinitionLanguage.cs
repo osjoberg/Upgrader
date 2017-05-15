@@ -27,14 +27,21 @@ namespace Upgrader.Infrastructure
             database.Dapper.Execute($"DROP DATABASE {escapedDatabaseName}");
         }
 
+        internal void RenameTable(string tableName, string newTableName)
+        {
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedNewTableName = database.EscapeIdentifier(newTableName);
+
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME TO {escapedNewTableName}");
+        }
+
         internal void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
             var columnsShallowClone = columns.ToArray();
 
             var escapedTableName = database.EscapeIdentifier(tableName);
 
-            var columnDefinitions = string.Join(", ", columnsShallowClone
-                .Select(column => $"{database.EscapeIdentifier(column.ColumnName)} {column.DataType} {GetNullableStatement(column.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
+            var columnDefinitions = string.Join(", ", columnsShallowClone.Select(column => $"{database.EscapeIdentifier(column.ColumnName)} {column.DataType} {GetNullableStatement(column.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
 
             var sql = $"CREATE TABLE {escapedTableName} ({columnDefinitions}";
 
@@ -67,14 +74,6 @@ namespace Upgrader.Infrastructure
             sql += ")";
 
             database.Dapper.Execute(sql);
-        }
-
-        public void RenameTable(string tableName, string newTableName)
-        {
-            var escapedTableName = database.EscapeIdentifier(tableName);
-            var escapedNewTableName = database.EscapeIdentifier(newTableName);
-
-            database.Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME TO {escapedNewTableName}");
         }
 
         internal void RemoveTable(string tableName)
@@ -148,14 +147,16 @@ namespace Upgrader.Infrastructure
             database.Dapper.Execute($"ALTER TABLE {escapedTableName} DROP CONSTRAINT {escapedForeignKeyName}");
         }
 
-        internal void AddIndex(string tableName, string[] columnNames, bool unique, string indexName)
+        internal void AddIndex(string tableName, string[] columnNames, bool unique, string indexName, string[] includeColumnNames)
         {
             var uniqueStatement = unique ? "UNIQUE " : "";
             var escapedIndexName = database.EscapeIdentifier(indexName);
             var escapedTableName = database.EscapeIdentifier(tableName);
-            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(identifier => database.EscapeIdentifier(identifier)));
+            var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(columnName => database.EscapeIdentifier(columnName)));
+            var escapedincludeColumnNames = string.Join(", ", (includeColumnNames ?? Enumerable.Empty<string>()).Select(includeColumnName => database.EscapeIdentifier(includeColumnName)));
+            var includeStatement = includeColumnNames != null ? $"INCLUDE ({escapedincludeColumnNames})" : "";
 
-            database.Dapper.Execute($"CREATE {uniqueStatement}INDEX {escapedIndexName} ON {escapedTableName} ({escapedCommaSeparatedColumnNames})");
+            database.Dapper.Execute($"CREATE {uniqueStatement}INDEX {escapedIndexName} ON {escapedTableName} ({escapedCommaSeparatedColumnNames}) {includeStatement}");
         }
 
         private static string GetNullableStatement(bool nullable)

@@ -8,16 +8,13 @@ namespace Upgrader.PostgreSql
 {
     public class PostgreSqlDatabase : Database
     {
-        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() =>new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection"));
+        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection"));
 
         /// <summary>
         /// Creates an instance of the PostgreSqlDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public PostgreSqlDatabase(string connectionStringOrName) : base(
-            ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)),
-            GetMasterConnectionString(connectionStringOrName, "Database", "postgres")
-            )
+        public PostgreSqlDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Database", "postgres"))
         {
         }
 
@@ -45,11 +42,11 @@ namespace Upgrader.PostgreSql
                 {
                     if (column.DataType.Equals("integer", StringComparison.InvariantCultureIgnoreCase) || column.DataType.Equals("int", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        modifiedColumns.Add(new Column(column.ColumnName, "serial", column.Nullable));
+                        modifiedColumns.Add(new Column(column.ColumnName, "serial", column.Nullable, ColumnModifier.PrimaryKey));
                     }
                     else if (column.DataType.Equals("bigint", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        modifiedColumns.Add(new Column(column.ColumnName, "bigserial", column.Nullable));
+                        modifiedColumns.Add(new Column(column.ColumnName, "bigserial", column.Nullable, ColumnModifier.PrimaryKey));
                     }
                     else
                     {
@@ -69,57 +66,64 @@ namespace Upgrader.PostgreSql
         {
             var schemaName = GetSchema(tableName);
 
-            return Dapper.Query<string>(@"
-                SELECT 
-                    indexname 
-                FROM pg_indexes WHERE 
-                    schemaname = 'public' AND 
-                    tablename = @tableName 
-                EXCEPT
+            return Dapper.Query<string>(
+                @"
+                    SELECT 
+                        indexname 
+                    FROM pg_indexes WHERE 
+                        schemaname = 'public' AND 
+                        tablename = @tableName 
+                    EXCEPT
 
-                SELECT 
-                    constraint_name 
-                FROM information_schema.table_constraints
-                WHERE
-				    constraint_type = 'PRIMARY KEY' AND
-                    table_name = @tableName AND 
-                    table_schema = @schemaName
-                ", new { tableName, schemaName })
+                    SELECT 
+                        constraint_name 
+                    FROM information_schema.table_constraints
+                    WHERE
+				        constraint_type = 'PRIMARY KEY' AND
+                        table_name = @tableName AND 
+                        table_schema = @schemaName
+                ", 
+                new { tableName, schemaName })
                 .ToArray();
         }
 
         internal override bool GetIndexType(string tableName, string indexName)
         {
-            return Dapper.ExecuteScalar<bool>(@"
-                SELECT
-                      ix.indisunique
-                FROM 
-                     pg_class ic,
-                     pg_index ix     
-                WHERE
-                     ic.relname = @indexName AND
-                     ic.oid = ix.indexrelid
-                ", new { indexName });
+            return Dapper.ExecuteScalar<bool>(
+                @"
+                    SELECT
+                          ix.indisunique
+                    FROM 
+                         pg_class ic,
+                         pg_index ix     
+                    WHERE
+                         ic.relname = @indexName AND
+                         ic.oid = ix.indexrelid
+                ", 
+                new { indexName });
         }
 
         internal override string[] GetIndexColumnNames(string tableName, string indexName)
         {
-            return Dapper.Query<string>(@"
-                SELECT
-                      a.attname
-                FROM 
-                     pg_class ic,
-                     pg_attribute a,
-                     pg_class tc,
-                     pg_index ix     
-                WHERE
-                     ic.relname = @indexName AND
-                     ic.oid = ix.indexrelid AND
-                     tc.oid = ix.indrelid AND
-                     a.attrelid = tc.oid AND
-                     a.attnum = ANY(ix.indkey) AND
-                     tc.relkind = 'r'
-                ", new { indexName }).ToArray();
+            return Dapper.Query<string>(
+                @"
+                    SELECT
+                          a.attname
+                    FROM 
+                         pg_class ic,
+                         pg_attribute a,
+                         pg_class tc,
+                         pg_index ix     
+                    WHERE
+                         ic.relname = @indexName AND
+                         ic.oid = ix.indexrelid AND
+                         tc.oid = ix.indrelid AND
+                         a.attrelid = tc.oid AND
+                         a.attnum = ANY(ix.indkey) AND
+                         tc.relkind = 'r'
+                ", 
+                new { indexName })
+                .ToArray();
         }
 
         internal override void RemoveIndex(string tableName, string indexName)
@@ -165,8 +169,17 @@ namespace Upgrader.PostgreSql
 
         internal override bool GetColumnAutoIncrement(string tableName, string columnName)
         {
-            var sequenceName = tableName + "_" + columnName + "_seq";
+            const string Suffix = "_seq";
+            var maxLength = MaxIdentifierLength - Suffix.Length;
+            var sequenceName = $"{StringHelper.Truncate($"{tableName}_{columnName}", maxLength)}{Suffix}";
+
             return Dapper.ExecuteScalar<int>("SELECT COUNT(*) FROM pg_class WHERE relkind = 'S' AND relname = @sequenceName", new { sequenceName }) == 1;
+        }
+
+        internal override string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName)
+        {
+            var escapedColumnName = EscapeIdentifier(columnName);
+            return $"RETURNING {escapedColumnName}";
         }
     }
 }

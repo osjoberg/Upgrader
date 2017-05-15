@@ -18,11 +18,7 @@ namespace Upgrader.SqLite
         /// Creates an instance of the SqlLiteDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public SqLiteDatabase(string connectionStringOrName) : base(
-            ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)),
-            null,
-            (string)new DbConnectionStringBuilder { ConnectionString = GetConnectionString(connectionStringOrName) }["Data Source"]
-            )
+        public SqLiteDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), null, (string)new DbConnectionStringBuilder { ConnectionString = GetConnectionString(connectionStringOrName) }["Data Source"])
         {
         }
 
@@ -31,6 +27,16 @@ namespace Upgrader.SqLite
         internal override string AutoIncrementStatement => "";
 
         internal override int MaxIdentifierLength => 64;
+
+        public override void Create()
+        {
+            File.WriteAllBytes(this.DatabaseName, new byte[0]);
+        }
+
+        public override void Remove()
+        {
+            File.Delete(this.DatabaseName);
+        }
 
         internal override string EscapeIdentifier(string identifier)
         {
@@ -45,16 +51,6 @@ namespace Upgrader.SqLite
             }
 
             return tableName.Split('.').First();
-        }
-
-        public override void Create()
-        {
-            File.WriteAllBytes(this.DatabaseName, new byte[0]);
-        }
-
-        public override void Remove()
-        {
-            File.Delete(this.DatabaseName);
         }
 
         internal override string[] GetTableNames()
@@ -103,7 +99,7 @@ namespace Upgrader.SqLite
         internal override bool GetColumnAutoIncrement(string tableName, string columnName)
         {
             var dataType = GetColumnDataType(tableName, columnName);
-            if (string.Equals(dataType, "INTEGER", StringComparison.OrdinalIgnoreCase) == false)
+            if (string.Equals(dataType, "INTEGER", StringComparison.OrdinalIgnoreCase) == false && string.Equals(dataType, "INT", StringComparison.OrdinalIgnoreCase) == false)
             {
                 return false;
             }
@@ -224,7 +220,6 @@ namespace Upgrader.SqLite
             throw new NotSupportedException("Adding foreign key after table creation is not supported in SQLite");
         }
 
-
         internal override void RemoveForeignKey(string tableName, string foreignKeyName)
         {
             throw new NotSupportedException("Removing foreign key is not supported in SQLite");
@@ -273,6 +268,11 @@ namespace Upgrader.SqLite
             var escapedSchemaName = EscapeIdentifier(schemaName);
 
             Dapper.Execute($"DROP INDEX {escapedSchemaName}.{escapedIndexName}");
+        }
+
+        internal override string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName)
+        {
+            return ";SELECT last_insert_rowid()";
         }
 
         private static string UnescapeIdentifier(string identifier)

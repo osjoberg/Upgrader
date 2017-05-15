@@ -15,12 +15,14 @@ namespace Upgrader
     public abstract class Database : IDisposable
     {
         private readonly DataDefinitionLanguage dataDefinitionLanguage;
+        private readonly DataManipulationLanguage dataManipulationLanguage;
+        private readonly StructuredQueryLanguage structuredQueryLanguage;
         private readonly InformationSchema informationSchema;
 
         internal readonly string DatabaseName;
         private readonly string connectionString;
         private readonly string mainConnectionString;
-
+        
         internal Database(IDbConnection connection, string mainConnectionString, string databaseName = null)
         {
             Connection = connection;
@@ -32,6 +34,8 @@ namespace Upgrader
             Tables = new TableCollection(this);
             NamingConvention = new NamingConvention(MaxIdentifierLength);
             dataDefinitionLanguage = new DataDefinitionLanguage(this);
+            dataManipulationLanguage = new DataManipulationLanguage(this);
+            structuredQueryLanguage = new StructuredQueryLanguage(this);
             informationSchema = new InformationSchema(this);
         }
 
@@ -71,6 +75,8 @@ namespace Upgrader
         internal abstract string AutoIncrementStatement { get; }
 
         internal abstract int MaxIdentifierLength { get; }
+
+        internal virtual bool InsertNullForAutoIncrementingPrimaryKey => false;
 
         internal Infrastructure.Dapper Dapper { get; }
 
@@ -133,6 +139,21 @@ namespace Upgrader
         internal void RemoveTable(string tableName)
         {
             dataDefinitionLanguage.RemoveTable(tableName);
+        }
+
+        internal void InsertRows<T>(string tableName, IEnumerable<T> rows)
+        {
+            dataManipulationLanguage.Insert(tableName, rows);
+        }
+
+        public void UpdateRows<T>(string tableName, IEnumerable<T> rows)
+        {
+            dataManipulationLanguage.Update(tableName, rows);
+        }
+
+        internal void DeleteRows<T>(string tableName, IEnumerable<T> rows)
+        {
+            dataManipulationLanguage.Delete(tableName, rows);
         }
 
         internal virtual string[] GetColumnNames(string tableName)
@@ -221,9 +242,9 @@ namespace Upgrader
 
         internal abstract string[] GetIndexColumnNames(string tableName, string indexName);
 
-        internal void AddIndex(string tableName, string[] columnNames, bool unique, string indexName)
+        internal void AddIndex(string tableName, string[] columnNames, bool unique, string indexName, string[] includeColumnNames)
         {
-            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName);
+            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
         }
 
         internal abstract void RemoveIndex(string tableName, string indexName);
@@ -241,10 +262,7 @@ namespace Upgrader
 
         internal void SetColumnValue(string tableName, string columnName, object value)
         {
-            var escapedTableName = EscapeIdentifier(tableName);
-            var escapedColumnName = EscapeIdentifier(columnName);
-
-            Dapper.Execute($"UPDATE {escapedTableName} SET {escapedColumnName} = @value", new { value });
+            dataManipulationLanguage.SetColumnValue(tableName, columnName, value);
         }
 
         internal abstract bool GetColumnAutoIncrement(string tableName, string columnName);
@@ -252,6 +270,18 @@ namespace Upgrader
         internal virtual string GetCatalog()
         {
             return Connection.Database;
+        }
+
+        internal abstract string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName);
+
+        public IEnumerable<object> Select(string tableName, string where)
+        {
+            return structuredQueryLanguage.Select(tableName, where);
+        }
+
+        public IEnumerable<T> Select<T>(string tableName, string where)
+        {
+            return structuredQueryLanguage.Select<T>(tableName, where);
         }
     }
 }

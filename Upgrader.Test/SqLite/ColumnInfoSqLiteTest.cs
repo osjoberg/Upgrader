@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Upgrader.Schema;
 using Upgrader.SqLite;
 
 namespace Upgrader.Test.SqLite

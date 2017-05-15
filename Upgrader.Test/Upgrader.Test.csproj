@@ -43,6 +43,7 @@
       <HintPath>..\packages\Dapper.1.50.2\lib\net40\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.2.2.7\lib\net40\Mono.Security.dll</HintPath>
       <Private>True</Private>
@@ -92,6 +93,7 @@
     <Compile Include="MySql\IndexCollectionMySqlTest.cs" />
     <Compile Include="MySql\IndexInfoMySqlTest.cs" />
     <Compile Include="MySql\PrimaryKeyInfoMySqlTest.cs" />
+    <Compile Include="MySql\RowCollectionMySqlTest.cs" />
     <Compile Include="MySql\TableInfoMySqlTest.cs" />
     <Compile Include="PostgreSql\ColumnCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\ColumnInfoPostgreSqlTest.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="PostgreSql\IndexCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\IndexInfoPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\PrimaryKeyInfoPostgreSqlTest.cs" />
+    <Compile Include="PostgreSql\RowCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\TableCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\TableInfoPostgreSqlTest.cs" />
     <Compile Include="PrimaryKeyInfoTest.cs" />
@@ -110,6 +113,7 @@
     <Compile Include="SqLite\IndexCollectionSqLiteTest.cs" />
     <Compile Include="SqLite\IndexInfoSqLiteTest.cs" />
     <Compile Include="SqLite\PrimaryKeyInfoSqLiteTest.cs" />
+    <Compile Include="SqLite\RowCollectionSqLiteTest.cs" />
     <Compile Include="SqLite\TableCollectionSqLiteTest.cs" />
     <Compile Include="SqLite\TableInfoSqLiteTest.cs" />
     <Compile Include="SqlServer\ColumnCollectionSqlServerTest.cs" />
@@ -119,12 +123,14 @@
     <Compile Include="SqlServer\IndexCollectionSqlServerTest.cs" />
     <Compile Include="SqlServer\IndexInfoSqlServerTest.cs" />
     <Compile Include="SqlServer\PrimaryKeyInfoSqlServerTest.cs" />
+    <Compile Include="SqlServer\RowCollectionSqlServerTest.cs" />
     <Compile Include="SqlServer\TableInfoSqlServerTest.cs" />
     <Compile Include="SqlServer\TableCollectionSqlServerTest.cs" />
     <Compile Include="MySql\TableCollectionMySqlTest.cs" />
     <Compile Include="TableCollectionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ColumnCollectionTest.cs" />
+    <Compile Include="RowCollectionTest.cs" />
     <Compile Include="TableInfoTest.cs" />
     <Compile Include="UpgradeTest.cs" />
   </ItemGroup>

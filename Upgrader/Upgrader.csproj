@@ -43,6 +43,7 @@
       <HintPath>..\packages\Dapper.1.50.2\lib\net40\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -52,9 +53,12 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\RowCollection.cs" />
     <Compile Include="Infrastructure\ConnectionFactory.cs" />
     <Compile Include="Infrastructure\DataDefinitionLanguage.cs" />
+    <Compile Include="Infrastructure\DataManipulationLanguage.cs" />
     <Compile Include="Infrastructure\InformationSchema.cs" />
+    <Compile Include="Infrastructure\StructuredQueryLanguage.cs" />
     <Compile Include="MutexScope.cs" />
     <Compile Include="PostgreSql\PostgreSqlDatabase.cs" />
     <Compile Include="Schema\ColumnInfo.cs" />
@@ -68,6 +72,7 @@
     <Compile Include="Schema\TableInfo.cs" />
     <Compile Include="SqLite\SqliteDatabase.cs" />
     <Compile Include="StepCollection.cs" />
+    <Compile Include="StringHelper.cs" />
     <Compile Include="UpgraderException.cs" />
     <Compile Include="Infrastructure\Validate.cs" />
     <Compile Include="Schema\Column.cs" />

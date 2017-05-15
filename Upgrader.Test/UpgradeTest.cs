@@ -28,7 +28,6 @@ namespace Upgrader.Test
             database.Remove();
         }
 
-
         [TestMethod]
         public void PerformUpgradeCreatesTableIfItDoesNotExist()
         {
@@ -111,7 +110,8 @@ namespace Upgrader.Test
             var database = new SqlServerDatabase("SqlServer");
             var upgrade = new Upgrade<SqlServerDatabase>(database)
             {
-                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep"
+                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep",
+                TransactionMode = TransactionMode.OneTransactionPerStep
             };
 
             var steps = new List<Step>

@@ -34,7 +34,7 @@ namespace Upgrader.Schema
         /// <param name="dataType">SQL data type.</param>
         /// <param name="nullable">True if columns is allowed to be null.</param>
         /// <param name="modifier">Column modifiers.</param>
-        private Column(string columnName, string dataType, bool nullable, ColumnModifier modifier)
+        internal Column(string columnName, string dataType, bool nullable, ColumnModifier modifier)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
             Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));

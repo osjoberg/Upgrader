@@ -1,6 +1,7 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Data;
+
 using Dapper;
 
 namespace Upgrader.SqlServer
@@ -11,9 +12,7 @@ namespace Upgrader.SqlServer
         /// Creates an instance of the SqlServerDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public SqlServerDatabase(string connectionStringOrName) : base(
-            new SqlConnection(GetConnectionString(connectionStringOrName)),
-            GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
+        public SqlServerDatabase(string connectionStringOrName) : base(new SqlConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
         {
         }
 
@@ -34,6 +33,10 @@ namespace Upgrader.SqlServer
                 return exists;
             }
         }
+
+        internal override string AutoIncrementStatement => "IDENTITY";
+
+        internal override int MaxIdentifierLength => 128;
 
         internal override void UseMainDatabase()
         {
@@ -82,10 +85,6 @@ namespace Upgrader.SqlServer
         {
             return "[" + identifier.Replace("]", "]]") + "]";
         }
-
-        internal override string AutoIncrementStatement => "IDENTITY";
-
-        internal override int MaxIdentifierLength => 128;
 
         internal override string[] GetIndexNames(string tableName)
         {
@@ -143,6 +142,11 @@ namespace Upgrader.SqlServer
             var escapedIndexName = EscapeIdentifier(indexName);
 
             Dapper.Execute($"DROP INDEX {escapedTableName}.{escapedIndexName}");
+        }
+
+        internal override string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName)
+        {
+            return "SELECT SCOPE_IDENTITY()";
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Transactions;
 using Upgrader.Infrastructure;
@@ -11,7 +10,18 @@ namespace Upgrader
     public class Upgrade<TDatabase> where TDatabase : Database
     {
         /// <summary>
-        /// Geta or seta the table name used for tracking executed steps.
+        /// Create a new instance of the Upgrade engine.
+        /// </summary>
+        /// <param name="database">Database instance to use for upgrades.</param>
+        public Upgrade(TDatabase database)
+        {
+            Validate.IsNotNull(database, nameof(database));
+
+            Database = database;
+        }
+
+        /// <summary>
+        /// Gets or sets the table name used for tracking executed steps.
         /// </summary>
         public string ExecutedStepsTable { get; set; } = "ExecutedSteps";
 
@@ -26,21 +36,14 @@ namespace Upgrader
         public TransactionMode TransactionMode { get; set; } = TransactionMode.OneTransactionPerStep;
 
         /// <summary>
-        /// Create a new instance of the Upgrade engine.
+        /// Gets or sets the Transaction Isolation Level to use when migrating with "TransactionMode" is not "None".
         /// </summary>
-        /// <param name="database">Database instance to use for upgrades.</param>
-        public Upgrade(TDatabase database)
-        {
-            Validate.IsNotNull(database, nameof(database));
-
-            Database = database;
-        }
+        public IsolationLevel TransactionIsolationLevel { get; set; } = IsolationLevel.ReadCommitted;
 
         /// <summary>
         /// Perform database schema upgrade. Will only execute steps that are not already executed on the target database.
         /// </summary>
         /// <param name="steps">Steps to evaluate and execute if not already executed.</param>
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
         public void PerformUpgrade(IEnumerable<IStep> steps)
         {
             Validate.IsNotNull(steps, nameof(steps));
@@ -94,7 +97,7 @@ namespace Upgrader
                 {
                     if (TransactionMode == TransactionMode.OneTransactionPerStep)
                     {
-                        ExecuteTransactionStep(Database, ExecutedStepsTable, step);
+                        ExecuteTransactionStep(Database, TransactionIsolationLevel, ExecutedStepsTable, step);
                     }
                     else
                     {
@@ -104,9 +107,9 @@ namespace Upgrader
             }
         }
 
-        private static void ExecuteTransactionStep(Database database, string changeTable, IStep step)
+        private static void ExecuteTransactionStep(Database database, IsolationLevel isolationLevel, string changeTable, IStep step)
         {
-            using (var transaction = new TransactionScope())
+            using (var transaction = new TransactionScope(new TransactionScopeOption(), new TransactionOptions { IsolationLevel = isolationLevel }))
             {
                 ExecuteStep(database, changeTable, step);
                 transaction.Complete();

@@ -87,8 +87,8 @@ namespace Upgrader.Test
         public virtual void CanAddNonNullColumn()
         {
             Database.Tables.Add("CanAddNotNullColumn", new Column("CanAddNotNullColumnId", "int"));
-            Database.Connection.Execute("INSERT INTO CanAddNotNullColumn VALUES (1)");
-            Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", 5);
+            Database.Connection.Execute($"INSERT INTO {Database.EscapeIdentifier("CanAddNotNullColumn")} VALUES (1)");
+            Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", false, 5);
 
             Assert.IsFalse(Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);
         }
@@ -97,7 +97,7 @@ namespace Upgrader.Test
         public void AddNullableAddsNullableColumn()
         {
             Database.Tables.Add("CanAddNullableColumn", new Column("CanAddNullableColumnId", "int"));
-            Database.Tables["CanAddNullableColumn"].Columns.AddNullable("NullableColumn", "int");
+            Database.Tables["CanAddNullableColumn"].Columns.Add("NullableColumn", "int", true);
 
             Assert.IsTrue(Database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Nullable);
         }

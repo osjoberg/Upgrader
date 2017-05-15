@@ -138,7 +138,6 @@ namespace Upgrader.Test
             Assert.AreEqual("decimal(8,2)", Database.Tables["DecimalPrecisionAndScale"].Columns["DecimalPrecisionAndScaleId"].DataType);
         }
 
-
         [TestMethod]
         public virtual void DataTypeDoesNotIncludeLengthOnChar()
         {

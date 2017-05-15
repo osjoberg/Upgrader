@@ -40,7 +40,8 @@ namespace Upgrader.Schema
         /// </summary>
         /// <param name="columnName">Column name.</param>
         /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
-        public void Add(string columnName, string indexName = null)
+        /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
+        public void Add(string columnName, string indexName = null, string[] includeColumnNames = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
 
@@ -52,7 +53,8 @@ namespace Upgrader.Schema
         /// </summary>
         /// <param name="columnNames">Column names.</param>
         /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
-        public void Add(string[] columnNames, string indexName = null)
+        /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
+        public void Add(string[] columnNames, string indexName = null, string[] includeColumnNames = null)
         {
             Add(columnNames, false, indexName);
         }
@@ -62,7 +64,8 @@ namespace Upgrader.Schema
         /// </summary>
         /// <param name="columnName">Column name.</param>
         /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
-        public void AddUnique(string columnName, string indexName = null)
+        /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
+        public void AddUnique(string columnName, string indexName = null, string[] includeColumnNames = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
 
@@ -74,7 +77,8 @@ namespace Upgrader.Schema
         /// </summary>
         /// <param name="columnNames">Column names.</param>
         /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
-        public void AddUnique(string[] columnNames, string indexName = null)
+        /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
+        public void AddUnique(string[] columnNames, string indexName = null, string[] includeColumnNames = null)
         {
             Add(columnNames, true, indexName);
         }
@@ -123,7 +127,7 @@ namespace Upgrader.Schema
             return GetEnumerator();
         }
 
-        private void Add(string[] columnNames, bool unique, string indexName = null)
+        private void Add(string[] columnNames, bool unique, string indexName = null, string[] includeColumnNames = null)
         {
             Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
             Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
@@ -131,7 +135,7 @@ namespace Upgrader.Schema
             Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
             indexName = indexName ?? database.NamingConvention.GetIndexNamingConvention(tableName, columnNames, unique);
-            database.AddIndex(tableName, columnNames, unique, indexName);
+            database.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
         }
     }
 }

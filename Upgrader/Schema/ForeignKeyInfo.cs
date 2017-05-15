@@ -30,7 +30,7 @@ namespace Upgrader.Schema
         public string[] ColumnNames => database.GetForeignKeyColumnNames(TableName, ForeignKeyName);
 
         /// <summary>
-        /// Gets foreign tabbe name name.
+        /// Gets foreign table name.
         /// </summary>
         public string ForeignTableName => database.GetForeignKeyForeignTableName(TableName, ForeignKeyName);
 

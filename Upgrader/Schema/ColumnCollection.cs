@@ -57,41 +57,39 @@ namespace Upgrader.Schema
         }
 
         /// <summary>
-        /// Adds a nullable column to the table.
-        /// </summary>
-        /// <param name="columnName">Column name.</param>
-        /// <param name="dataType">SQL data type.</param>
-        public void AddNullable(string columnName, string dataType)
-        {
-            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
-
-            Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
-
-            database.AddColumn(tableName, columnName, dataType, true);
-        }
-
-        /// <summary>
         /// Adds a column to the table.
         /// </summary>
         /// <param name="columnName">Column name.</param>
         /// <param name="dataType">SQL data type.</param>
+        /// <param name="nullable">True to allow null values.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
-        public void Add(string columnName, string dataType, object initialValue = null)
+        public void Add(string columnName, string dataType, bool nullable = false, object initialValue = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
             Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
             Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
 
-            if (initialValue == null)
+            // Add column.
+            if (nullable == false && initialValue != null)
             {
-                database.AddColumn(tableName, columnName, dataType, false);
-                return;
+                database.AddColumn(tableName, columnName, dataType, true);
+            }
+            else
+            {
+                database.AddColumn(tableName, columnName, dataType, nullable);
             }
 
-            database.AddColumn(tableName, columnName, dataType, true);
-            database.SetColumnValue(tableName, columnName, initialValue);
-            database.ChangeColumn(tableName, columnName, dataType, false);
+            // Set value.
+            if (initialValue != null)
+            {
+                database.SetColumnValue(tableName, columnName, initialValue);
+            }
+
+            // Change nullable.
+            if (nullable == false && initialValue != null)
+            {
+                database.ChangeColumn(tableName, columnName, dataType, false);
+            }
         }
 
         /// <summary>

@@ -30,6 +30,15 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
+        public void AddAddsIndexWithIncludeColumn()
+        {
+            database.Tables.Add("AddIndexWithIncludeColumn", new Column("AddIndexId", "int"), new Column("IncludeColumn", "int"));
+            database.Tables["AddIndexWithIncludeColumn"].Indexes.Add("AddIndexId", includeColumnNames: new[] { "IncludeColumn" });
+
+            Assert.IsNotNull(database.Tables["AddIndexWithIncludeColumn"].Indexes.Single());
+        }
+
+        [TestMethod]
         public void AddAddsIndexWithMultipleColumns()
         {
             database.Tables.Add("AddIndexMultiple", new Column("AddIndexMultipleId", "int"), new Column("Multiple", "int"));

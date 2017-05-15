@@ -9,6 +9,13 @@ namespace Upgrader.Schema
     {
         private readonly Database database;
 
+        internal ColumnInfo(Database database, string tableName, string columnColumnName)
+        {            
+            this.database = database;
+            TableName = tableName;
+            ColumnName = columnColumnName;
+        }
+
         /// <summary>
         /// Gets column SQL data type.
         /// </summary>
@@ -33,13 +40,6 @@ namespace Upgrader.Schema
         /// Gets table name.
         /// </summary>
         public string TableName { get; }
-
-        internal ColumnInfo(Database database, string tableName, string columnColumnName)
-        {            
-            this.database = database;
-            TableName = tableName;
-            ColumnName = columnColumnName;
-        }
 
         /// <summary>
         /// Change type of column.

@@ -19,11 +19,11 @@
         /// <param name="tableName">Table name of parent side of the foreign-key relationship.</param>
         /// <param name="columnNames">Column names of the parent side of the foreign-key relationship.</param>
         /// <param name="foreignTableName">Table name of the child side of the foreign-key relationship.</param>
-        /// <returns>Returns a foreign key name with format FK_<tableName>_<column1>_<columnN>_<foreignTableName>.</returns>
+        /// <returns>Returns a foreign key name with format FK_tableName_column1_columnN_foreignTableName.</returns>
         public virtual string GetForeignKeyNamingConvention(string tableName, string[] columnNames, string foreignTableName)
         {
             var underscoreSepratedColumnNames = string.Join("_", columnNames);
-            return Truncate($"FK_{tableName}_{underscoreSepratedColumnNames}_{foreignTableName}");
+            return StringHelper.Truncate($"FK_{tableName}_{underscoreSepratedColumnNames}_{foreignTableName}", maxIdentifierLength);
         }
 
         /// <summary>
@@ -31,11 +31,11 @@
         /// </summary>
         /// <param name="tableName">Table name defining the primary key.</param>
         /// <param name="columnNames">Columns defining the primary key.</param>
-        /// <returns>Returns a primary key name with format PK_<tableName>_<column1>_<columnN>.</returns>
+        /// <returns>Returns a primary key name with format PK_tableName_column1_columnN.</returns>
         public virtual string GetPrimaryKeyNamingConvention(string tableName, string[] columnNames)
         {
             var underscoreSepratedColumnNames = string.Join("_", columnNames);
-            return Truncate($"PK_{tableName}_{underscoreSepratedColumnNames}");
+            return StringHelper.Truncate($"PK_{tableName}_{underscoreSepratedColumnNames}", maxIdentifierLength);
         }
 
         /// <summary>
@@ -45,19 +45,14 @@
         /// <param name="columnNames">Column names defining the index.</param>
         /// <param name="unique">True if the defining index is unique.</param>
         /// <returns>
-        /// Returns a index name with format IX_<tablename>_<column1>_<columnN> for non-unique indexes. 
-        /// If the index is unique the format is UX_<tablename>_<column1>_<columnN>.
+        /// Returns a index name with format IX_tableName_column1_columnN for non-unique indexes. 
+        /// If the index is unique the format is UX_tableName_column1_columnN.
         /// </returns>
         public virtual string GetIndexNamingConvention(string tableName, string[] columnNames, bool unique)
         {
             var prefix = unique ? "UX" : "IX";
             var underscoreSepratedColumnNames = string.Join("_", columnNames);
-            return Truncate($"{prefix}_{tableName}_{underscoreSepratedColumnNames}");
-        }
-
-        protected string Truncate(string identifier)
-        {
-            return identifier.Length >= maxIdentifierLength ? identifier.Substring(0, maxIdentifierLength) : identifier;
+            return StringHelper.Truncate($"{prefix}_{tableName}_{underscoreSepratedColumnNames}", maxIdentifierLength);
         }
     }
 }

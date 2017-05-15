@@ -1,4 +1,6 @@
 ﻿using System;
+
+using Upgrader.Data;
 using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
@@ -14,10 +16,16 @@ namespace Upgrader.Schema
         {
             this.database = database;
             TableName = tableName;
+            Rows = new RowCollection(database, tableName);
             Columns = new ColumnCollection(database, tableName);
             ForeignKeys = new ForeignKeyCollection(database, tableName);
             Indexes = new IndexCollection(database, tableName);
         }
+
+        /// <summary>
+        /// Gets access to table rows.
+        /// </summary>
+        public RowCollection Rows { get; }
 
         /// <summary>
         /// Gets collection of columns in table.
