@@ -159,10 +159,12 @@ var rows = database.Tables["Customer"].Rows.Query();
 // Add a new row to table "Customer".
 datbase.Tables["Customer"].Rows.Add(new { CustomerName = "Acme" });
 
-// Update a row in table "Customer", primary key column is resolved by querying the database schema. (UPDATE Customer SET CustomerName = 'Acme Inc.' WHERE CustomerId = 1)
+// Update a row in table "Customer", primary key column is resolved by querying the database schema. 
+// (UPDATE Customer SET CustomerName = 'Acme Inc.' WHERE CustomerId = 1)
 datbase.Tables["Customer"].Rows.Update(new { CustomerName = "Acme Inc.", CustomerId = 1 });
 
-// Delete a row in table "Customer", primary key column is resolved by querying the database schema. (DELETE FROM Customer WHERE CustomerId = 1)
+// Delete a row in table "Customer", primary key column is resolved by querying the database schema. 
+// (DELETE FROM Customer WHERE CustomerId = 1)
 datbase.Tables["Customer"].Rows.Remove(new { CustomerId = 1 });
 ```
 
