@@ -4,23 +4,34 @@ using System.Linq;
 using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.Schema;
-using Upgrader.SqlServer;
 
 namespace Upgrader.Test
 {
     [TestClass]
-    public class UpgradeTest
+    public abstract class UpgradeTest<TDatabase> where TDatabase : Database
     {
+        private readonly TDatabase database;
+
+        protected UpgradeTest(TDatabase database)
+        {
+            this.database = database;
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            database.Dispose();
+        }
+
         [TestMethod]
         public void PerformUpgradeCreatesDatabaseIfItDoesNotExist()
         {
-            var database = new SqlServerDatabase("SqlServerCreateDatabase");
             if (database.Exists)
             {
                 database.Remove();
             }
 
-            var upgrade = new Upgrade<SqlServerDatabase>(database);
+            var upgrade = new Upgrade<TDatabase>(database);
             upgrade.PerformUpgrade(Enumerable.Empty<IStep>());
 
             Assert.IsTrue(database.Exists);
@@ -31,8 +42,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeCreatesTableIfItDoesNotExist()
         {
-            var database = new SqlServerDatabase("SqlServer");
-            var upgrade = new Upgrade<SqlServerDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(database)
             {
                 ExecutedStepsTable = "UpgradeCreatesTable"
             };
@@ -45,8 +55,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeExecutesSteps()
         {
-            var database = new SqlServerDatabase("SqlServer");
-            var upgrade = new Upgrade<SqlServerDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(database)
             {
                 ExecutedStepsTable = "UpgradeExecutesSteps"
             };
@@ -66,8 +75,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeRecordsExecutedStepName()
         {
-            var database = new SqlServerDatabase("SqlServer");
-            var upgrade = new Upgrade<SqlServerDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(database)
             {
                 ExecutedStepsTable = "UpgradeExecutesStepsRecords"
             };
@@ -79,14 +87,13 @@ namespace Upgrader.Test
 
             upgrade.PerformUpgrade(steps);
 
-            Assert.AreEqual("StepName", database.Connection.Query<string>("SELECT Step FROM UpgradeExecutesStepsRecords").Single());
+            Assert.AreEqual("StepName", database.Tables["UpgradeExecutesStepsRecords"].Rows.Query().Single().Step);
         }
 
         [TestMethod]
         public void PerformUpgradeDoesNotExecutesAlreadyExecutedSteps()
         {
-            var database = new SqlServerDatabase("SqlServer");
-            var upgrade = new Upgrade<SqlServerDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(database)
             {
                 ExecutedStepsTable = "UpgradeExecutesNotExecutedSteps"
             };
@@ -105,10 +112,9 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
+        public virtual void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
         {
-            var database = new SqlServerDatabase("SqlServer");
-            var upgrade = new Upgrade<SqlServerDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(database)
             {
                 ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep",
                 TransactionMode = TransactionMode.OneTransactionPerStep
@@ -118,9 +124,9 @@ namespace Upgrader.Test
             {
                 new Step(
                     "Atomic", 
-                    () =>
+                    (d) =>
                     {
-                        database.Tables.Add("AtomicTable", new Column("AtomicTableId", "int"));
+                        d.Tables.Add("AtomicTable", new Column("AtomicTableId", "int"));
                         throw new InvalidOperationException("Injected fault");                            
                     })
             };
@@ -133,14 +139,13 @@ namespace Upgrader.Test
             {
             }
 
-            //Assert.IsNull(database.Tables["AtomicTable"]);
+            Assert.IsNull(database.Tables["AtomicTable"]);
         }
 
         [TestMethod]
         public void PerformUpgradeWithTransactioModeNoneDoesNotRollbackChangesWhenExceptionOccurs()
         {
-            var database = new SqlServerDatabase("SqlServer");
-            var upgrade = new Upgrade<SqlServerDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(database)
             {
                 ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep", 
                 TransactionMode = TransactionMode.None               
@@ -171,7 +176,6 @@ namespace Upgrader.Test
         [TestMethod]
         public void ConnectionIsOpenAfterInstanceIsCreated()
         {
-            var database = new SqlServerDatabase("SqlServer");
             database.Connection.Execute("SELECT 1");
         }
     }

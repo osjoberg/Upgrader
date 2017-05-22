@@ -1,19 +1,19 @@
-﻿using System.Data;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Linq;
-
-using Dapper;
 
 namespace Upgrader.SqlServer
 {
     public class SqlServerDatabase : Database
     {
+        private readonly string connectionStringOrName;
+
         /// <summary>
         /// Creates an instance of the SqlServerDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public SqlServerDatabase(string connectionStringOrName) : base(new SqlConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
         {
+            this.connectionStringOrName = connectionStringOrName;
         }
 
         public override bool Exists
@@ -25,11 +25,6 @@ namespace Upgrader.SqlServer
 
                 UseConnectedDatabase();
 
-                if (exists)
-                {
-                    Connection.Open();
-                }
-
                 return exists;
             }
         }
@@ -37,16 +32,6 @@ namespace Upgrader.SqlServer
         internal override string AutoIncrementStatement => "IDENTITY";
 
         internal override int MaxIdentifierLength => 128;
-
-        internal override void UseMainDatabase()
-        {
-            if (Connection.State == ConnectionState.Open)
-            {
-               Connection.Execute("USE master");
-            }
-            
-            base.UseMainDatabase();
-        }
 
         internal override string GetSchema(string tableName)
         {
@@ -147,6 +132,11 @@ namespace Upgrader.SqlServer
         internal override string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName)
         {
             return "SELECT SCOPE_IDENTITY()";
+        }
+
+        internal override Database Clone()
+        {
+            return new SqlServerDatabase(connectionStringOrName);
         }
     }
 }

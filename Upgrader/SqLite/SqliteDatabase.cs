@@ -12,14 +12,17 @@ namespace Upgrader.SqLite
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("System.Data.SQLite.dll", "System.Data.SQLite.SQLiteConnection"));
 
-        private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase);
+        private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private readonly string connectionStringOrName;
 
         /// <summary>
-        /// Creates an instance of the SqlLiteDatabase.
+        /// Creates an instance of the SqLiteDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public SqLiteDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), null, (string)new DbConnectionStringBuilder { ConnectionString = GetConnectionString(connectionStringOrName) }["Data Source"])
         {
+            this.connectionStringOrName = connectionStringOrName;
         }
 
         public override bool Exists => File.Exists(this.DatabaseName);
@@ -283,6 +286,11 @@ namespace Upgrader.SqLite
             }
 
             return identifier.Substring(1, identifier.Length - 2).Replace("\"\"", "\"");            
+        }
+
+        internal override Database Clone()
+        {
+            return new SqLiteDatabase(connectionStringOrName);
         }
 
         // ReSharper disable once ClassNeverInstantiated.Local

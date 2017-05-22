@@ -8,12 +8,15 @@ namespace Upgrader.MySql
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection"));
 
+        private readonly string connectionStringOrName;
+
         /// <summary>
         /// Creates an instance of the MySqlDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public MySqlDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Database", "mysql"))
         {
+            this.connectionStringOrName = connectionStringOrName;
         }
 
         public override bool Exists
@@ -30,6 +33,11 @@ namespace Upgrader.MySql
         internal override int MaxIdentifierLength => 64;
 
         internal override string AutoIncrementStatement => "AUTO_INCREMENT";
+
+        internal override void SupportsTransactionalDataDescriptionLanguage()
+        {
+            throw new NotSupportedException("Transactional data definition language statements are not supported by MySql.");
+        }
 
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
@@ -234,6 +242,11 @@ namespace Upgrader.MySql
         internal override string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName)
         {
             return ";SELECT LAST_INSERT_ID()";
+        }
+
+        internal override Database Clone()
+        {
+            return new MySqlDatabase(connectionStringOrName);           
         }
     }
 }

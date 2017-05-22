@@ -5,10 +5,14 @@ using System.Transactions;
 using Upgrader.Infrastructure;
 using Upgrader.Schema;
 
+using IsolationLevel = System.Transactions.IsolationLevel;
+
 namespace Upgrader
 {
     public class Upgrade<TDatabase> where TDatabase : Database
     {
+        private TransactionMode transactionMode = TransactionMode.None;
+
         /// <summary>
         /// Create a new instance of the Upgrade engine.
         /// </summary>
@@ -33,7 +37,28 @@ namespace Upgrader
         /// <summary>
         /// Gets or sets the Transaction Mode to use when migrating.
         /// </summary>
-        public TransactionMode TransactionMode { get; set; } = TransactionMode.OneTransactionPerStep;
+        public TransactionMode TransactionMode
+        {
+            get
+            {
+                return transactionMode;
+            }
+
+            set
+            {
+                if (value != TransactionMode.None)
+                {
+                    Database.SupportsTransactionalDataDescriptionLanguage();
+                }
+
+                transactionMode = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the transaction timeout.
+        /// </summary>
+        public TimeSpan TransactionTimeout { get; set; }
 
         /// <summary>
         /// Gets or sets the Transaction Isolation Level to use when migrating with "TransactionMode" is not "None".
@@ -69,35 +94,24 @@ namespace Upgrader
 
             using (new MutexScope("PeformUpgrade" + Database.DatabaseName.ToLowerInvariant()))
             {
-                bool? databaseExists;
-                try
-                {
-                    databaseExists = Database.Exists;
-                }
-                catch (UpgraderException)
-                {
-                    databaseExists = null;
-                }
-
-                if (databaseExists == false)
+                if (Database.Exists == false)
                 {
                     Database.Create();
                 }
 
                 if (Database.Tables[ExecutedStepsTable] == null)
                 {
-                    Database.Tables.Add(
-                        ExecutedStepsTable, new Column("Step", "NVARCHAR(100)"), new Column("ExecutedAt", "DATETIME"));
+                    Database.Tables.Add(ExecutedStepsTable, new Column("Step", $"{Database.UnicodeDataType}(100)"), new Column("ExecutedAt", Database.DateTimeDataType));
                 }
 
-                var alreadyExecutedStepNames = new HashSet<string>(Database.Dapper.Query<string>($"SELECT Step FROM {ExecutedStepsTable}"));
+                var alreadyExecutedStepNames = new HashSet<string>(Database.Dapper.Query<string>($"SELECT {Database.EscapeIdentifier("Step")} FROM {Database.EscapeIdentifier(ExecutedStepsTable)}"));
 
                 var notExecutedSteps = stepsShallowClone.Where(step => alreadyExecutedStepNames.Contains(step.StepName) == false).ToArray();
                 foreach (var step in notExecutedSteps)
                 {
                     if (TransactionMode == TransactionMode.OneTransactionPerStep)
                     {
-                        ExecuteTransactionStep(Database, TransactionIsolationLevel, ExecutedStepsTable, step);
+                        ExecuteTransactionStep(Database, TransactionIsolationLevel, TransactionTimeout, ExecutedStepsTable, step);
                     }
                     else
                     {
@@ -107,11 +121,12 @@ namespace Upgrader
             }
         }
 
-        private static void ExecuteTransactionStep(Database database, IsolationLevel isolationLevel, string changeTable, IStep step)
+        private static void ExecuteTransactionStep(Database database, IsolationLevel isolationLevel, TimeSpan timeout, string changeTable, IStep step)
         {
-            using (var transaction = new TransactionScope(new TransactionScopeOption(), new TransactionOptions { IsolationLevel = isolationLevel }))
+            using (var transaction = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = isolationLevel, Timeout = timeout }))
+            using (var stepDatabase = database.Clone())
             {
-                ExecuteStep(database, changeTable, step);
+                ExecuteStep(stepDatabase, changeTable, step);
                 transaction.Complete();
             }
         }
@@ -119,7 +134,7 @@ namespace Upgrader
         private static void ExecuteStep(Database database, string changeTable, IStep step)
         {
             step.Execute(database);
-            database.Dapper.Execute($"INSERT INTO {changeTable} VALUES(@Name, @ExecutedAt)", new { Name = step.StepName, ExecutedAt = DateTime.Now });
+            database.Dapper.Execute($"INSERT INTO {database.EscapeIdentifier(changeTable)} VALUES(@Name, @ExecutedAt)", new { Name = step.StepName, ExecutedAt = DateTime.Now });
         }
     }
 }

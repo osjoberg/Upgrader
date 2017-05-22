@@ -16,6 +16,12 @@ namespace Upgrader.Test
             this.database = database;
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            this.database.Dispose();
+        }
+
         [TestMethod]
         public void AddInsertsRowIntoTable()
         {

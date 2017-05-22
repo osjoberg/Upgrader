@@ -22,14 +22,14 @@ namespace Upgrader
         internal readonly string DatabaseName;
         private readonly string connectionString;
         private readonly string mainConnectionString;
-        
+
         internal Database(IDbConnection connection, string mainConnectionString, string databaseName = null)
         {
             Connection = connection;
             this.mainConnectionString = mainConnectionString;
             connectionString = connection.ConnectionString;
             this.DatabaseName = databaseName ?? connection.Database;
-            
+
             Dapper = new Infrastructure.Dapper(connection);
             Tables = new TableCollection(this);
             NamingConvention = new NamingConvention(MaxIdentifierLength);
@@ -80,6 +80,14 @@ namespace Upgrader
 
         internal Infrastructure.Dapper Dapper { get; }
 
+        internal virtual string UnicodeDataType => "NVARCHAR";
+
+        internal virtual string DateTimeDataType => "DATETIME";
+
+        internal virtual void SupportsTransactionalDataDescriptionLanguage()
+        {
+        }
+
         [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This implementation is enough for now.")]
         public void Dispose()
         {
@@ -100,7 +108,7 @@ namespace Upgrader
         public virtual void Create()
         {
             UseMainDatabase();
-            dataDefinitionLanguage.CreateDatabase(this.DatabaseName);
+            dataDefinitionLanguage.CreateDatabase(DatabaseName);
             UseConnectedDatabase();
         }
 
@@ -110,14 +118,14 @@ namespace Upgrader
         public virtual void Remove()
         {
             UseMainDatabase();
-            dataDefinitionLanguage.RemoveDatabase(this.DatabaseName);
+            dataDefinitionLanguage.RemoveDatabase(DatabaseName);
             UseConnectedDatabase();
         }
 
         internal virtual void UseMainDatabase()
         {
             Connection.Close();
-            Connection.ConnectionString = this.mainConnectionString;
+            Connection.ConnectionString = mainConnectionString;
         }
 
         internal virtual void UseConnectedDatabase()
@@ -283,5 +291,7 @@ namespace Upgrader
         {
             return structuredQueryLanguage.Select<T>(tableName, where);
         }
+
+        internal abstract Database Clone();
     }
 }

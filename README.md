@@ -151,14 +151,28 @@ database.Tables["Customer"].Indexes.Add("Profit");
 database.Tables["Customer"].Indexes.Remove("IX_Customer_Profit");
 ```
 
+## Row manupilation examples.
+
+// IEnumerable<dynamic> representing all rows in the table "Customer".
+var rows = database.Tables["Customer"].Rows.Query();
+
+// Add a new row to table "Customer".
+datbase.Tables["Customer"].Rows.Add(new { CustomerName = "Acme" });
+
+// Update a row in table "Customer", primary key column is resolved by querying the database schema. (UPDATE Customer SET CustomerName = 'Acme Inc.' WHERE CustomerId = 1)
+datbase.Tables["Customer"].Rows.Update(new { CustomerName = "Acme Inc.", CustomerId = 1 });
+
+// Delete a row in table "Customer", primary key column is resolved by querying the database schema. (DELETE FROM Customer WHERE CustomerId = 1)
+datbase.Tables["Customer"].Rows.Remove(new { CustomerId = 1 });
+
 
 ## Configration options
 ```c#
 // Change table used for tracking executed steps to "Executed" (default is "ExecutedSteps").
 upgrade.ExecutedStepsTable = "Executed";
 
-// Change transaction mode for upgrade to "None" (default is "TransactionMode.OneTransactionPerStep")
-upgrade.TransactionMode = TransactionMode.None;
+// Change transaction mode for upgrade to "OneTransactionPerStep" (default is "None.")
+upgrade.TransactionMode = TransactionMode.OneTransactionPerStep;
 ```
 
 ## Supported database management systems

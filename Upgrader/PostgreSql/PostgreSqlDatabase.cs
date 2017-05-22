@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Upgrader.Infrastructure;
 using Upgrader.Schema;
 
@@ -10,12 +11,15 @@ namespace Upgrader.PostgreSql
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection"));
 
+        private readonly string connectionStringOrName;
+
         /// <summary>
         /// Creates an instance of the PostgreSqlDatabase.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public PostgreSqlDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Database", "postgres"))
         {
+            this.connectionStringOrName = connectionStringOrName;
         }
 
         public override bool Exists
@@ -32,6 +36,10 @@ namespace Upgrader.PostgreSql
         internal override string AutoIncrementStatement => "";
 
         internal override int MaxIdentifierLength => 63;
+
+        internal override string UnicodeDataType => "VARCHAR";
+
+        internal override string DateTimeDataType => "TIMESTAMP";
 
         internal override void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
@@ -180,6 +188,11 @@ namespace Upgrader.PostgreSql
         {
             var escapedColumnName = EscapeIdentifier(columnName);
             return $"RETURNING {escapedColumnName}";
+        }
+
+        internal override Database Clone()
+        {
+            return new PostgreSqlDatabase(connectionStringOrName);
         }
     }
 }
