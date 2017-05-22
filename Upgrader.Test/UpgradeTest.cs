@@ -114,53 +114,34 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
         {
-            var upgrade = new Upgrade<TDatabase>(database)
-            {
-                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep",
-                TransactionMode = TransactionMode.OneTransactionPerStep
-            };
+            PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(database);
+        }
 
-            var steps = new List<Step>
-            {
-                new Step(
-                    "Atomic", 
-                    (d) =>
-                    {
-                        d.Tables.Add("AtomicTable", new Column("AtomicTableId", "int"));
-                        throw new InvalidOperationException("Injected fault");                            
-                    })
-            };
-
-            try
-            {
-                upgrade.PerformUpgrade(steps);
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
-            Assert.IsNull(database.Tables["AtomicTable"]);
+        [TestMethod]
+        public void ConnectionIsOpenAfterInstanceIsCreated()
+        {
+            database.Connection.Execute("SELECT 1");
         }
 
         [TestMethod]
         public void PerformUpgradeWithTransactioModeNoneDoesNotRollbackChangesWhenExceptionOccurs()
         {
             var upgrade = new Upgrade<TDatabase>(database)
-            {
-                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep", 
-                TransactionMode = TransactionMode.None               
-            };
+                              {
+                                  ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep", 
+                                  TransactionMode = TransactionMode.None               
+                              };
 
             var steps = new List<Step>
-            {
-                new Step(
-                    "NonAtomic", 
-                    () =>
-                    {
-                        database.Tables.Add("NonAtomicTable", new Column("NonAtomicTableId", "int"));
-                        throw new InvalidOperationException("Injected fault");
-                    })
-            };
+                            {
+                                new Step(
+                                    "NonAtomic", 
+                                    () =>
+                                        {
+                                            database.Tables.Add("NonAtomicTable", new Column("NonAtomicTableId", "int"));
+                                            throw new InvalidOperationException("Injected fault");
+                                        })
+                            };
 
             try
             {
@@ -173,10 +154,34 @@ namespace Upgrader.Test
             Assert.IsNotNull(database.Tables["NonAtomicTable"]);
         }
 
-        [TestMethod]
-        public void ConnectionIsOpenAfterInstanceIsCreated()
+        protected void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(TDatabase database)
         {
-            database.Connection.Execute("SELECT 1");
+            var upgrade = new Upgrade<TDatabase>(database)
+            {
+                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep",
+                TransactionMode = TransactionMode.OneTransactionPerStep
+            };
+
+            var steps = new List<Step>
+            {
+                new Step(
+                    "Atomic",
+                    d =>
+                    {
+                        d.Tables.Add("AtomicTable", new Column("AtomicTableId", "int"));
+                        throw new InvalidOperationException("Injected fault");
+                    })
+            };
+
+            try
+            {
+                upgrade.PerformUpgrade(steps);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            Assert.IsNull(database.Tables["AtomicTable"]);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 
 using Upgrader.Infrastructure;
@@ -40,6 +41,19 @@ namespace Upgrader.PostgreSql
         internal override string UnicodeDataType => "VARCHAR";
 
         internal override string DateTimeDataType => "TIMESTAMP";
+
+        internal override void SupportsTransactionalDataDescriptionLanguage()
+        {
+            var builder = new DbConnectionStringBuilder
+            {
+                ConnectionString = GetConnectionString(connectionStringOrName)
+            };
+
+            if (builder.ContainsKey("enlist") == false || string.Equals(builder["enlist"].ToString(), "true", StringComparison.InvariantCultureIgnoreCase) == false)
+            {
+                throw new NotSupportedException("Transactional upgrades requires \"enlist=true;\" in the connection string on PostgreSql.");
+            }
+        }
 
         internal override void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {

@@ -151,7 +151,7 @@ database.Tables["Customer"].Indexes.Add("Profit");
 database.Tables["Customer"].Indexes.Remove("IX_Customer_Profit");
 ```
 
-## Row manupilation examples.
+## Row manupilation examples
 ```c#
 // IEnumerable<dynamic> representing all rows in the table "Customer".
 var rows = database.Tables["Customer"].Rows.Query();
