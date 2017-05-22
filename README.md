@@ -152,7 +152,7 @@ database.Tables["Customer"].Indexes.Remove("IX_Customer_Profit");
 ```
 
 ## Row manupilation examples.
-
+```c#
 // IEnumerable<dynamic> representing all rows in the table "Customer".
 var rows = database.Tables["Customer"].Rows.Query();
 
@@ -164,7 +164,7 @@ datbase.Tables["Customer"].Rows.Update(new { CustomerName = "Acme Inc.", Custome
 
 // Delete a row in table "Customer", primary key column is resolved by querying the database schema. (DELETE FROM Customer WHERE CustomerId = 1)
 datbase.Tables["Customer"].Rows.Remove(new { CustomerId = 1 });
-
+```
 
 ## Configration options
 ```c#
