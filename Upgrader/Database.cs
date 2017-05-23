@@ -4,6 +4,8 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+
 using Upgrader.Infrastructure;
 using Upgrader.Schema;
 
@@ -125,6 +127,7 @@ namespace Upgrader
         internal virtual void UseMainDatabase()
         {
             Connection.Close();
+            ClearPool(Connection);
             Connection.ConnectionString = mainConnectionString;
         }
 
@@ -132,6 +135,13 @@ namespace Upgrader
         {
             Connection.Close();
             Connection.ConnectionString = connectionString;
+        }
+
+        internal virtual void ClearPool(IDbConnection connection)
+        {
+            var connectionType = connection.GetType();
+            var methodInfo = connectionType.GetMethod("ClearPool", BindingFlags.Public | BindingFlags.Static);
+            methodInfo.Invoke(null, new  object[] { connection });
         }
 
         internal virtual string[] GetTableNames()

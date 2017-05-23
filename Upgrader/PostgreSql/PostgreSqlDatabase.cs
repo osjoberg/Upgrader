@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 
 using Upgrader.Infrastructure;
 using Upgrader.Schema;
@@ -53,6 +55,13 @@ namespace Upgrader.PostgreSql
             {
                 throw new NotSupportedException("Transactional upgrades requires \"enlist=true;\" in the connection string on PostgreSql.");
             }
+        }
+
+        internal override void ClearPool(IDbConnection connection)
+        {
+            var connectionType = connection.GetType();
+            var methodInfo = connectionType.GetMethod("ClearPool", BindingFlags.Public | BindingFlags.Instance);
+            methodInfo.Invoke(connection, new object[] { });
         }
 
         internal override void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)

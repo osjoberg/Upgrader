@@ -39,8 +39,8 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.2\lib\net40\Dapper.dll</HintPath>
+    <Reference Include="Dapper, Version=1.50.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.1\lib\net40\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
