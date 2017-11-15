@@ -134,7 +134,7 @@ namespace Upgrader
         private static void ExecuteStep(Database database, string changeTable, IStep step)
         {
             step.Execute(database);
-            database.Dapper.Execute($"INSERT INTO {database.EscapeIdentifier(changeTable)} VALUES(@Name, @ExecutedAt)", new { Name = step.StepName, ExecutedAt = DateTime.Now });
+            database.Tables[changeTable].Rows.Add(new { Step = step.StepName, ExecutedAt = DateTime.Now });
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Upgrader.Test
         public virtual void CanAddNonNullColumn()
         {
             Database.Tables.Add("CanAddNotNullColumn", new Column("CanAddNotNullColumnId", "int"));
-            Database.Connection.Execute($"INSERT INTO {Database.EscapeIdentifier("CanAddNotNullColumn")} VALUES (1)");
+            Database.Tables["CanAddNotNullColumn"].Rows.Add(new { CanAddNotNullColumnId  = 1 });
             Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", false, 5);
 
             Assert.IsFalse(Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);

@@ -34,7 +34,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("AddAutoIncrementTable", new Column("AddAutoIncrementTableId", "integer", ColumnModifier.AutoIncrementPrimaryKey), new Column("Data", "int"));
 
-            Database.Connection.Execute($"INSERT INTO {Database.EscapeIdentifier("AddAutoIncrementTable")}  ({Database.EscapeIdentifier("Data")}) VALUES (12345)");
+            Database.Tables["AddAutoIncrementTable"].Rows.Add(new { Data = 12345 });
 
             Assert.AreEqual(1, Database.Tables["AddAutoIncrementTable"].Rows.Query().Single().AddAutoIncrementTableId);
         }
