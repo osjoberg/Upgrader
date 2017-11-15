@@ -51,7 +51,7 @@ namespace Upgrader.Test
         public void UniqueIsTrueForUniqueIndexes()
         {
             database.Tables.Add("IndexInfoUniqueIndex", new Column("IndexInfoUniqueIndexId", "int"));
-            database.Tables["IndexInfoUniqueIndex"].Indexes.AddUnique("IndexInfoUniqueIndexId");
+            database.Tables["IndexInfoUniqueIndex"].Indexes.Add("IndexInfoUniqueIndexId", true);
 
             Assert.IsTrue(database.Tables["IndexInfoUniqueIndex"].Indexes.Single().Unique);
         }

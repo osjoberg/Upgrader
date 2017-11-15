@@ -39,48 +39,32 @@ namespace Upgrader.Schema
         /// Adds an index to the table.
         /// </summary>
         /// <param name="columnName">Column name.</param>
+        /// <param name="unique">True to create a unique index.</param>
         /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
         /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
-        public void Add(string columnName, string indexName = null, string[] includeColumnNames = null)
+        public void Add(string columnName, bool unique = false, string indexName = null, string[] includeColumnNames = null)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
 
-            Add(new[] { columnName }, false, indexName);
+            Add(new[] { columnName }, unique, indexName);
         }
 
         /// <summary>
         /// Adds an index to the table.
         /// </summary>
         /// <param name="columnNames">Column names.</param>
+        /// <param name="unique">True to create a unique index.</param>
         /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
         /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
-        public void Add(string[] columnNames, string indexName = null, string[] includeColumnNames = null)
+        public void Add(string[] columnNames, bool unique = false, string indexName = null, string[] includeColumnNames = null)
         {
-            Add(columnNames, false, indexName);
-        }
+            Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
+            Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
+            Validate.IsNotEmpty(indexName, nameof(indexName));
+            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
 
-        /// <summary>
-        /// Adds a unique index to the table.
-        /// </summary>
-        /// <param name="columnName">Column name.</param>
-        /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
-        /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
-        public void AddUnique(string columnName, string indexName = null, string[] includeColumnNames = null)
-        {
-            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-
-            Add(new[] { columnName }, true, indexName);
-        }
-
-        /// <summary>
-        /// Adds a unique index to the table.
-        /// </summary>
-        /// <param name="columnNames">Column names.</param>
-        /// <param name="indexName">Index name. If not name is given, name is set by convention.</param>
-        /// <param name="includeColumnNames">Include additional data columns in index. If no include column names are given, index refers to the entire row.</param>
-        public void AddUnique(string[] columnNames, string indexName = null, string[] includeColumnNames = null)
-        {
-            Add(columnNames, true, indexName);
+            indexName = indexName ?? database.NamingConvention.GetIndexNamingConvention(tableName, columnNames, unique);
+            database.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
         }
 
         /// <summary>
@@ -125,17 +109,6 @@ namespace Upgrader.Schema
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        private void Add(string[] columnNames, bool unique, string indexName = null, string[] includeColumnNames = null)
-        {
-            Validate.IsNotNullAndNotEmptyEnumerable(columnNames, nameof(columnNames));
-            Validate.MaxLength(columnNames, nameof(columnNames), database.MaxIdentifierLength);
-            Validate.IsNotEmpty(indexName, nameof(indexName));
-            Validate.MaxLength(indexName, nameof(indexName), database.MaxIdentifierLength);
-
-            indexName = indexName ?? database.NamingConvention.GetIndexNamingConvention(tableName, columnNames, unique);
-            database.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
         }
     }
 }

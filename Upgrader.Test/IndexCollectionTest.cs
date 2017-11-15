@@ -61,7 +61,7 @@ namespace Upgrader.Test
         public void IndexesCanBeEnumerated()
         {
             database.Tables.Add("EnumerateIndexParent", new Column("EnumerateIndexParentId", "int", ColumnModifier.AutoIncrementPrimaryKey));
-            database.Tables["EnumerateIndexParent"].Indexes.AddUnique("EnumerateIndexParentId");
+            database.Tables["EnumerateIndexParent"].Indexes.Add("EnumerateIndexParentId", true);
 
             database.Tables.Add(
                 "EnumerateIndex", 
