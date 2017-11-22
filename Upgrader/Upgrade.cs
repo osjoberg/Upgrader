@@ -39,7 +39,10 @@ namespace Upgrader
         /// </summary>
         public TransactionMode TransactionMode
         {
-            get => transactionMode;
+            get
+            {
+                return transactionMode;
+            }
             set
             {
                 if (value != TransactionMode.None)

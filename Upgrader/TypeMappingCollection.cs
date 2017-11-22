@@ -27,7 +27,8 @@ namespace Upgrader
                 Validate.IsNotNull(type, nameof(type));
                 Validate.IsNotNullable(type, nameof(type));
 
-                return mapping.TryGetValue(type, out var dataType) ? dataType : null;
+                string dataType;
+                return mapping.TryGetValue(type, out dataType) ? dataType : null;
             }
 
             set
