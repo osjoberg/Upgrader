@@ -18,12 +18,12 @@ namespace Upgrader.Infrastructure
 
             return database.Dapper.Query<string>(
                 @"
-                SELECT
-                    TABLE_NAME
-                FROM INFORMATION_SCHEMA.TABLES
-                WHERE 
-                    TABLE_SCHEMA = @schemaName AND
-                    TABLE_CATALOG = @tableCatalog
+                    SELECT
+                        TABLE_NAME
+                    FROM INFORMATION_SCHEMA.TABLES
+                    WHERE 
+                        TABLE_SCHEMA = @schemaName AND
+                        TABLE_CATALOG = @tableCatalog
                 ", 
                 new { schemaName, tableCatalog }).ToArray();
         }
@@ -34,30 +34,34 @@ namespace Upgrader.Infrastructure
 
             return database.Dapper.Query<string>(
                 @"
-                SELECT 
-                    COLUMN_NAME
-                FROM INFORMATION_SCHEMA.COLUMNS 
-                WHERE 
-                    TABLE_NAME = @tableName AND 
-                    TABLE_SCHEMA = @schemaName
-                ORDER BY ORDINAL_POSITION
+                    SELECT 
+                        COLUMN_NAME
+                    FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE 
+                        TABLE_NAME = @tableName AND 
+                        TABLE_SCHEMA = @schemaName
+                    ORDER BY ORDINAL_POSITION
                 ", 
                 new { tableName, schemaName }).ToArray();
         }
 
-        internal string GetColumnDataType(string tableName, string columnName)
+        internal string GetColumnDataType(string tableName, string columnName, params string[] includePrecisionOnTypes)
         {
             var schemaName = database.GetSchema(tableName);
 
             var columnInformation = database.Dapper.Query<Column>(
                 @"
-                SELECT 
-                    DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE
-                FROM INFORMATION_SCHEMA.COLUMNS 
-                WHERE 
-                    COLUMN_NAME = @columnName AND
-                    TABLE_NAME = @tableName AND 
-                    TABLE_SCHEMA = @schemaName
+                    SELECT 
+                        DATA_TYPE, 
+                        CHARACTER_MAXIMUM_LENGTH, 
+                        NUMERIC_PRECISION, 
+                        NUMERIC_SCALE,
+                        DATETIME_PRECISION
+                    FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE 
+                        COLUMN_NAME = @columnName AND
+                        TABLE_NAME = @tableName AND 
+                        TABLE_SCHEMA = @schemaName
                 ", 
                 new { tableName, schemaName, columnName }).SingleOrDefault();
 
@@ -66,23 +70,16 @@ namespace Upgrader.Infrastructure
                 return null;
             }
 
-            if (columnInformation.character_maximum_length.HasValue && columnInformation.character_maximum_length.Value > 1)
-            {
-                return $"{columnInformation.data_type}({columnInformation.character_maximum_length.Value})";
-            }
-
-            var numericPrecisionTypeNames = new[] { "decimal", "numeric" };
-            if (numericPrecisionTypeNames.Contains(columnInformation.data_type) == false || columnInformation.numeric_scale.HasValue == false)
+            if (includePrecisionOnTypes.Contains(columnInformation.data_type) == false)
             {
                 return columnInformation.data_type;
             }
 
-            if (columnInformation.numeric_scale.Value > 0)
-            {
-                return $"{columnInformation.data_type}({columnInformation.numeric_precision},{columnInformation.numeric_scale})";
-            }
+            var parameters = new[] { columnInformation.datetime_precision, columnInformation.character_maximum_length, columnInformation.numeric_precision, columnInformation.numeric_scale };
 
-            return $"{columnInformation.data_type}({columnInformation.numeric_precision})";
+            var usedParameters = parameters.Where(parameter => parameter > 0).Select(parameter => parameter.Value.ToString()).ToArray();
+            
+            return columnInformation.data_type + (usedParameters.Any() ? "(" + string.Join(",", usedParameters) + ")" : "");
         }
 
         internal bool GetColumnNullable(string tableName, string columnName)
@@ -91,12 +88,12 @@ namespace Upgrader.Infrastructure
 
             return database.Dapper.Query<string>(
                 @"
-                SELECT 
-                    IS_NULLABLE
-                FROM INFORMATION_SCHEMA.COLUMNS 
-                WHERE 
-                    COLUMN_NAME = @columnName AND
-                    TABLE_NAME = @tableName AND 
+                    SELECT 
+                        IS_NULLABLE
+                    FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE 
+                        COLUMN_NAME = @columnName AND
+                        TABLE_NAME = @tableName AND 
                         TABLE_SCHEMA = @schemaName
                 ", 
                 new { tableName, schemaName, columnName }).Single() == "YES";
@@ -128,8 +125,35 @@ namespace Upgrader.Infrastructure
 
             return database.Dapper.Query<string>(
                 @"
+	                SELECT  
+                        KCU2.COLUMN_NAME
+                    FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
+	                JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU1 ON
+		                KCU1.CONSTRAINT_NAME = RC.CONSTRAINT_NAME AND
+		                KCU1.CONSTRAINT_CATALOG = RC.CONSTRAINT_CATALOG AND
+		                KCU1.CONSTRAINT_SCHEMA = RC.CONSTRAINT_SCHEMA
+                    JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU2 ON 
+                        KCU2.CONSTRAINT_NAME = UNIQUE_CONSTRAINT_NAME AND
+		                KCU2.CONSTRAINT_CATALOG = UNIQUE_CONSTRAINT_CATALOG AND
+                        KCU2.CONSTRAINT_SCHEMA = UNIQUE_CONSTRAINT_SCHEMA
+	                WHERE 
+		                RC.CONSTRAINT_NAME = @foreignKeyName AND 
+		                RC.CONSTRAINT_SCHEMA = @schemaName AND 
+		                KCU1.TABLE_NAME = @tableName
+	                ORDER BY 
+		                KCU2.ORDINAL_POSITION
+                ", 
+                new { foreignKeyName, tableName, schemaName }).ToArray();
+        }
+
+        internal string GetForeignKeyForeignTableName(string tableName, string foreignKeyName)
+        {
+            var schemaName = database.GetSchema(tableName);
+
+            return database.Dapper.ExecuteScalar<string>(
+            @"
 	            SELECT  
-                    KCU2.COLUMN_NAME
+                    KCU2.TABLE_NAME
                 FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
 	            JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU1 ON
 		            KCU1.CONSTRAINT_NAME = RC.CONSTRAINT_NAME AND
@@ -143,33 +167,6 @@ namespace Upgrader.Infrastructure
 		            RC.CONSTRAINT_NAME = @foreignKeyName AND 
 		            RC.CONSTRAINT_SCHEMA = @schemaName AND 
 		            KCU1.TABLE_NAME = @tableName
-	            ORDER BY 
-		            KCU2.ORDINAL_POSITION
-                ", 
-                new { foreignKeyName, tableName, schemaName }).ToArray();
-        }
-
-        internal string GetForeignKeyForeignTableName(string tableName, string foreignKeyName)
-        {
-            var schemaName = database.GetSchema(tableName);
-
-            return database.Dapper.ExecuteScalar<string>(
-            @"
-	        SELECT  
-                KCU2.TABLE_NAME
-            FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
-	        JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU1 ON
-		        KCU1.CONSTRAINT_NAME = RC.CONSTRAINT_NAME AND
-		        KCU1.CONSTRAINT_CATALOG = RC.CONSTRAINT_CATALOG AND
-		        KCU1.CONSTRAINT_SCHEMA = RC.CONSTRAINT_SCHEMA
-            JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU2 ON 
-                KCU2.CONSTRAINT_NAME = UNIQUE_CONSTRAINT_NAME AND
-		        KCU2.CONSTRAINT_CATALOG = UNIQUE_CONSTRAINT_CATALOG AND
-                KCU2.CONSTRAINT_SCHEMA = UNIQUE_CONSTRAINT_SCHEMA
-	        WHERE 
-		        RC.CONSTRAINT_NAME = @foreignKeyName AND 
-		        RC.CONSTRAINT_SCHEMA = @schemaName AND 
-		        KCU1.TABLE_NAME = @tableName
             ", 
             new { tableName, foreignKeyName, schemaName });
         }
@@ -180,13 +177,13 @@ namespace Upgrader.Infrastructure
 
             return database.Dapper.Query<string>(
                 @"
-                SELECT 
-                  	CONSTRAINT_NAME
-                FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
-                WHERE
-				    CONSTRAINT_TYPE = @constraintType AND
-                    TABLE_NAME = @tableName AND 
-                    TABLE_SCHEMA = @schemaName
+                    SELECT 
+                  	    CONSTRAINT_NAME
+                    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+                    WHERE
+				        CONSTRAINT_TYPE = @constraintType AND
+                        TABLE_NAME = @tableName AND 
+                        TABLE_SCHEMA = @schemaName
                 ", 
                 new { tableName, schemaName, constraintType }).ToArray();
         }
@@ -197,18 +194,18 @@ namespace Upgrader.Infrastructure
 
             return database.Dapper.Query<string>(
                 @"
-                SELECT 
-                    COLUMN_NAME
-                FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-                WHERE
-				    CONSTRAINT_NAME = @constraintName AND
-                    TABLE_NAME = @tableName AND 
-                    TABLE_SCHEMA = @schemaName
+                    SELECT 
+                        COLUMN_NAME
+                    FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
+                    WHERE
+				        CONSTRAINT_NAME = @constraintName AND
+                        TABLE_NAME = @tableName AND 
+                        TABLE_SCHEMA = @schemaName
                 ", 
                 new { tableName, schemaName, constraintName }).ToArray();
         }
 
-        private class Column
+        internal class Column
         {
             public string data_type { get; set; }
 
@@ -217,6 +214,10 @@ namespace Upgrader.Infrastructure
             public int? numeric_precision { get; set; }
 
             public int? numeric_scale { get; set; }
+
+            public string column_type { get; set; }
+
+            public int? datetime_precision { get; set; }
         }
     }
 }

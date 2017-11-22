@@ -11,17 +11,17 @@ using Upgrader.Schema;
 
 namespace Upgrader
 {
+    /// <inheritdoc />
     /// <summary>
     /// Encapsulates high-level data definition language functionality as well as the possibility to reflect on the underlying database.
     /// </summary>
     public abstract class Database : IDisposable
     {
+        internal readonly InformationSchema InformationSchema;
+        internal readonly string DatabaseName;
         private readonly DataDefinitionLanguage dataDefinitionLanguage;
         private readonly DataManipulationLanguage dataManipulationLanguage;
         private readonly StructuredQueryLanguage structuredQueryLanguage;
-        private readonly InformationSchema informationSchema;
-
-        internal readonly string DatabaseName;
         private readonly string connectionString;
         private readonly string mainConnectionString;
 
@@ -30,7 +30,7 @@ namespace Upgrader
             Connection = connection;
             this.mainConnectionString = mainConnectionString;
             connectionString = connection.ConnectionString;
-            this.DatabaseName = databaseName ?? connection.Database;
+            DatabaseName = databaseName ?? connection.Database;
 
             Dapper = new Infrastructure.Dapper(connection);
             Tables = new TableCollection(this);
@@ -38,29 +38,11 @@ namespace Upgrader
             dataDefinitionLanguage = new DataDefinitionLanguage(this);
             dataManipulationLanguage = new DataManipulationLanguage(this);
             structuredQueryLanguage = new StructuredQueryLanguage(this);
-            informationSchema = new InformationSchema(this);
-        }
-
-        internal static string GetConnectionString(string connectionStringOrName)
-        {
-            return connectionStringOrName.Contains("=") ? connectionStringOrName : ConfigurationManager.ConnectionStrings[connectionStringOrName].ConnectionString;
-        }
-
-        internal static string GetMasterConnectionString(string connectionStringOrName, string keyword, string overrideDatabaseName)
-        {
-            var connectionString = GetConnectionString(connectionStringOrName);
-
-            var connectionStringBuilder = new DbConnectionStringBuilder
-            {
-                ConnectionString = connectionString,
-                [keyword] = overrideDatabaseName
-            };
-
-            return connectionStringBuilder.ToString();
+            InformationSchema = new InformationSchema(this);
         }
 
         /// <summary>
-        /// Underlying ADO.NET connection to the database.
+        /// Gets underlying ADO.NET connection to the database.
         /// </summary>
         public IDbConnection Connection { get; }
 
@@ -70,9 +52,19 @@ namespace Upgrader
         public NamingConvention NamingConvention { get; set; }
 
         /// <summary>
-        /// Collection of tables in the connected database.
+        /// Gets a collection of tables in the connected database.
         /// </summary>
         public TableCollection Tables { get; }
+
+        /// <summary>
+        /// Gets a collection of  type mappings.
+        /// </summary>
+        public TypeMappingCollection TypeMappings { get; } = new TypeMappingCollection();
+
+        /// <summary>
+        /// Gets a value indicating whether the database exists or not.
+        /// </summary>
+        public abstract bool Exists { get; }
 
         internal abstract string AutoIncrementStatement { get; }
 
@@ -82,26 +74,10 @@ namespace Upgrader
 
         internal Infrastructure.Dapper Dapper { get; }
 
-        internal virtual string UnicodeDataType => "NVARCHAR";
-
-        internal virtual string DateTimeDataType => "DATETIME";
-
-        internal virtual void SupportsTransactionalDataDescriptionLanguage()
-        {
-        }
-
         [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This implementation is enough for now.")]
         public void Dispose()
         {
             Connection.Dispose();
-        }
-
-        /// <summary>
-        /// Gets if the database exists or not.
-        /// </summary>
-        public abstract bool Exists
-        {
-            get;
         }
 
         /// <summary>
@@ -124,6 +100,28 @@ namespace Upgrader
             UseConnectedDatabase();
         }
 
+        internal static string GetConnectionString(string connectionStringOrName)
+        {
+            return connectionStringOrName.Contains("=") ? connectionStringOrName : ConfigurationManager.ConnectionStrings[connectionStringOrName].ConnectionString;
+        }
+
+        internal static string GetMasterConnectionString(string connectionStringOrName, string keyword, string overrideDatabaseName)
+        {
+            var connectionString = GetConnectionString(connectionStringOrName);
+
+            var connectionStringBuilder = new DbConnectionStringBuilder
+            {
+                ConnectionString = connectionString,
+                [keyword] = overrideDatabaseName
+            };
+
+            return connectionStringBuilder.ToString();
+        }
+
+        internal virtual void SupportsTransactionalDataDescriptionLanguage()
+        {
+        }
+
         internal virtual void UseMainDatabase()
         {
             Connection.Close();
@@ -141,12 +139,12 @@ namespace Upgrader
         {
             var connectionType = connection.GetType();
             var methodInfo = connectionType.GetMethod("ClearPool", BindingFlags.Public | BindingFlags.Static);
-            methodInfo.Invoke(null, new  object[] { connection });
+            methodInfo.Invoke(null, new object[] { connection });
         }
 
         internal virtual string[] GetTableNames()
         {
-            return informationSchema.GetTableNames();
+            return InformationSchema.GetTableNames();
         }
 
         internal virtual void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
@@ -164,7 +162,7 @@ namespace Upgrader
             dataManipulationLanguage.Insert(tableName, rows);
         }
 
-        public void UpdateRows<T>(string tableName, IEnumerable<T> rows)
+        internal void UpdateRows<T>(string tableName, IEnumerable<T> rows)
         {
             dataManipulationLanguage.Update(tableName, rows);
         }
@@ -176,18 +174,15 @@ namespace Upgrader
 
         internal virtual string[] GetColumnNames(string tableName)
         {
-            return informationSchema.GetColumnNames(tableName);
+            return InformationSchema.GetColumnNames(tableName);
         }
 
         internal virtual bool GetColumnNullable(string tableName, string columnName)
         {
-            return informationSchema.GetColumnNullable(tableName, columnName);
+            return InformationSchema.GetColumnNullable(tableName, columnName);
         }
 
-        internal virtual string GetColumnDataType(string tableName, string columnName)
-        {
-            return informationSchema.GetColumnDataType(tableName, columnName);
-        }
+        internal abstract string GetColumnDataType(string tableName, string columnName);
 
         internal virtual void AddColumn(string tableName, string columnName, string dataType, bool nullable)
         {
@@ -206,12 +201,12 @@ namespace Upgrader
 
         internal virtual string GetPrimaryKeyName(string tableName)
         {
-            return informationSchema.GetPrimaryKeyName(tableName);
+            return InformationSchema.GetPrimaryKeyName(tableName);
         }
 
         internal virtual string[] GetPrimaryKeyColumnNames(string tableName, string primaryKeyName)
         {
-            return informationSchema.GetPrimaryKeyColumnNames(tableName, primaryKeyName);
+            return InformationSchema.GetPrimaryKeyColumnNames(tableName, primaryKeyName);
         }
 
         internal virtual void AddPrimaryKey(string tableName, string[] columnNames, string primaryKeyName)
@@ -226,22 +221,22 @@ namespace Upgrader
 
         internal virtual string[] GetForeignKeyNames(string tableName)
         {
-            return informationSchema.GetForeignKeyNames(tableName);
+            return InformationSchema.GetForeignKeyNames(tableName);
         }
 
         internal virtual string GetForeignKeyForeignTableName(string tableName, string foreignKeyName)
         {
-            return informationSchema.GetForeignKeyForeignTableName(tableName, foreignKeyName);
+            return InformationSchema.GetForeignKeyForeignTableName(tableName, foreignKeyName);
         }
 
         internal virtual string[] GetForeignKeyColumnNames(string tableName, string foreignKeyName)
         {
-            return informationSchema.GetForeignKeyColumnNames(tableName, foreignKeyName);
+            return InformationSchema.GetForeignKeyColumnNames(tableName, foreignKeyName);
         }
 
         internal virtual string[] GetForeignKeyForeignColumnNames(string tableName, string foreignKeyName)
         {
-            return informationSchema.GetForeignKeyForeignColumnNames(tableName, foreignKeyName);
+            return InformationSchema.GetForeignKeyForeignColumnNames(tableName, foreignKeyName);
         }
 
         internal virtual void AddForeignKey(string tableName, string[] columnNames, string foreignTableName, string[] foreignColumnNames, string foreignKeyName)
@@ -292,12 +287,12 @@ namespace Upgrader
 
         internal abstract string GetLastInsertedAutoIncrementedPrimaryKeyIdentity(string columnName);
 
-        public IEnumerable<object> Select(string tableName, string where)
+        internal IEnumerable<object> Select(string tableName, string where)
         {
             return structuredQueryLanguage.Select(tableName, where);
         }
 
-        public IEnumerable<T> Select<T>(string tableName, string where)
+        internal IEnumerable<T> Select<T>(string tableName, string where)
         {
             return structuredQueryLanguage.Select<T>(tableName, where);
         }

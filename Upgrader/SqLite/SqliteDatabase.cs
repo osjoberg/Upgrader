@@ -7,25 +7,38 @@ using System.Text.RegularExpressions;
 using Upgrader.Infrastructure;
 
 namespace Upgrader.SqLite
-{
+{    
     public class SqLiteDatabase : Database
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("System.Data.SQLite.dll", "System.Data.SQLite.SQLiteConnection"));
-
         private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
         private readonly string connectionStringOrName;
 
         /// <summary>
-        /// Creates an instance of the SqLiteDatabase.
+        /// Initializes a new instance of the <see cref="SqLiteDatabase"/> class.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public SqLiteDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), null, (string)new DbConnectionStringBuilder { ConnectionString = GetConnectionString(connectionStringOrName) }["Data Source"])
         {
             this.connectionStringOrName = connectionStringOrName;
+
+            TypeMappings.Add<bool>("boolean");
+            TypeMappings.Add<byte>("tinyint");
+            TypeMappings.Add<char>("character(1)");
+            TypeMappings.Add<DateTime>("datetime");
+            TypeMappings.Add<decimal>("decimal(19,5)");
+            TypeMappings.Add<double>("real");
+            TypeMappings.Add<float>("real");
+            TypeMappings.Add<Guid>("uniqueidentifier");
+            TypeMappings.Add<int>("integer");
+            TypeMappings.Add<long>("bigint");
+            TypeMappings.Add<short>("smallint");
+            TypeMappings.Add<string>("varchar(50)");
+            
+            // No type mapping for TimesSpan.
         }
 
-        public override bool Exists => File.Exists(this.DatabaseName);
+        public override bool Exists => File.Exists(DatabaseName);
 
         internal override string AutoIncrementStatement => "";
 
@@ -33,12 +46,12 @@ namespace Upgrader.SqLite
 
         public override void Create()
         {
-            File.WriteAllBytes(this.DatabaseName, new byte[0]);
+            File.WriteAllBytes(DatabaseName, new byte[0]);
         }
 
         public override void Remove()
         {
-            File.Delete(this.DatabaseName);
+            File.Delete(DatabaseName);
         }
 
         internal override string EscapeIdentifier(string identifier)
@@ -278,6 +291,11 @@ namespace Upgrader.SqLite
             return ";SELECT last_insert_rowid()";
         }
 
+        internal override Database Clone()
+        {
+            return new SqLiteDatabase(connectionStringOrName);
+        }
+
         private static string UnescapeIdentifier(string identifier)
         {
             if (identifier.StartsWith("\"") == false)
@@ -288,13 +306,8 @@ namespace Upgrader.SqLite
             return identifier.Substring(1, identifier.Length - 2).Replace("\"\"", "\"");            
         }
 
-        internal override Database Clone()
-        {
-            return new SqLiteDatabase(connectionStringOrName);
-        }
-
         // ReSharper disable once ClassNeverInstantiated.Local
-        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Internal class")]
         private class TableInfo
         {
             public string Name { get; set; }
@@ -307,7 +320,7 @@ namespace Upgrader.SqLite
         }
 
         // ReSharper disable once ClassNeverInstantiated.Local
-        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Internal class")]
         private class IndexList
         {
             public string Name { get; set; }

@@ -61,22 +61,32 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public virtual void ChangeTypeChangesType()
+        public virtual void ChangeDataTypeChangesType()
         {
-            Database.Tables.Add("ChangeType", new Column("ChangeTypeId", "int"));
-            Database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("float", true);
+            Database.Tables.Add("ChangeDataType", new Column<int>("ChangeDataTypeId"));
+            Database.Tables["ChangeDataType"].Columns["ChangeDataTypeId"].ChangeDataType<float>();
 
-            Assert.AreEqual("float", Database.Tables["ChangeType"].Columns["ChangeTypeId"].DataType);
+            Assert.AreEqual("real", Database.Tables["ChangeDataType"].Columns["ChangeDataTypeId"].DataType);
         }
 
         [TestMethod]
-        public virtual void ChangeTypeChangesTypePreservingNullable()
+        public virtual void ChangeDataTypeChangesTypePreservingNullable()
         {
-            Database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
-            Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("float");
+            Database.Tables.Add("ChangeDataTypeNullable", new Column("ChangeDataTypeNullableId", "int"));
+            Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].ChangeDataType<float>();
 
-            Assert.AreEqual("float", Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
-            Assert.IsFalse(Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
+            Assert.AreEqual("real", Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].DataType);
+            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].Nullable);
+        }
+
+        [TestMethod]
+        public virtual void ChangeDataTypeChangesTypePreservingNullable2()
+        {
+            Database.Tables.Add("ChangeDataTypeNullable2", new Column<int>("ChangeDataTypeNullable2Id"));
+            Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].ChangeDataType<double>();
+            
+            Assert.AreEqual(Database.TypeMappings[typeof(double)], Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].DataType);
+            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].Nullable);
         }
 
         [TestMethod]
@@ -139,11 +149,11 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public virtual void DataTypeDoesNotIncludeLengthOnChar()
+        public virtual void DataTypeDoesIncludeLengthOnChar()
         {
-            Database.Tables.Add("SingleChar", new Column("SingleCharId", "char"));
+            Database.Tables.Add("SingleChar", new Column("SingleCharId", "char(1)"));
 
-            Assert.AreEqual("char", Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
+            Assert.AreEqual("char(1)", Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
         }
     }
 }

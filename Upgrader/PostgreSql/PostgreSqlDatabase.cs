@@ -13,16 +13,29 @@ namespace Upgrader.PostgreSql
     public class PostgreSqlDatabase : Database
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection"));
-
         private readonly string connectionStringOrName;
 
         /// <summary>
-        /// Creates an instance of the PostgreSqlDatabase.
+        /// Initializes a new instance of the <see cref="PostgreSqlDatabase"/> class.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public PostgreSqlDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Database", "postgres"))
         {
             this.connectionStringOrName = connectionStringOrName;
+
+            // No type mapping for byte.
+            TypeMappings.Add<bool>("boolean");
+            TypeMappings.Add<char>("character(1)");
+            TypeMappings.Add<DateTime>("timestamp without time zone");
+            TypeMappings.Add<decimal>("numeric(19,5)");
+            TypeMappings.Add<double>("double precision");
+            TypeMappings.Add<float>("real");
+            TypeMappings.Add<Guid>("uuid");
+            TypeMappings.Add<int>("integer");
+            TypeMappings.Add<long>("bigint");
+            TypeMappings.Add<short>("smallint");
+            TypeMappings.Add<string>("character varying(50)");
+            TypeMappings.Add<TimeSpan>("interval(6)");
         }
 
         public override bool Exists
@@ -30,19 +43,20 @@ namespace Upgrader.PostgreSql
             get
             {
                 UseMainDatabase();
-                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM pg_database WHERE datistemplate = false AND datname = @databaseName", new { databaseName = this.DatabaseName });
+                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM pg_database WHERE datistemplate = false AND datname = @databaseName", new { databaseName = DatabaseName });
                 UseConnectedDatabase();
                 return exists;
             }
-        } 
+        }
 
         internal override string AutoIncrementStatement => "";
 
         internal override int MaxIdentifierLength => 63;
 
-        internal override string UnicodeDataType => "VARCHAR";
-
-        internal override string DateTimeDataType => "TIMESTAMP";
+        internal override string GetColumnDataType(string tableName, string columnName)
+        {
+            return InformationSchema.GetColumnDataType(tableName, columnName, "character varying", "character", "numeric", "interval");
+        }
 
         internal override void SupportsTransactionalDataDescriptionLanguage()
         {
@@ -71,11 +85,11 @@ namespace Upgrader.PostgreSql
             {
                 if (column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)
                 {
-                    if (column.DataType.Equals("integer", StringComparison.InvariantCultureIgnoreCase) || column.DataType.Equals("int", StringComparison.CurrentCultureIgnoreCase))
+                    if (column.GetDataType(TypeMappings).Equals("integer", StringComparison.InvariantCultureIgnoreCase) || column.GetDataType(TypeMappings).Equals("int", StringComparison.CurrentCultureIgnoreCase))
                     {
                         modifiedColumns.Add(new Column(column.ColumnName, "serial", column.Nullable, ColumnModifier.PrimaryKey));
                     }
-                    else if (column.DataType.Equals("bigint", StringComparison.InvariantCultureIgnoreCase))
+                    else if (column.GetDataType(TypeMappings).Equals("bigint", StringComparison.InvariantCultureIgnoreCase))
                     {
                         modifiedColumns.Add(new Column(column.ColumnName, "bigserial", column.Nullable, ColumnModifier.PrimaryKey));
                     }
@@ -133,6 +147,8 @@ namespace Upgrader.PostgreSql
                 ", 
                 new { indexName });
         }
+
+
 
         internal override string[] GetIndexColumnNames(string tableName, string indexName)
         {

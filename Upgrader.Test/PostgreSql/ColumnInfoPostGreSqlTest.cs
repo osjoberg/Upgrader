@@ -21,22 +21,32 @@ namespace Upgrader.Test.PostgreSql
         }
 
         [TestMethod]
-        public override void ChangeTypeChangesType()
+        public override void ChangeDataTypeChangesType()
         {
-            Database.Tables.Add("ChangeType", new Column("ChangeTypeId", "int"));
-            Database.Tables["ChangeType"].Columns["ChangeTypeId"].ChangeType("real", true);
+            Database.Tables.Add("ChangeDataType", new Column<int>("ChangeDataTypeId"));
+            Database.Tables["ChangeDataType"].Columns["ChangeDataTypeId"].ChangeDataType<float>();
 
-            Assert.AreEqual("real", Database.Tables["ChangeType"].Columns["ChangeTypeId"].DataType);
+            Assert.AreEqual("real", Database.Tables["ChangeDataType"].Columns["ChangeDataTypeId"].DataType);
         }
 
         [TestMethod]
-        public override void ChangeTypeChangesTypePreservingNullable()
+        public override void ChangeDataTypeChangesTypePreservingNullable()
         {
-            Database.Tables.Add("ChangeTypeNullable", new Column("ChangeTypeNullableId", "int"));
-            Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].ChangeType("real");
+            Database.Tables.Add("ChangeDataTypeNullable", new Column<int>("ChangeDataTypeNullableId"));
+            Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].ChangeDataType<float>();
 
-            Assert.AreEqual("real", Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].DataType);
-            Assert.IsFalse(Database.Tables["ChangeTypeNullable"].Columns["ChangeTypeNullableId"].Nullable);
+            Assert.AreEqual("real", Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].DataType);
+            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].Nullable);
+        }
+
+        [TestMethod]
+        public override void ChangeDataTypeChangesTypePreservingNullable2()
+        {
+            Database.Tables.Add("ChangeDataTypeNullable2", new Column<int>("ChangeDataTypeNullable2Id"));
+            Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].ChangeDataType<float>();
+
+            Assert.AreEqual("real", Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].DataType);
+            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].Nullable);
         }
 
         [TestMethod]
@@ -64,11 +74,11 @@ namespace Upgrader.Test.PostgreSql
         }
 
         [TestMethod]
-        public override void DataTypeDoesNotIncludeLengthOnChar()
+        public override void DataTypeDoesIncludeLengthOnChar()
         {
             Database.Tables.Add("SingleChar", new Column("SingleCharId", "char"));
 
-            Assert.AreEqual("character", Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
+            Assert.AreEqual("character(1)", Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
         }
 
         [TestMethod]

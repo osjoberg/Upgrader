@@ -58,7 +58,12 @@ if (database.Tables["Customer"] != null)
 // Enumerate all table names.
 database.Tables.ToList().ForEach(table => Console.WriteLine(table.TableName));
 
-// Create a table named "Customer" with two columns.
+// Create a table named "Customer" with two columns using type mappings.
+database.Tables.Add("Customer",
+	new Column<int>("CustomerId", ColumnModifier.AutoIncrementPrimaryKey),
+	new Column<string>("Name", 50));
+
+// Create a table named "Customer" with two columns using SQL data types.
 database.Tables.Add("Customer",
 	new Column("CustomerId", "int", ColumnModifier.AutoIncrementPrimaryKey),
 	new Column("Name", "varchar(50)"));
@@ -81,14 +86,23 @@ if (database.Tables["Customer"].Columns["Name"] != null)
 // Enumerate all columns in table "Customer".
 database.Tables["Customer"].Columns.ToList().ForEach(column => Console.WriteLine(column.ColumnName));
 
-// Add a nullable column named "Profit" to table "Customer".
-database.Tables["Customer"].Columns.AddNullable("Profit", "decimal");
+// Add a nullable column named "Profit" to table "Customer" using type mappings.
+database.Tables["Customer"].Columns.Add<decimal?>("Profit");
 
-// Add a non-nullable column named "Status" to table "Customer", set value "0" in all existing rows.
+// Add a nullable column named "Profit" to table "Customer" using SQL data types.
+database.Tables["Customer"].Columns.Add("Profit", "decimal", true);
+
+// Add a non-nullable column named "Status" to table "Customer", set value "0" in all existing rows using type mappings.
+database.Tables["Customer"].Columns.Add<int>("Status", 0);
+
+// Add a non-nullable column named "Status" to table "Customer", set value "0" in all existing rows using SQL data types.
 database.Tables["Customer"].Columns.Add("Status", "int", 0);
 
-// Change column "Name" in table "Customer" to data type "varchar(100)".
-database.Tables["Customer"].Columns["Name"].ChangeType("varchar(100)");
+// Change column "Name" in table "Customer" to data type "varchar(100)" using type mappings.
+database.Tables["Customer"].Columns["Name"].ChangeDataType<string>(100);
+
+// Change column "Name" in table "Customer" to data type "varchar(100)" using SQL data types.
+database.Tables["Customer"].Columns["Name"].ChangeDataType("varchar(100)");
 
 // Rename column "Name" in table "Customer" to "CustomerName".
 database.Tables["Customer"].Columns.Rename("Name", "CustomerName");

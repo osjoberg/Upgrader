@@ -13,9 +13,9 @@ namespace Upgrader.Test.MySql
         }
 
         [ExpectedException(typeof(NotSupportedException))]
-        public override void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
+        public override void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
         {
-            base.PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs();
+            base.PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs();
         }
     }
 }

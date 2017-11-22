@@ -112,9 +112,9 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public virtual void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
+        public virtual void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
         {
-            PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(database);
+            PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(database);
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void PerformUpgradeWithTransactioModeNoneDoesNotRollbackChangesWhenExceptionOccurs()
+        public void PerformUpgradeWithTransactionModeNoneDoesNotRollbackChangesWhenExceptionOccurs()
         {
             var upgrade = new Upgrade<TDatabase>(database)
                               {
@@ -154,7 +154,7 @@ namespace Upgrader.Test
             Assert.IsNotNull(database.Tables["NonAtomicTable"]);
         }
 
-        protected void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(TDatabase database)
+        protected void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(TDatabase database)
         {
             var upgrade = new Upgrade<TDatabase>(database)
             {

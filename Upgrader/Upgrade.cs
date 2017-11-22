@@ -14,7 +14,7 @@ namespace Upgrader
         private TransactionMode transactionMode = TransactionMode.None;
 
         /// <summary>
-        /// Create a new instance of the Upgrade engine.
+        /// Initializes a new instance of the <see cref="Upgrade{TDatabase}" /> class.
         /// </summary>
         /// <param name="database">Database instance to use for upgrades.</param>
         public Upgrade(TDatabase database)
@@ -39,11 +39,7 @@ namespace Upgrader
         /// </summary>
         public TransactionMode TransactionMode
         {
-            get
-            {
-                return transactionMode;
-            }
-
+            get => transactionMode;
             set
             {
                 if (value != TransactionMode.None)
@@ -92,7 +88,7 @@ namespace Upgrader
 
             Validate.IsTrue(firstDuplicateStepName == null, nameof(steps), $"Step names must be unique, \"{firstDuplicateStepName}\" occurs more than once.");
 
-            using (new MutexScope("PeformUpgrade" + Database.DatabaseName.ToLowerInvariant()))
+            using (new MutexScope("PerformUpgrade" + Database.DatabaseName.ToLowerInvariant()))
             {
                 if (Database.Exists == false)
                 {
@@ -101,7 +97,7 @@ namespace Upgrader
 
                 if (Database.Tables[ExecutedStepsTable] == null)
                 {
-                    Database.Tables.Add(ExecutedStepsTable, new Column("Step", $"{Database.UnicodeDataType}(100)"), new Column("ExecutedAt", Database.DateTimeDataType));
+                    Database.Tables.Add(ExecutedStepsTable, new Column<string>("Step", 100), new Column<DateTime>("ExecutedAt"));
                 }
 
                 var alreadyExecutedStepNames = new HashSet<string>(Database.Dapper.Query<string>($"SELECT {Database.EscapeIdentifier("Step")} FROM {Database.EscapeIdentifier(ExecutedStepsTable)}"));

@@ -15,15 +15,15 @@ namespace Upgrader.Test.PostgreSql
 
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
-        public override void PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
+        public override void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
         {
-            base.PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs();
+            base.PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs();
         }
 
         [TestMethod]
         public void PerformUpgradeWithTransactioModeOneTransactionPerStepWithEnlistTrueDoesRollbackChangesWhenExceptionOccurs()
-        {
-            base.PerformUpgradeWithTransactioModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(new PostgreSqlDatabase("PostgreSqlEnlist"));
+        {            
+            base.PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(new PostgreSqlDatabase("PostgreSqlEnlist"));
         }
     }
 }

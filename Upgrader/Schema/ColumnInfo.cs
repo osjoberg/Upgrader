@@ -1,4 +1,6 @@
-﻿using Upgrader.Infrastructure;
+﻿using System;
+
+using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
 {
@@ -42,26 +44,82 @@ namespace Upgrader.Schema
         public string TableName { get; }
 
         /// <summary>
-        /// Change type of column.
+        /// Change data type of column.
         /// </summary>
-        /// <param name="type">SQL data type.</param>
-        public void ChangeType(string type)
+        /// <param name="dataType">SQL data type.</param>
+        public void ChangeDataType(string dataType)
         {
-            Validate.IsNotNullAndNotEmpty(type, nameof(type));
+            Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
 
-            database.ChangeColumn(TableName, ColumnName, type, Nullable);
+            database.ChangeColumn(TableName, ColumnName, dataType, Nullable);
         }
 
         /// <summary>
-        /// Change type of column.
+        /// Change data type of column.
         /// </summary>
-        /// <param name="type">SQL data type.</param>
+        /// <param name="dataType">SQL data type.</param>
         /// <param name="nullable">True if columns is allowed to be null.</param>
-        public void ChangeType(string type, bool nullable)
+        public void ChangeDataType(string dataType, bool nullable)
         {
-            Validate.IsNotNullAndNotEmpty(type, nameof(type));
+            Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
 
-            database.ChangeColumn(TableName, ColumnName, type, nullable);
+            database.ChangeColumn(TableName, ColumnName, dataType, nullable);
+        }
+
+        /// <summary>
+        /// Change data type of column.
+        /// </summary>
+        /// <typeparam name="TType">CLR data typed to translate to SQL data type.</typeparam>
+        public void ChangeDataType<TType>()
+        {
+            var dataType = database.TypeMappings.GetDataType(typeof(TType));
+            if (dataType == null)
+            {
+                var type = System.Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
+            }
+
+            var nullable = System.Nullable.GetUnderlyingType(typeof(TType)) != null;
+
+            ChangeDataType(dataType, nullable);
+        }
+
+        /// <summary>
+        /// Change data type of column.
+        /// </summary>
+        /// <param name="length">Length of data type.</param>
+        /// <param name="nullable">True if columns is allowed to be null.</param>
+        /// <typeparam name="TType">CLR data typed to translate to SQL data type.</typeparam>
+        public void ChangeDataType<TType>(int length, bool nullable = false)
+        {
+            var dataType = database.TypeMappings.GetDataType(typeof(TType), length);
+            if (dataType == null)
+            {
+                var type = System.Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
+            }
+
+            ChangeDataType(dataType, nullable);
+        }
+
+        /// <summary>
+        /// Change data type of column.
+        /// </summary>
+        /// <param name="scale">Scale of data type.</param>
+        /// <param name="precision">Precision of data type.</param>
+        /// <typeparam name="TType">CLR data typed to translate to SQL data type.</typeparam>
+        public void ChangeDataType<TType>(int scale, int precision)
+        {
+            var dataType = database.TypeMappings.GetDataType(typeof(TType), scale, precision);
+            if (dataType == null)
+            {
+                var type = System.Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
+            }
+
+            var nullable = System.Nullable.GetUnderlyingType(typeof(TType)) != null;
+
+            ChangeDataType(dataType, nullable);
         }
     }
 }

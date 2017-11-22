@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -73,6 +74,7 @@
     <Compile Include="SqLite\SqliteDatabase.cs" />
     <Compile Include="StepCollection.cs" />
     <Compile Include="StringHelper.cs" />
+    <Compile Include="TypeMappingCollection.cs" />
     <Compile Include="UpgraderException.cs" />
     <Compile Include="Infrastructure\Validate.cs" />
     <Compile Include="Schema\Column.cs" />

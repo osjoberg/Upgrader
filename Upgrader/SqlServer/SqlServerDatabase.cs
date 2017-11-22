@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace Upgrader.SqlServer
@@ -8,12 +9,26 @@ namespace Upgrader.SqlServer
         private readonly string connectionStringOrName;
 
         /// <summary>
-        /// Creates an instance of the SqlServerDatabase.
+        /// Initializes a new instance of the <see cref="SqlServerDatabase"/> class.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
         public SqlServerDatabase(string connectionStringOrName) : base(new SqlConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
         {
             this.connectionStringOrName = connectionStringOrName;
+
+            TypeMappings.Add<bool>("bit");
+            TypeMappings.Add<byte>("tinyint");
+            TypeMappings.Add<char>("nchar(1)");
+            TypeMappings.Add<DateTime>("datetime");
+            TypeMappings.Add<decimal>("decimal(19,5)");
+            TypeMappings.Add<double>("float");
+            TypeMappings.Add<float>("real");
+            TypeMappings.Add<Guid>("uniqueidentifier");
+            TypeMappings.Add<int>("int");
+            TypeMappings.Add<long>("bigint");
+            TypeMappings.Add<short>("smallint");
+            TypeMappings.Add<string>("nvarchar(50)");
+            TypeMappings.Add<TimeSpan>("time(7)");
         }
 
         public override bool Exists
@@ -21,7 +36,10 @@ namespace Upgrader.SqlServer
             get
             {
                 UseMainDatabase();
-                var exists = Dapper.ExecuteScalar<bool>("SELECT COUNT(*) FROM sysdatabases WHERE name = @databaseName", new { databaseName = this.DatabaseName });
+
+                var exists = Dapper.ExecuteScalar<bool>(
+                    "SELECT COUNT(*) FROM sysdatabases WHERE name = @databaseName",
+                    new { databaseName = DatabaseName });
 
                 UseConnectedDatabase();
 
@@ -43,6 +61,11 @@ namespace Upgrader.SqlServer
             return tableName.Split('.').Last();
         }
 
+        internal override string GetColumnDataType(string tableName, string columnName)
+        {
+            return InformationSchema.GetColumnDataType(tableName, columnName, "decimal", "nvarchar", "nchar", "varchar", "char", "time");
+        }
+
         internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
             Dapper.Execute($"sp_RENAME '{tableName}.{columnName}', '{newColumnName}', 'COLUMN'");
@@ -57,11 +80,11 @@ namespace Upgrader.SqlServer
         {
             return Dapper.ExecuteScalar<bool>(
                 @"
-                SELECT 
-                    is_identity
-                FROM sys.columns WHERE
-                    object_id = OBJECT_ID(@tableName) AND 
-                    name = @columnName
+                    SELECT 
+                        is_identity
+                    FROM sys.columns WHERE
+                        object_id = OBJECT_ID(@tableName) AND 
+                        name = @columnName
                 ", 
                 new { tableName, columnName });
         }
@@ -75,12 +98,12 @@ namespace Upgrader.SqlServer
         {
             return Dapper.Query<string>(
                 @"
-                SELECT 
-                    name
-                FROM sys.indexes 
-                WHERE 
-                    object_id = OBJECT_ID(@tableName) AND 
-                    [type] = 2
+                    SELECT 
+                        name
+                    FROM sys.indexes 
+                    WHERE 
+                        object_id = OBJECT_ID(@tableName) AND 
+                        [type] = 2
                 ", 
                 new { tableName }).ToArray();
         }
@@ -89,13 +112,13 @@ namespace Upgrader.SqlServer
         {
             return Dapper.ExecuteScalar<bool>(
                 @"
-                SELECT 
-                    is_unique
-                FROM sys.indexes 
-                WHERE 
-                    name = @indexName AND
-                    object_id = OBJECT_ID(@tableName) AND        
-                    [type] = 2
+                    SELECT 
+                        is_unique
+                    FROM sys.indexes 
+                    WHERE 
+                        name = @indexName AND
+                        object_id = OBJECT_ID(@tableName) AND        
+                        [type] = 2
                 ", 
                 new { indexName, tableName });
         }
@@ -104,19 +127,19 @@ namespace Upgrader.SqlServer
         {
             return Dapper.Query<string>(
                 @"
-                SELECT 
-                    sys.columns.Name
-                FROM sys.indexes
-                INNER JOIN sys.index_columns ON 
-	                sys.index_columns .object_id = sys.indexes.object_id AND 
-	                sys.index_columns .index_id = sys.indexes.index_id
-                INNER JOIN sys.columns ON 
-	                sys.columns.object_id = sys.index_columns .object_id AND 
-	                sys.columns.column_id = sys.index_columns .column_id
-                WHERE
-	                sys.columns.object_id = OBJECT_ID(@tableName) AND
-	                sys.indexes.name = @indexName AND
-                    sys.indexes.[type] = 2
+                    SELECT 
+                        sys.columns.Name
+                    FROM sys.indexes
+                    INNER JOIN sys.index_columns ON 
+	                    sys.index_columns .object_id = sys.indexes.object_id AND 
+	                    sys.index_columns .index_id = sys.indexes.index_id
+                    INNER JOIN sys.columns ON 
+	                    sys.columns.object_id = sys.index_columns .object_id AND 
+	                    sys.columns.column_id = sys.index_columns .column_id
+                    WHERE
+	                    sys.columns.object_id = OBJECT_ID(@tableName) AND
+	                    sys.indexes.name = @indexName AND
+                        sys.indexes.[type] = 2
                 ", 
                 new { indexName, tableName }).ToArray();
         }

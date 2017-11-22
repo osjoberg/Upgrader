@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.Schema;
 
@@ -24,9 +23,9 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void AddAddsColumn()
         {
-            Database.Tables.Add("AddColumn", new Column("AddColumnId", "int"));
+            Database.Tables.Add("AddColumn", new Column<int>("AddColumnId"));
 
-            Database.Tables["AddColumn"].Columns.Add("AddedColumn", "int");
+            Database.Tables["AddColumn"].Columns.Add<int>("AddedColumn");
 
             Assert.AreEqual(2, Database.Tables["AddColumn"].Columns.Count());
         }
@@ -34,7 +33,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void RenameRenamesColumn()
         {
-            Database.Tables.Add("RenameColumn", new Column("RenameColumnId", "int"));
+            Database.Tables.Add("RenameColumn", new Column<int>("RenameColumnId"));
 
             Database.Tables["RenameColumn"].Columns.Rename("RenameColumnId", "NewColumnNameId");
 
@@ -44,7 +43,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void RemoveDropsColumn()
         {
-            Database.Tables.Add("RemoveColumn", new Column("RemoveColumnId", "int"), new Column("RemovedColumn", "int"));
+            Database.Tables.Add("RemoveColumn", new Column<int>("RemoveColumnId"), new Column<int>("RemovedColumn"));
 
             Database.Tables["RemoveColumn"].Columns.Remove("RemovedColumn");
 
@@ -86,7 +85,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void CanAddNonNullColumn()
         {
-            Database.Tables.Add("CanAddNotNullColumn", new Column("CanAddNotNullColumnId", "int"));
+            Database.Tables.Add("CanAddNotNullColumn", new Column<int>("CanAddNotNullColumnId"));
             Database.Tables["CanAddNotNullColumn"].Rows.Add(new { CanAddNotNullColumnId  = 1 });
             Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", "int", false, 5);
 
@@ -96,7 +95,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddNullableAddsNullableColumn()
         {
-            Database.Tables.Add("CanAddNullableColumn", new Column("CanAddNullableColumnId", "int"));
+            Database.Tables.Add("CanAddNullableColumn", new Column<int?>("CanAddNullableColumnId"));
             Database.Tables["CanAddNullableColumn"].Columns.Add("NullableColumn", "int", true);
 
             Assert.IsTrue(Database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Nullable);

@@ -29,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -95,6 +96,7 @@
     <Compile Include="MySql\PrimaryKeyInfoMySqlTest.cs" />
     <Compile Include="MySql\RowCollectionMySqlTest.cs" />
     <Compile Include="MySql\TableInfoMySqlTest.cs" />
+    <Compile Include="MySql\TypeMappingCollectionMySqlTest.cs" />
     <Compile Include="MySql\UprgradeMySqlTest.cs" />
     <Compile Include="PostgreSql\ColumnCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\ColumnInfoPostgreSqlTest.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="PostgreSql\RowCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\TableCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\TableInfoPostgreSqlTest.cs" />
+    <Compile Include="PostgreSql\TypeMappingCollectionPostgreSqlTest.cs" />
     <Compile Include="PostgreSql\UpgradePostgreSqlTest.cs" />
     <Compile Include="PrimaryKeyInfoTest.cs" />
     <Compile Include="SqLite\ColumnCollectionSqLiteTest.cs" />
@@ -118,6 +121,7 @@
     <Compile Include="SqLite\RowCollectionSqLiteTest.cs" />
     <Compile Include="SqLite\TableCollectionSqLiteTest.cs" />
     <Compile Include="SqLite\TableInfoSqLiteTest.cs" />
+    <Compile Include="SqLite\TypeMappingCollectionSqLiteTest.cs" />
     <Compile Include="SqLite\UpgradeSqLiteTest.cs" />
     <Compile Include="SqlServer\ColumnCollectionSqlServerTest.cs" />
     <Compile Include="SqlServer\ColumnInfoSqlServerTest.cs" />
@@ -130,12 +134,14 @@
     <Compile Include="SqlServer\TableInfoSqlServerTest.cs" />
     <Compile Include="SqlServer\TableCollectionSqlServerTest.cs" />
     <Compile Include="MySql\TableCollectionMySqlTest.cs" />
+    <Compile Include="SqlServer\TypeMappingCollectionSqlServerTest.cs" />
     <Compile Include="SqlServer\UpgradeSqlServerTest.cs" />
     <Compile Include="TableCollectionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ColumnCollectionTest.cs" />
     <Compile Include="RowCollectionTest.cs" />
     <Compile Include="TableInfoTest.cs" />
+    <Compile Include="TypeMappingCollectionTest.cs" />
     <Compile Include="UpgradeTest.cs" />
   </ItemGroup>
   <ItemGroup>

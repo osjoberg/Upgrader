@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Upgrader.Infrastructure;
 
 namespace Upgrader.Schema
 {
+    /// <inheritdoc />
     /// <summary>
     /// Collection of all tables in the connected database.
     /// </summary>
@@ -68,6 +70,14 @@ namespace Upgrader.Schema
             Validate.MaxLength(columns.Select(column => column.ColumnName), nameof(columns), database.MaxIdentifierLength);
             Validate.IsNotNull(foreignKeys, nameof(foreignKeys));
             Validate.MaxLength(foreignKeys.Select(foreignKey => foreignKey.ForeignKeyName), nameof(columns), database.MaxIdentifierLength);
+
+            var firstInvalidColumn = columns.FirstOrDefault(column => column.GetDataType(database.TypeMappings) == null);
+            if (firstInvalidColumn != null)
+            {
+                var type = firstInvalidColumn.GetType().GetGenericArguments().Single();
+
+                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(columns));
+            }
 
             database.AddTable(tableName, columns, foreignKeys);
         }

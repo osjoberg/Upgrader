@@ -70,5 +70,23 @@ namespace Upgrader.Infrastructure
                 throw new ArgumentNullException(argumentName);
             }
         }
+
+        public static void IsNotNullable(Type argument, string argumentName)
+        {
+            IsNotNull(argument, argumentName);
+
+            if (Nullable.GetUnderlyingType(argument) != null)
+            {
+                throw new ArgumentNullException(argumentName);
+            }
+        }
+
+        public static void IsEqualOrGreaterThan(int argument, int value, string argumentName)
+        {
+            if (argument < value)
+            {
+                throw new ArgumentOutOfRangeException(argumentName);
+            }
+        }
     }
 }

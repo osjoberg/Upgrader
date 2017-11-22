@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.Schema;
 
@@ -24,25 +23,35 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddCreatesTable()
         {
-            Database.Tables.Add("AddTable", new Column("AddTableId", "int"));
+            Database.Tables.Add("AddTable", new Column<int>("AddTableId"));
 
             Assert.IsNotNull(Database.Tables["AddTable"]);
         }
 
         [TestMethod]
+        public void AddWithPrecisionCreatesTable()
+        {
+            Database.Tables.Add("AddDecimalTable", new Column<decimal?>("AddDecimalTableId", 4, 2));
+
+            Assert.IsTrue(Database.Tables["AddDecimalTable"].Columns["AddDecimalTableId"].DataType.EndsWith("(4,2)"));
+            Assert.IsTrue(Database.Tables["AddDecimalTable"].Columns["AddDecimalTableId"].Nullable);
+        }
+
+        [TestMethod]
         public void AddWithAutoIncrementCreatesTableWithAutoIncrement()
         {
-            Database.Tables.Add("AddAutoIncrementTable", new Column("AddAutoIncrementTableId", "integer", ColumnModifier.AutoIncrementPrimaryKey), new Column("Data", "int"));
+            Database.Tables.Add("AddAutoIncrementTable", new Column<int>("AddAutoIncrementTableId", ColumnModifier.AutoIncrementPrimaryKey), new Column<int>("Data"));
 
             Database.Tables["AddAutoIncrementTable"].Rows.Add(new { Data = 12345 });
 
             Assert.AreEqual(1, Database.Tables["AddAutoIncrementTable"].Rows.Query().Single().AddAutoIncrementTableId);
+            Assert.IsFalse(Database.Tables["AddAutoIncrementTable"].Columns["AddAutoIncrementTableId"].Nullable);
         }
 
         [TestMethod]
         public void RemoveDropsTable()
         {
-            Database.Tables.Add("RemoveTable", new Column("RemoveTableId", "int"));
+            Database.Tables.Add("RemoveTable", new Column<int>("RemoveTableId"));
             Database.Tables.Remove("RemoveTable");
 
             Assert.IsNull(Database.Tables["RemoveTable"]);
@@ -51,7 +60,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void TablesCanBeEnumerated()
         {
-            Database.Tables.Add("EnumerateTable", new Column("EnumerateTableId", "int"));
+            Database.Tables.Add("EnumerateTable", new Column<int>("EnumerateTableId"));
 
             Assert.AreEqual(1, Database.Tables.Count(table => table.TableName == "EnumerateTable"));
         }
@@ -59,7 +68,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void TablesCanBeAccessedByName()
         {
-            Database.Tables.Add("SpecificTable", new Column("SpecificTableId", "int"));
+            Database.Tables.Add("SpecificTable", new Column<int>("SpecificTableId"));
 
             Assert.AreEqual("SpecificTable", Database.Tables["SpecificTable"].TableName);
         }
@@ -73,7 +82,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void ReturnsNotNullWhenTableDoesExist()
         {
-            Database.Tables.Add("ExistingTable", new Column("ExistingTableId", "int"));
+            Database.Tables.Add("ExistingTable", new Column<int>("ExistingTableId"));
 
             Assert.IsNotNull(Database.Tables["ExistingTable"]);
         }
