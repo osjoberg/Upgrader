@@ -90,8 +90,9 @@ namespace Upgrader.Schema
         /// Adds a column to the table.
         /// </summary>
         /// <param name="columnName">Column name.</param>
+        /// <param name="initialValue">Initial value to set to all existing rows.</param>
         /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName)
+        public void Add<TType>(string columnName, TType initialValue = default)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
 
@@ -104,52 +105,7 @@ namespace Upgrader.Schema
 
             var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
 
-            Add(columnName, dataType, nullable);
-        }
-
-        /// <summary>
-        /// Adds a column to the table.
-        /// </summary>
-        /// <param name="columnName">Column name.</param>
-        /// <param name="initialValue">Initial value to set to all existing rows.</param>
-        /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, TType initialValue)
-        {
-            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-
-            var dataType = database.TypeMappings.GetDataType(typeof(TType));
-            if (dataType == null)
-            {
-                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
-                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
-            }
-
-            var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
-
-            Add(columnName, dataType, nullable, Equals(initialValue, default(TType)) ? null : (object)initialValue);
-        }
-
-        /// <summary>
-        /// Adds a column to the table.
-        /// </summary>
-        /// <param name="columnName">Column name.</param>
-        /// <param name="length">Length of string data type.</param>
-        /// <param name="nullable">True to allow null values.</param>
-        /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, int length, bool nullable = false)
-        {
-            Validate.IsNotNullable(typeof(TType), nameof(TType));
-            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-            Validate.IsEqualOrGreaterThan(length, 1, nameof(length));
-
-            var dataType = database.TypeMappings.GetDataType(typeof(TType), length);
-            if (dataType == null)
-            {
-                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
-                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
-            }
-
-            Add(columnName, dataType, nullable);
+            Add(columnName, dataType, nullable, initialValue);
         }
 
         /// <summary>
@@ -160,7 +116,7 @@ namespace Upgrader.Schema
         /// <param name="nullable">True to allow null values.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
         /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, int length, bool nullable, TType initialValue)
+        public void Add<TType>(string columnName, int length, bool nullable = false, TType initialValue = default)
         {
             Validate.IsNotNullable(typeof(TType), nameof(TType));
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
@@ -184,7 +140,7 @@ namespace Upgrader.Schema
         /// <param name="precision">Precision of numeric data type.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
         /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, int scale, int precision, TType initialValue)
+        public void Add<TType>(string columnName, int scale, int precision, TType initialValue = default)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
             Validate.IsEqualOrGreaterThan(scale, 1, nameof(scale));
@@ -199,32 +155,7 @@ namespace Upgrader.Schema
 
             var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
 
-            Add(columnName, dataType, nullable, Equals(initialValue, default(TType)) ? null : (object)initialValue);
-        }
-
-        /// <summary>
-        /// Adds a column to the table.
-        /// </summary>
-        /// <param name="columnName">Column name.</param>
-        /// <param name="scale">Scale of numeric data type.</param>
-        /// <param name="precision">Precision of numeric data type.</param>
-        /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, int scale, int precision)
-        {
-            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
-            Validate.IsEqualOrGreaterThan(scale, 1, nameof(scale));
-            Validate.IsEqualOrGreaterThan(precision, 0, nameof(precision));
-
-            var dataType = database.TypeMappings.GetDataType(typeof(TType), scale, precision);
-            if (dataType == null)
-            {
-                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
-                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
-            }
-
-            var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
-
-            Add(columnName, dataType, nullable);
+            Add(columnName, dataType, nullable, initialValue);
         }
 
         /// <summary>
