@@ -92,7 +92,7 @@ namespace Upgrader.Schema
         /// <param name="columnName">Column name.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
         /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, TType initialValue = default)
+        public void Add<TType>(string columnName, TType initialValue = default(TType))
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
 
@@ -116,7 +116,7 @@ namespace Upgrader.Schema
         /// <param name="nullable">True to allow null values.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
         /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, int length, bool nullable = false, TType initialValue = default)
+        public void Add<TType>(string columnName, int length, bool nullable = false, TType initialValue = default(TType))
         {
             Validate.IsNotNullable(typeof(TType), nameof(TType));
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
@@ -140,7 +140,7 @@ namespace Upgrader.Schema
         /// <param name="precision">Precision of numeric data type.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
         /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, int scale, int precision, TType initialValue = default)
+        public void Add<TType>(string columnName, int scale, int precision, TType initialValue = default(TType))
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
             Validate.IsEqualOrGreaterThan(scale, 1, nameof(scale));
