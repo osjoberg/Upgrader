@@ -28,7 +28,6 @@ namespace Upgrader.SqlServer
             TypeMappings.Add<long>("bigint");
             TypeMappings.Add<short>("smallint");
             TypeMappings.Add<string>("nvarchar(50)");
-            TypeMappings.Add<TimeSpan>("time(7)");
         }
 
         public override bool Exists
