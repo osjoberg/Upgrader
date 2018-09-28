@@ -138,7 +138,7 @@ namespace Upgrader.Test
                                     "NonAtomic", 
                                     () =>
                                         {
-                                            database.Tables.Add("NonAtomicTable", new Column("NonAtomicTableId", "int"));
+                                            database.Tables.Add("NonAtomicTable", new Column<int>("NonAtomicTableId"));
                                             throw new InvalidOperationException("Injected fault");
                                         })
                             };
@@ -168,7 +168,7 @@ namespace Upgrader.Test
                     "Atomic",
                     d =>
                     {
-                        d.Tables.Add("AtomicTable", new Column("AtomicTableId", "int"));
+                        d.Tables.Add("AtomicTable", new Column<int>("AtomicTableId"));
                         throw new InvalidOperationException("Injected fault");
                     })
             };

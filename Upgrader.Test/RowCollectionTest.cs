@@ -25,7 +25,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddInsertsRowIntoTable()
         {
-            database.Tables.Add("InsertRowIntoTable", new Column("InsertRowIntoTableId", "int"));
+            database.Tables.Add("InsertRowIntoTable", new Column<int>("InsertRowIntoTableId"));
 
             database.Tables["InsertRowIntoTable"].Rows.Add(new { InsertRowIntoTableId = 5 });
 
@@ -35,7 +35,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddSetsIdentity()
         {
-            database.Tables.Add("InsertRowIntoTableSetIdentity", new Column("InsertRowIntoTableSetIdentityId", "integer", ColumnModifier.AutoIncrementPrimaryKey), new Column("Value", "int"));
+            database.Tables.Add("InsertRowIntoTableSetIdentity", new Column<int>("InsertRowIntoTableSetIdentityId", ColumnModifier.AutoIncrementPrimaryKey), new Column<int>("Value"));
 
             var data = new InsertRowIntoTableSetIdentity { InsertRowIntoTableSetIdentityId = 0, Value = 5 };
             database.Tables["InsertRowIntoTableSetIdentity"].Rows.Add(data);
@@ -46,7 +46,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void UpdateUpdatesRow()
         {
-            database.Tables.Add("UpdateUpdatesRow", new Column("UpdateUpdatesRowId", "integer", ColumnModifier.AutoIncrementPrimaryKey), new Column("Value", "integer"));
+            database.Tables.Add("UpdateUpdatesRow", new Column<int>("UpdateUpdatesRowId", ColumnModifier.AutoIncrementPrimaryKey), new Column<int>("Value"));
 
             database.Tables["UpdateUpdatesRow"].Rows.Add(new { Value = 1 });
             database.Tables["UpdateUpdatesRow"].Rows.Update(new { UpdateUpdatesRowId = 1, Value = 2 });
@@ -57,7 +57,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void RemoveDeletesRow()
         {
-            database.Tables.Add("RemoveDeletesRow", new Column("RemoveDeletesRowId", "integer", ColumnModifier.PrimaryKey), new Column("Value", "integer"));
+            database.Tables.Add("RemoveDeletesRow", new Column<int>("RemoveDeletesRowId", ColumnModifier.PrimaryKey), new Column<int>("Value"));
 
             database.Tables["RemoveDeletesRow"].Rows.Add(new { RemoveDeletesRowId = 1, Value = 1 });
             database.Tables["RemoveDeletesRow"].Rows.Remove(new { RemoveDeletesRowId = 1 });

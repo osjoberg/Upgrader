@@ -23,7 +23,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddAddsIndex()
         {
-            database.Tables.Add("AddIndex", new Column("AddIndexId", "int"));
+            database.Tables.Add("AddIndex", new Column<int>("AddIndexId"));
             database.Tables["AddIndex"].Indexes.Add("AddIndexId");
 
             Assert.IsNotNull(database.Tables["AddIndex"].Indexes.Single());
@@ -32,7 +32,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddAddsIndexWithIncludeColumn()
         {
-            database.Tables.Add("AddIndexWithIncludeColumn", new Column("AddIndexId", "int"), new Column("IncludeColumn", "int"));
+            database.Tables.Add("AddIndexWithIncludeColumn", new Column<int>("AddIndexId"), new Column<int>("IncludeColumn"));
             database.Tables["AddIndexWithIncludeColumn"].Indexes.Add("AddIndexId", includeColumnNames: new[] { "IncludeColumn" });
 
             Assert.IsNotNull(database.Tables["AddIndexWithIncludeColumn"].Indexes.Single());
@@ -41,7 +41,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddAddsIndexWithMultipleColumns()
         {
-            database.Tables.Add("AddIndexMultiple", new Column("AddIndexMultipleId", "int"), new Column("Multiple", "int"));
+            database.Tables.Add("AddIndexMultiple", new Column<int>("AddIndexMultipleId"), new Column<int>("Multiple"));
             database.Tables["AddIndexMultiple"].Indexes.Add(new[] { "AddIndexMultipleId", "Multiple" });
 
             CollectionAssert.AreEqual(new[] { "AddIndexMultipleId", "Multiple" }, database.Tables["AddIndexMultiple"].Indexes.Single().ColumnNames);
@@ -50,7 +50,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void RemoveRemovesIndex()
         {
-            database.Tables.Add("RemoveIndex", new Column("RemoveIndexId", "int"));
+            database.Tables.Add("RemoveIndex", new Column<int>("RemoveIndexId"));
             database.Tables["RemoveIndex"].Indexes.Add("RemoveIndexId");
 
             database.Tables["RemoveIndex"].Indexes.Remove("IX_RemoveIndex_RemoveIndexId");
@@ -60,12 +60,12 @@ namespace Upgrader.Test
         [TestMethod]
         public void IndexesCanBeEnumerated()
         {
-            database.Tables.Add("EnumerateIndexParent", new Column("EnumerateIndexParentId", "int", ColumnModifier.AutoIncrementPrimaryKey));
+            database.Tables.Add("EnumerateIndexParent", new Column<int>("EnumerateIndexParentId", ColumnModifier.AutoIncrementPrimaryKey));
             database.Tables["EnumerateIndexParent"].Indexes.Add("EnumerateIndexParentId", true);
 
             database.Tables.Add(
                 "EnumerateIndex", 
-                new[] { new Column("EnumerateIndexId", "int"), new Column("EnumerateIndexParentId", "int") },
+                new[] { new Column<int>("EnumerateIndexId"), new Column<int>("EnumerateIndexParentId") },
                 new[] { new ForeignKey("EnumerateIndexParentId", "EnumerateIndexParent") });
 
             database.Tables["EnumerateIndex"].Indexes.Add("EnumerateIndexId");
@@ -76,7 +76,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void IndexesCanBeAccessedByName()
         {
-            database.Tables.Add("AccessIndex", new Column("AccessIndexId", "int"));
+            database.Tables.Add("AccessIndex", new Column<int>("AccessIndexId"));
             database.Tables["AccessIndex"].Indexes.Add("AccessIndexId");
 
             Assert.AreEqual("IX_AccessIndex_AccessIndexId", database.Tables["AccessIndex"].Indexes["IX_AccessIndex_AccessIndexId"].IndexName);

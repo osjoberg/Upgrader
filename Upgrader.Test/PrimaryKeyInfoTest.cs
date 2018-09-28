@@ -22,7 +22,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void TableNameReturnsTableName()
         {
-            Database.Tables.Add("PrimaryKeyTableName", new Column("PrimaryKeyTableNameId", "int", ColumnModifier.PrimaryKey));
+            Database.Tables.Add("PrimaryKeyTableName", new Column<int>("PrimaryKeyTableNameId", ColumnModifier.PrimaryKey));
             
             Assert.AreEqual("PrimaryKeyTableName", Database.Tables["PrimaryKeyTableName"].PrimaryKey.TableName);
         }
@@ -30,7 +30,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void PrimaryKeyIsNamedAccordingToNamingConvention()
         {
-            Database.Tables.Add("PrimaryKeyName", new Column("PrimaryKeyNameId", "int", ColumnModifier.PrimaryKey));
+            Database.Tables.Add("PrimaryKeyName", new Column<int>("PrimaryKeyNameId", ColumnModifier.PrimaryKey));
 
             Assert.AreEqual("PK_PrimaryKeyName_PrimaryKeyNameId", Database.Tables["PrimaryKeyName"].PrimaryKey.PrimaryKeyName);
         }

@@ -25,10 +25,10 @@ namespace Upgrader.Test
         {
             if (database.Tables["ForeignTable"] == null)
             { 
-                database.Tables.Add("ForeignTable", new Column("ForeignTableId", "int", ColumnModifier.PrimaryKey));
+                database.Tables.Add("ForeignTable", new Column<int>("ForeignTableId", ColumnModifier.PrimaryKey));
                 database.Tables.Add(
                     "ParentTable", 
-                    new[] { new Column("ParentTableId", "int", ColumnModifier.PrimaryKey), new Column("ForeignTableId", "int") }, 
+                    new[] { new Column<int>("ParentTableId", ColumnModifier.PrimaryKey), new Column<int>("ForeignTableId") }, 
                     new[] { new ForeignKey("ForeignTableId", "ForeignTable") });
             }
         }
@@ -62,7 +62,7 @@ namespace Upgrader.Test
         {
             database.Tables.Add(
                 "RemoveForeignKeyTable",
-                new[] { new Column("RemoveForeignKeyTableId", "int", ColumnModifier.PrimaryKey), new Column("ForeignTableId", "int") },
+                new[] { new Column<int>("RemoveForeignKeyTableId", ColumnModifier.PrimaryKey), new Column<int>("ForeignTableId") },
                 new[] { new ForeignKey("ForeignTableId", "ForeignTable", "ForeignTableId", "DuplicateFK") });
 
             database.Tables["RemoveForeignKeyTable"].ForeignKeys.Remove("DuplicateFK");

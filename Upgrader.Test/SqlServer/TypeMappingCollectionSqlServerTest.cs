@@ -27,15 +27,17 @@ namespace Upgrader.Test.SqlServer
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public override void TestAddTimeSpanColumn()
         {
-            TestAddType(TimeSpan.Zero, TimeSpan.FromDays(1).Subtract(TimeSpan.FromMilliseconds(1)));
+            base.TestAddTimeSpanColumn();
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public override void TestAddNullableTimeSpanColumn()
         {
-            TestAddType<TimeSpan?>(null, TimeSpan.Zero, TimeSpan.FromDays(1).Subtract(TimeSpan.FromMilliseconds(1)));
+            base.TestAddNullableTimeSpanColumn();
         }
     }
 }

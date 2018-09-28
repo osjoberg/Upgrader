@@ -14,7 +14,7 @@ namespace Upgrader.Test.SqLite
         [TestMethod]
         public override void PrimaryKeyIsNamedAccordingToNamingConvention()
         {
-            Database.Tables.Add("PrimaryKeyName", new Column("PrimaryKeyNameId", "int", ColumnModifier.PrimaryKey));
+            Database.Tables.Add("PrimaryKeyName", new Column<int>("PrimaryKeyNameId", ColumnModifier.PrimaryKey));
 
             Assert.AreEqual("", Database.Tables["PrimaryKeyName"].PrimaryKey.PrimaryKeyName);
         }

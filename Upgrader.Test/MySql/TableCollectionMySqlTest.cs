@@ -16,7 +16,7 @@ namespace Upgrader.Test.MySql
         [TestMethod]
         public override void TablesCanBeEnumerated()
         {
-            Database.Tables.Add("EnumerateTable", new Column("EnumerateTableId", "int"));
+            Database.Tables.Add("EnumerateTable", new Column<int>("EnumerateTableId"));
 
             Assert.AreEqual(1, Database.Tables.Count(table => table.TableName.Equals("EnumerateTable", StringComparison.InvariantCultureIgnoreCase)));
         }

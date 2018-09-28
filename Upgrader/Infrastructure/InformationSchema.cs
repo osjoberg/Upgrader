@@ -77,7 +77,7 @@ namespace Upgrader.Infrastructure
 
             var parameters = new[] { columnInformation.datetime_precision, columnInformation.character_maximum_length, columnInformation.numeric_precision, columnInformation.numeric_scale };
 
-            var usedParameters = parameters.Where(parameter => parameter > 0).Select(parameter => parameter.Value.ToString()).ToArray();
+            var usedParameters = parameters.Where(parameter => parameter.HasValue).Select(parameter => parameter.Value.ToString()).ToArray();
             
             return columnInformation.data_type + (usedParameters.Any() ? "(" + string.Join(",", usedParameters) + ")" : "");
         }

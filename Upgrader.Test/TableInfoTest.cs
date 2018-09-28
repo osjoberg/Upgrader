@@ -23,7 +23,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void AddPrimaryKeyAddsPrimaryKey()
         {
-            Database.Tables.Add("AddPrimaryKey", new Column("AddPrimaryKeyId", "int"));
+            Database.Tables.Add("AddPrimaryKey", new Column<int>("AddPrimaryKeyId"));
             Database.Tables["AddPrimaryKey"].AddPrimaryKey("AddPrimaryKeyId");
             
             Assert.AreEqual("AddPrimaryKeyId", Database.Tables["AddPrimaryKey"].PrimaryKey.ColumnNames.Single());
@@ -32,7 +32,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void AddPrimaryKeyWithMultipleColumnsAddsPrimaryKeyWithMultipleColums()
         {
-            Database.Tables.Add("AddPrimaryKeyMultiple", new Column("AddPrimaryKeyMultipleId", "int"), new Column("Multiple", "int"));
+            Database.Tables.Add("AddPrimaryKeyMultiple", new Column<int>("AddPrimaryKeyMultipleId"), new Column<int>("Multiple"));
             Database.Tables["AddPrimaryKeyMultiple"].AddPrimaryKey(new[] { "AddPrimaryKeyMultipleId", "Multiple" });
 
             CollectionAssert.AreEqual(new[] { "AddPrimaryKeyMultipleId", "Multiple" }, Database.Tables["AddPrimaryKeyMultiple"].PrimaryKey.ColumnNames);
@@ -41,7 +41,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PrimaryKeyPropertyIsNullWhenNoPrimaryKeyIsPresent()
         {
-            Database.Tables.Add("GetPrimaryKeyColumns", new Column("GetPrimaryKeyColumnsId", "int"));
+            Database.Tables.Add("GetPrimaryKeyColumns", new Column<int>("GetPrimaryKeyColumnsId"));
 
             Assert.IsNull(Database.Tables["GetPrimaryKeyColumns"].PrimaryKey);
         }
@@ -49,7 +49,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void RemovePrimaryKeyRemovesPrimaryKey()
         {
-            Database.Tables.Add("RemovePrimaryKey", new Column("RemovePrimaryKeyId", "int"));
+            Database.Tables.Add("RemovePrimaryKey", new Column<int>("RemovePrimaryKeyId"));
             Database.Tables["RemovePrimaryKey"].AddPrimaryKey("RemovePrimaryKeyId");
             Database.Tables["RemovePrimaryKey"].RemovePrimaryKey();
 
@@ -59,7 +59,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void RenameRenamesTable()
         {
-            Database.Tables.Add("RenameTable", new Column("RenameTableId", "int"));
+            Database.Tables.Add("RenameTable", new Column<int>("RenameTableId"));
 
             Database.Tables.Rename("RenameTable", "NewTableName");
 
