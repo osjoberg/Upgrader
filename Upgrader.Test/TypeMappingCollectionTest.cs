@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -45,7 +44,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void TestAddDecimalColumn()
         {
-            TestAddType(Math.Round(1 / 3M, 5));
+            TestAddType(Math.Round(1 / 3M, 5), default(decimal));
         }
 
         [TestMethod]
@@ -63,25 +62,25 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void TestAddFloatColumn()
         {
-            TestAddType(float.MinValue, float.MaxValue);
+            TestAddType(float.MinValue + 1, float.MaxValue, default(float));
         }
 
         [TestMethod]
         public virtual void TestAddInt32Column()
         {
-            TestAddType(int.MinValue, int.MaxValue);
+            TestAddType(int.MinValue, int.MaxValue, default(int));
         }
 
         [TestMethod]
         public virtual void TestAddInt64Column()
         {
-            TestAddType(long.MinValue, long.MaxValue);
+            TestAddType(long.MinValue, long.MaxValue, default(long));
         }
 
         [TestMethod]
         public virtual void TestAddInt16Column()
         {
-            TestAddType(short.MinValue, short.MaxValue);
+            TestAddType(short.MinValue, short.MaxValue, default(short));
         }
 
         [TestMethod]
@@ -99,7 +98,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void TestAddTimeSpanColumn()
         {
-            TestAddType(TimeSpan.MinValue, TimeSpan.MaxValue);
+            TestAddType(TimeSpan.MinValue, TimeSpan.MaxValue, default(TimeSpan));
         }
 
         [TestMethod]
@@ -129,13 +128,13 @@ namespace Upgrader.Test
         [TestMethod]
         public void TestAddNullableDecimalColumn()
         {
-            TestAddType<decimal?>(null, Math.Round(1 / 3M, 5));
+            TestAddType<decimal?>(null, Math.Round(1 / 3M, 5), default(decimal));
         }
 
         [TestMethod]
         public virtual void TestAddNullableDoubleColumn()
         {
-            TestAddType<double?>(null, double.MinValue, double.MaxValue);
+            TestAddType<double?>(null, double.MinValue, double.MaxValue, default(double));
         }
 
         [TestMethod]
@@ -147,25 +146,25 @@ namespace Upgrader.Test
         [TestMethod]
         public void TestAddNullableFloatColumn()
         {
-            TestAddType<float?>(null, float.MinValue, float.MaxValue);
+            TestAddType<float?>(null, float.MinValue, float.MaxValue, default(float));
         }
 
         [TestMethod]
         public virtual void TestAddNullableInt32Column()
         {
-            TestAddType<int?>(null, int.MinValue, int.MaxValue);
+            TestAddType<int?>(null, int.MinValue, int.MaxValue, default(int));
         }
 
         [TestMethod]
         public void TestAddNullableInt64Column()
         {
-            TestAddType<long?>(null, long.MinValue, long.MaxValue);
+            TestAddType<long?>(null, long.MinValue, long.MaxValue, default(long));
         }
 
         [TestMethod]
         public void TestAddNullableInt16Column()
         {
-            TestAddType<short?>(null, short.MinValue, short.MaxValue);
+            TestAddType<short?>(null, short.MinValue, short.MaxValue, default(short));
         }
 
         [TestMethod]
@@ -183,7 +182,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void TestAddNullableTimeSpanColumn()
         {
-            TestAddType<TimeSpan?>(null, TimeSpan.MinValue, TimeSpan.MaxValue);
+            TestAddType<TimeSpan?>(null, TimeSpan.MinValue, TimeSpan.MaxValue, TimeSpan.Zero);
         }
 
         protected void TestAddType<TType>(params TType[] values)
@@ -195,36 +194,33 @@ namespace Upgrader.Test
         {
             var tableName = GetTableName(typeof(TType), length, nullable);
 
-            database.Tables.Add(tableName, new Column("Id", "integer", ColumnModifier.PrimaryKey));
-
-            if (length == 1)
-            {
-                database.Tables[tableName].Columns.Add<TType>("Value");
-            }
-            else
-            {
-                database.Tables[tableName].Columns.Add<TType>("Value", length, nullable);
-            }
-
-            database.Tables[tableName].Rows.Add(new { Id = 1, Value = values.First() });
+            database.Tables.Add(tableName, new Column<int>("Id", ColumnModifier.PrimaryKey));
 
             foreach (var value in values)
             {
-                database.Tables[tableName].Rows.Update(new { Id = 1, Value = value });
-                Assert.AreEqual(value, database.Tables[tableName].Rows.Query<KeyValuePair<int, TType>>().Single().Value);
-            }
+                var columnName = "Value" + (values.ToList().IndexOf(value) + 1);
 
-            var dataType = database.TypeMappings[Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType)];
-            if (length == 1)
-            {
-                Assert.AreEqual(dataType, database.Tables[tableName].Columns["Value"].DataType);
-            }
-            else
-            {
-                Assert.AreEqual(dataType.Substring(0, dataType.IndexOf('(')) + $"({length})", database.Tables[tableName].Columns["Value"].DataType);
-            }
+                if (length == 1)
+                {
+                    database.Tables[tableName].Columns.Add(columnName, value);
+                }
+                else
+                {
+                    database.Tables[tableName].Columns.Add(columnName, length, nullable, value);
+                }
 
-            Assert.AreEqual(nullable, database.Tables[tableName].Columns["Value"].Nullable);
+                var dataType = database.TypeMappings[Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType)];
+                if (length == 1)
+                {
+                    Assert.AreEqual(dataType, database.Tables[tableName].Columns[columnName].DataType);
+                }
+                else
+                {
+                    Assert.AreEqual(dataType.Substring(0, dataType.IndexOf('(')) + $"({length})", database.Tables[tableName].Columns[columnName].DataType);
+                }
+
+                Assert.AreEqual(nullable, database.Tables[tableName].Columns[columnName].Nullable);
+            }
         }
 
         private static string GetTableName(Type type, int length, bool nullable)
