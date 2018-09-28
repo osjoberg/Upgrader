@@ -116,7 +116,7 @@ namespace Upgrader.Schema
         /// <param name="nullable">True to allow null values.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
         /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
-        public void Add<TType>(string columnName, int length, bool nullable = false, TType initialValue = default(TType))
+        public void Add<TType>(string columnName, int length, bool nullable = false, TType initialValue = default(TType)) where TType : IComparable<string>
         {
             Validate.IsNotNullable(typeof(TType), nameof(TType));
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));

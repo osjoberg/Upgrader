@@ -92,7 +92,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void TestAddStringColumnSpecifiedLength()
         {
-            TestAddType(10, false, new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
+            this.TestAddStringType(10, false, new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
         }
 
         [TestMethod]
@@ -170,13 +170,13 @@ namespace Upgrader.Test
         [TestMethod]
         public void TestAddNullableStringColumnDefaultLength()
         {
-            TestAddType(50, true, null, "", new string('a', 50), new string(Enumerable.Range(10000, 50).Select(i => (char)i).ToArray()));
+            this.TestAddStringType(50, true, null, "", new string('a', 50), new string(Enumerable.Range(10000, 50).Select(i => (char)i).ToArray()));
         }
 
         [TestMethod]
         public void TestAddNullableStringColumnSpecifiedLength()
         {
-            TestAddType(10, true, null, "", new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
+            this.TestAddStringType(10, true, null, "", new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
         }
 
         [TestMethod]
@@ -191,6 +191,32 @@ namespace Upgrader.Test
         }
 
         protected void TestAddType<TType>(int length, bool nullable, params TType[] values)
+        {
+            var tableName = GetTableName(typeof(TType), length, nullable);
+
+            database.Tables.Add(tableName, new Column<int>("Id", ColumnModifier.PrimaryKey));
+
+            foreach (var value in values)
+            {
+                var columnName = "Value" + (values.ToList().IndexOf(value) + 1);
+
+                database.Tables[tableName].Columns.Add(columnName, value);
+
+                var dataType = database.TypeMappings[Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType)];
+                if (length == 1)
+                {
+                    Assert.AreEqual(dataType, database.Tables[tableName].Columns[columnName].DataType);
+                }
+                else
+                {
+                    Assert.AreEqual(dataType.Substring(0, dataType.IndexOf('(')) + $"({length})", database.Tables[tableName].Columns[columnName].DataType);
+                }
+
+                Assert.AreEqual(nullable, database.Tables[tableName].Columns[columnName].Nullable);
+            }
+        }
+
+        protected void TestAddStringType<TType>(int length, bool nullable, params TType[] values) where TType : IComparable<string>
         {
             var tableName = GetTableName(typeof(TType), length, nullable);
 
