@@ -31,11 +31,11 @@ using (var database = new SqlServerDatabase(connectionString))
 
 	var steps = new StepCollection();
 
-	steps.Add("CreateCustomerTable", () =>
+	steps.Add("CreateCustomerTable", db =>
 	{
-		database.Tables.Add(
+		db.Tables.Add(
 			"Customers", 
-			new Column("CustomerId", "INT", ColumnModifier.AutoIncrementPrimaryKey),
+			new Column("CustomerId", "int", ColumnModifier.AutoIncrementPrimaryKey),
 			new Column("Name", "VARCHAR(50)")
 		);
 	});
