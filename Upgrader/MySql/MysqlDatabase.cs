@@ -259,12 +259,7 @@ namespace Upgrader.MySql
             var escapedColumnName = EscapeIdentifier(columnName);
             var escapedNewColumnName = EscapeIdentifier(newColumnName);
 
-            var dataType = GetColumnDataType(tableName, columnName);
-            var nullable = GetColumnNullable(tableName, columnName);
-            var nullableStatement = nullable ? "NULL" : "NOT NULL";
-            var autoIncrementStatement = GetColumnAutoIncrement(tableName, columnName) ? "AUTO_INCREMENT" : "";
-
-            Dapper.Execute($"ALTER TABLE {escapedTableName} CHANGE COLUMN {escapedColumnName} {escapedNewColumnName} {dataType} {nullableStatement} {autoIncrementStatement}");
+            Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME COLUMN {escapedColumnName} TO {escapedNewColumnName}");
         }
 
         internal override void RenameTable(string tableName, string newTableName)
