@@ -7,7 +7,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class UpgradeSqlServerTest : UpgradeTest<SqlServerDatabase>
     {
-        public UpgradeSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
+        public UpgradeSqlServerTest() : base(new SqlServerDatabase("SqlServer"), "SqlServer")
         {            
         }
     }

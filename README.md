@@ -7,6 +7,7 @@ Features
 - Regular SQL can used for data changes, complicated or vendor specific DDL operations
 - Steps can be expressed in-line or in separate classes
 - Constraints are automaticaly named by convention
+- Steps that fail can be rolled back automatically, speeding up development cycle
 - Easy to debug
 
 ## Install via NuGet
@@ -25,25 +26,22 @@ This example will intialize Upgader with one upgrade step named "CreateCustomerT
 // TODO: Insert real connection string here.
 var connectionString = "Server=(local); Integrated Security=true; Initial Catalog=Acme";
 
-using (var database = new SqlServerDatabase(connectionString))
+var upgrade = new Upgrade<SqlServerDatabase>(connectionString);
+
+var steps = new StepCollection();
+
+steps.Add("CreateCustomerTable", db =>
 {
-	var upgrade = new Upgrade<SqlServerDatabase>(database);
+	db.Tables.Add(
+		"Customers", 
+		new Column<int>("CustomerId", ColumnModifier.AutoIncrementPrimaryKey),
+		new Column<string>("Name", 50)
+	);
+});
 
-	var steps = new StepCollection();
+// TODO: Add more steps here as you develop your system.
 
-	steps.Add("CreateCustomerTable", db =>
-	{
-		db.Tables.Add(
-			"Customers", 
-			new Column("CustomerId", "int", ColumnModifier.AutoIncrementPrimaryKey),
-			new Column("Name", "VARCHAR(50)")
-		);
-	});
-
-	// TODO: Add more steps here as you develop your system.
-
-	upgrade.PerformUpgrade(steps);
-}
+upgrade.PerformUpgrade(steps);
 ```
 
 ## Table manipulation examples

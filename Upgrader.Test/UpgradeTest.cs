@@ -11,10 +11,12 @@ namespace Upgrader.Test
     public abstract class UpgradeTest<TDatabase> where TDatabase : Database
     {
         private readonly TDatabase database;
+        private readonly string connectionStringOrName;
 
-        protected UpgradeTest(TDatabase database)
+        protected UpgradeTest(TDatabase database, string connectionStringOrName)
         {
             this.database = database;
+            this.connectionStringOrName = connectionStringOrName;
         }
 
         [TestCleanup]
@@ -31,7 +33,7 @@ namespace Upgrader.Test
                 database.Remove();
             }
 
-            var upgrade = new Upgrade<TDatabase>(database);
+            var upgrade = new Upgrade<TDatabase>(this.connectionStringOrName);
             upgrade.PerformUpgrade(Enumerable.Empty<IStep>());
 
             Assert.IsTrue(database.Exists);
@@ -42,20 +44,20 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeCreatesTableIfItDoesNotExist()
         {
-            var upgrade = new Upgrade<TDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
             {
                 ExecutedStepsTable = "UpgradeCreatesTable"
             };
 
             upgrade.PerformUpgrade(Enumerable.Empty<IStep>());
 
-            CollectionAssert.AreEqual(new[] { "Step", "ExecutedAt" }, upgrade.Database.Tables["UpgradeCreatesTable"].Columns.Select(column => column.ColumnName).ToArray());
+            CollectionAssert.AreEqual(new[] { "Step", "ExecutedAt" }, database.Tables["UpgradeCreatesTable"].Columns.Select(column => column.ColumnName).ToArray());
         }
 
         [TestMethod]
         public void PerformUpgradeExecutesSteps()
         {
-            var upgrade = new Upgrade<TDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
             {
                 ExecutedStepsTable = "UpgradeExecutesSteps"
             };
@@ -75,7 +77,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeRecordsExecutedStepName()
         {
-            var upgrade = new Upgrade<TDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
             {
                 ExecutedStepsTable = "UpgradeExecutesStepsRecords"
             };
@@ -93,7 +95,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeDoesNotExecutesAlreadyExecutedSteps()
         {
-            var upgrade = new Upgrade<TDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
             {
                 ExecutedStepsTable = "UpgradeExecutesNotExecutedSteps"
             };
@@ -114,7 +116,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
         {
-            PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(database);
+            PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(connectionStringOrName);
         }
 
         [TestMethod]
@@ -126,22 +128,22 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeWithTransactionModeNoneDoesNotRollbackChangesWhenExceptionOccurs()
         {
-            var upgrade = new Upgrade<TDatabase>(database)
-                              {
-                                  ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep", 
-                                  TransactionMode = TransactionMode.None               
-                              };
+            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
+            {
+                ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep", 
+                TransactionMode = TransactionMode.None               
+            };
 
             var steps = new List<Step>
-                            {
-                                new Step(
-                                    "NonAtomic", 
-                                    () =>
-                                        {
-                                            database.Tables.Add("NonAtomicTable", new Column<int>("NonAtomicTableId"));
-                                            throw new InvalidOperationException("Injected fault");
-                                        })
-                            };
+            {
+                new Step(
+                    "NonAtomic", 
+                    () =>
+                        {
+                            database.Tables.Add("NonAtomicTable", new Column<int>("NonAtomicTableId"));
+                            throw new InvalidOperationException("Injected fault");
+                        })
+            };
 
             try
             {
@@ -154,9 +156,9 @@ namespace Upgrader.Test
             Assert.IsNotNull(database.Tables["NonAtomicTable"]);
         }
 
-        protected void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(TDatabase database)
+        protected void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(string overrideConnectionStringOrName)
         {
-            var upgrade = new Upgrade<TDatabase>(database)
+            var upgrade = new Upgrade<TDatabase>(overrideConnectionStringOrName)
             {
                 ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep",
                 TransactionMode = TransactionMode.OneTransactionPerStep
@@ -166,9 +168,9 @@ namespace Upgrader.Test
             {
                 new Step(
                     "Atomic",
-                    d =>
+                    db =>
                     {
-                        d.Tables.Add("AtomicTable", new Column<int>("AtomicTableId"));
+                        db.Tables.Add("AtomicTable", new Column<int>("AtomicTableId"));
                         throw new InvalidOperationException("Injected fault");
                     })
             };
