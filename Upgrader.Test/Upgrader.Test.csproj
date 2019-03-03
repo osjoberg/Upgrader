@@ -1,191 +1,39 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2DC905A6-7091-42F7-AD96-AD1F30A47D17}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Upgrader.Test</RootNamespace>
-    <AssemblyName>Upgrader.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.2\lib\net40\Dapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.2.2.7\lib\net40\Mono.Security.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.9.9\lib\net40\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Npgsql, Version=2.2.7.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.2.2.7\lib\net40\Npgsql.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.102.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.102.0\lib\net40\System.Data.SQLite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.15" />
+    <PackageReference Include="Npgsql" Version="4.0.5" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.109.2" />
   </ItemGroup>
-  <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+
   <ItemGroup>
-    <Compile Include="AssemblyInitialize.cs" />
-    <Compile Include="ColumnInfoTest.cs" />
-    <Compile Include="ForeignKeyCollectionTest.cs" />
-    <Compile Include="ForeignKeyInfoTest.cs" />
-    <Compile Include="IndexCollectionTest.cs" />
-    <Compile Include="IndexInfoTest.cs" />
-    <Compile Include="MySql\ColumnCollectionMySqlTest.cs" />
-    <Compile Include="MySql\ColumnInfoMySqlTest.cs" />
-    <Compile Include="MySql\ForeignKeyCollectionMySqlTest.cs" />
-    <Compile Include="MySql\ForeignKeyInfoMySqlTest.cs" />
-    <Compile Include="MySql\IndexCollectionMySqlTest.cs" />
-    <Compile Include="MySql\IndexInfoMySqlTest.cs" />
-    <Compile Include="MySql\PrimaryKeyInfoMySqlTest.cs" />
-    <Compile Include="MySql\RowCollectionMySqlTest.cs" />
-    <Compile Include="MySql\TableInfoMySqlTest.cs" />
-    <Compile Include="MySql\TypeMappingCollectionMySqlTest.cs" />
-    <Compile Include="MySql\UprgradeMySqlTest.cs" />
-    <Compile Include="PostgreSql\ColumnCollectionPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\ColumnInfoPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\ForeignKeyCollectionPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\ForeignKeyInfoPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\IndexCollectionPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\IndexInfoPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\PrimaryKeyInfoPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\RowCollectionPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\TableCollectionPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\TableInfoPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\TypeMappingCollectionPostgreSqlTest.cs" />
-    <Compile Include="PostgreSql\UpgradePostgreSqlTest.cs" />
-    <Compile Include="PrimaryKeyInfoTest.cs" />
-    <Compile Include="SqLite\ColumnCollectionSqLiteTest.cs" />
-    <Compile Include="SqLite\ColumnInfoSqLiteTest.cs" />
-    <Compile Include="SqLite\ForeignKeyCollectionSqLiteTest.cs" />
-    <Compile Include="SqLite\ForeignKeyInfoSqLiteTest.cs" />
-    <Compile Include="SqLite\IndexCollectionSqLiteTest.cs" />
-    <Compile Include="SqLite\IndexInfoSqLiteTest.cs" />
-    <Compile Include="SqLite\PrimaryKeyInfoSqLiteTest.cs" />
-    <Compile Include="SqLite\RowCollectionSqLiteTest.cs" />
-    <Compile Include="SqLite\TableCollectionSqLiteTest.cs" />
-    <Compile Include="SqLite\TableInfoSqLiteTest.cs" />
-    <Compile Include="SqLite\TypeMappingCollectionSqLiteTest.cs" />
-    <Compile Include="SqLite\UpgradeSqLiteTest.cs" />
-    <Compile Include="SqlServer\ColumnCollectionSqlServerTest.cs" />
-    <Compile Include="SqlServer\ColumnInfoSqlServerTest.cs" />
-    <Compile Include="SqlServer\ForeignKeyCollectionSqlServerTest.cs" />
-    <Compile Include="SqlServer\ForeignKeyInfoSqlServerTest.cs" />
-    <Compile Include="SqlServer\IndexCollectionSqlServerTest.cs" />
-    <Compile Include="SqlServer\IndexInfoSqlServerTest.cs" />
-    <Compile Include="SqlServer\PrimaryKeyInfoSqlServerTest.cs" />
-    <Compile Include="SqlServer\RowCollectionSqlServerTest.cs" />
-    <Compile Include="SqlServer\TableInfoSqlServerTest.cs" />
-    <Compile Include="SqlServer\TableCollectionSqlServerTest.cs" />
-    <Compile Include="MySql\TableCollectionMySqlTest.cs" />
-    <Compile Include="SqlServer\TypeMappingCollectionSqlServerTest.cs" />
-    <Compile Include="SqlServer\UpgradeSqlServerTest.cs" />
-    <Compile Include="TableCollectionTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ColumnCollectionTest.cs" />
-    <Compile Include="RowCollectionTest.cs" />
-    <Compile Include="TableInfoTest.cs" />
-    <Compile Include="TypeMappingCollectionTest.cs" />
-    <Compile Include="UpgradeTest.cs" />
+    <ProjectReference Include="..\Upgrader\Upgrader.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Upgrader\Upgrader.csproj">
-      <Project>{9048803a-8359-4cef-b023-f33c31864578}</Project>
-      <Name>Upgrader</Name>
-    </ProjectReference>
+    <Folder Include="Properties\" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Microsoft.CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.102.0\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.102.0\build\net40\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.102.0\build\net40\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.102.0\build\net40\System.Data.SQLite.Core.targets'))" />
+
+  <Target Name="CopyAppConfig" AfterTargets="Build" DependsOnTargets="Build">
+    <CreateItem Include="$(OutputPath)$(AssemblyName).dll.config">
+      <Output TaskParameter="Include" ItemName="FilesToCopy" />
+    </CreateItem>
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="$(OutputPath)testhost.dll.config" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

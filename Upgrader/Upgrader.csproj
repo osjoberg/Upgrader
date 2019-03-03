@@ -1,107 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9048803A-8359-4CEF-B023-F33C31864578}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Upgrader</RootNamespace>
-    <AssemblyName>Upgrader</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.8.2.0</Version>
+    <Copyright>Copyright ©  2018</Copyright>
+    <RepositoryUrl>https://github.com/osjoberg/Upgrader</RepositoryUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/osjoberg/Upgrader</PackageProjectUrl>
+    <Description>Upgrader keeps your database schema in sync with your source code as your development project evolves. Changes to the database schema are expressed as Upgrader Steps. Each Step that successfully have been deployed is tracked in a table. Typically you use Upgrader on application startup or in an installer.</Description>
+    <Product />
+    <Authors>Oskar Sjöberg</Authors>
+    <Company>N/A</Company>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.1\lib\net40\Dapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
+    <PackageReference Include="Dapper" Version="1.50.7" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Data\RowCollection.cs" />
-    <Compile Include="Infrastructure\ConnectionFactory.cs" />
-    <Compile Include="Infrastructure\DataDefinitionLanguage.cs" />
-    <Compile Include="Infrastructure\DataManipulationLanguage.cs" />
-    <Compile Include="Infrastructure\InformationSchema.cs" />
-    <Compile Include="Infrastructure\StructuredQueryLanguage.cs" />
-    <Compile Include="MutexScope.cs" />
-    <Compile Include="PostgreSql\PostgreSqlDatabase.cs" />
-    <Compile Include="Schema\ColumnInfo.cs" />
-    <Compile Include="Schema\ColumnModifier.cs" />
-    <Compile Include="Infrastructure\Dapper.cs" />
-    <Compile Include="Schema\ForeignKey.cs" />
-    <Compile Include="Schema\ForeignKeyInfo.cs" />
-    <Compile Include="Schema\IndexInfo.cs" />
-    <Compile Include="NamingConvention.cs" />
-    <Compile Include="Schema\PrimaryKeyInfo.cs" />
-    <Compile Include="Schema\TableInfo.cs" />
-    <Compile Include="SqLite\SqliteDatabase.cs" />
-    <Compile Include="StepCollection.cs" />
-    <Compile Include="StringHelper.cs" />
-    <Compile Include="TypeMappingCollection.cs" />
-    <Compile Include="UpgraderException.cs" />
-    <Compile Include="Infrastructure\Validate.cs" />
-    <Compile Include="Schema\Column.cs" />
-    <Compile Include="Schema\ForeignKeyCollection.cs" />
-    <Compile Include="Schema\IndexCollection.cs" />
-    <Compile Include="Schema\ColumnCollection.cs" />
-    <Compile Include="Database.cs" />
-    <Compile Include="IStep.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MySql\MysqlDatabase.cs" />
-    <Compile Include="SqlServer\SqlServerDatabase.cs" />
-    <Compile Include="Step.cs" />
-    <Compile Include="Schema\TableCollection.cs" />
-    <Compile Include="TransactionMode.cs" />
-    <Compile Include="Upgrade.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Upgrader.nuspec" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

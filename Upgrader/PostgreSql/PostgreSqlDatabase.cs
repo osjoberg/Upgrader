@@ -74,8 +74,15 @@ namespace Upgrader.PostgreSql
         internal override void ClearPool(IDbConnection connection)
         {
             var connectionType = connection.GetType();
-            var methodInfo = connectionType.GetMethod("ClearPool", BindingFlags.Public | BindingFlags.Instance);
-            methodInfo.Invoke(connection, new object[] { });
+            var instanceMethodInfo = connectionType.GetMethod("ClearPool", BindingFlags.Public | BindingFlags.Instance);
+            if (instanceMethodInfo != null)
+            {
+                instanceMethodInfo.Invoke(connection, new object[] { });
+                return;
+            }
+
+            var staticMethodInfo = connectionType.GetMethod("ClearPool", BindingFlags.Public | BindingFlags.Static);
+            staticMethodInfo.Invoke(null, new object[] { connection });
         }
 
         internal override void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
@@ -127,7 +134,7 @@ namespace Upgrader.PostgreSql
 				        constraint_type = 'PRIMARY KEY' AND
                         table_name = @tableName AND 
                         table_schema = @schemaName
-                ", 
+                ",
                 new { tableName, schemaName })
                 .ToArray();
         }
@@ -144,7 +151,7 @@ namespace Upgrader.PostgreSql
                     WHERE
                          ic.relname = @indexName AND
                          ic.oid = ix.indexrelid
-                ", 
+                ",
                 new { indexName });
         }
 
@@ -168,7 +175,7 @@ namespace Upgrader.PostgreSql
                          a.attrelid = tc.oid AND
                          a.attnum = ANY(ix.indkey) AND
                          tc.relkind = 'r'
-                ", 
+                ",
                 new { indexName })
                 .ToArray();
         }
