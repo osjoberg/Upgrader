@@ -46,7 +46,7 @@ namespace Upgrader.Schema
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
 
-            Add(new[] { columnName }, unique, indexName);
+            Add(new[] { columnName }, unique, indexName, includeColumnNames);
         }
 
         /// <summary>
