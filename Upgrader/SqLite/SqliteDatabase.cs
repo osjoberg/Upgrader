@@ -272,7 +272,7 @@ namespace Upgrader.SqLite
                 throw new NotSupportedException("Including columns in an index is not supported bySQLite.");
             }
 
-            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
+            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, null);
         }
 
         internal override bool GetIndexType(string tableName, string indexName)

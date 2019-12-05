@@ -203,6 +203,16 @@ namespace Upgrader.MySql
                 .ToArray();
         }
 
+        internal override void AddIndex(string tableName, string[] columnNames, bool unique, string indexName, string[] includeColumnNames)
+        {
+            if (includeColumnNames != null)
+            {
+                throw new NotSupportedException("Including columns in an index is not supported bySQLite.");
+            }
+
+            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, null);
+        }
+
         internal override bool GetIndexType(string tableName, string indexName)
         {
             var schemaName = GetSchema(tableName);

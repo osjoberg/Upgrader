@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.MySql;
 
 namespace Upgrader.Test.MySql
@@ -8,6 +10,13 @@ namespace Upgrader.Test.MySql
     {
         public IndexCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
         {            
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void AddAddsIndexWithIncludeColumn()
+        {
+            base.AddAddsIndexWithIncludeColumn();
         }
     }
 }
