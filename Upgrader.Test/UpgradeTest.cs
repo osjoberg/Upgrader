@@ -33,7 +33,7 @@ namespace Upgrader.Test
                 database.Remove();
             }
 
-            var upgrade = new Upgrade<TDatabase>(this.connectionStringOrName);
+            var upgrade = new Upgrade<TDatabase>(connectionStringOrName);
             upgrade.PerformUpgrade(Enumerable.Empty<IStep>());
 
             Assert.IsTrue(database.Exists);

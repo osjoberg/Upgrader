@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Linq;
+
+using Upgrader.Infrastructure;
 
 namespace Upgrader.SqlServer
 {
     public class SqlServerDatabase : Database
     {
+        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory(new AdoProvider("Microsoft.Data.SqlClient.dll", "Microsoft.Data.SqlClient.SqlConnection"), new AdoProvider("System.Data.SqlClient.dll", "System.Data.SqlClient.SqlConnection")));
         private readonly string connectionStringOrName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlServerDatabase"/> class.
         /// </summary>
         /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public SqlServerDatabase(string connectionStringOrName) : base(new SqlConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
+        public SqlServerDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
         {
             this.connectionStringOrName = connectionStringOrName;
 

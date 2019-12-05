@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Upgrader
 {
@@ -8,14 +9,16 @@ namespace Upgrader
     [Serializable]
     public sealed class UpgraderException : Exception
     {
-        internal static UpgraderException CannotCreateInstance(string typeName, string assembly)
+        internal static UpgraderException CannotCreateInstance(string typeName, string assemblyFilename)
         {
-            return new UpgraderException($"Cannot create instance of type \"{typeName}\". Make sure \"{assembly}\" is loaded in the app domain.");            
+            return new UpgraderException($"Cannot create instance of type \"{typeName}\". Make sure \"{assemblyFilename}\" is loaded in the app domain.");            
         }
 
-        internal static UpgraderException CannotFindAssembly(string assembly)
+        internal static UpgraderException CannotFindAssembly(params string[] assemblyFilenames)
         {
-            return new UpgraderException($"Cannot find asssembly named \"{assembly}\".");
+            var assemblyFilenamesFormatted = string.Join(" or ", assemblyFilenames.Select(assemblyFilename => $"\"{assemblyFilename}\""));
+
+            return new UpgraderException($"Cannot find asssembly named {assemblyFilenamesFormatted}.");
         }
 
 

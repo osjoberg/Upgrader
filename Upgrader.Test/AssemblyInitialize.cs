@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.SqlClient;
 using System.Data.SQLite;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +22,7 @@ namespace Upgrader.Test
         public static void Initialize(TestContext context)
         {
             // References to all connection types so that the assemblies will be copied to the test bin directory.
-            var references = new IDbConnection[] { new MySqlConnection(), new NpgsqlConnection(), new SQLiteConnection() };
+            var references = new IDbConnection[] { new MySqlConnection(), new NpgsqlConnection(), new SQLiteConnection(), new SqlConnection() };
 
             var databases = new Database[]
             {
