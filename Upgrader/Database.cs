@@ -18,8 +18,8 @@ namespace Upgrader
     public abstract class Database : IDisposable
     {
         internal readonly InformationSchema InformationSchema;
+        internal readonly DataDefinitionLanguage dataDefinitionLanguage;
         internal readonly string DatabaseName;
-        private readonly DataDefinitionLanguage dataDefinitionLanguage;
         private readonly DataManipulationLanguage dataManipulationLanguage;
         private readonly StructuredQueryLanguage structuredQueryLanguage;
         private readonly string connectionString;
@@ -255,7 +255,7 @@ namespace Upgrader
 
         internal abstract string[] GetIndexColumnNames(string tableName, string indexName);
 
-        internal void AddIndex(string tableName, string[] columnNames, bool unique, string indexName, string[] includeColumnNames)
+        internal virtual void AddIndex(string tableName, string[] columnNames, bool unique, string indexName, string[] includeColumnNames)
         {
             dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
         }

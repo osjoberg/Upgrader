@@ -202,7 +202,7 @@ namespace Upgrader.PostgreSql
             var isColumnAutoIncrement = GetColumnAutoIncrement(tableName, columnName);
             if (isColumnAutoIncrement)
             {
-                throw new NotSupportedException("Renaming a serial column is not supported in PostgreSql.");
+                throw new NotSupportedException("Renaming a serial column is not supported byPostgreSql.");
             }
 
             var escapedTableName = EscapeIdentifier(tableName);

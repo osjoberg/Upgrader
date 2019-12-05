@@ -129,7 +129,7 @@ namespace Upgrader.SqLite
         {
             if (nullable == false)
             {
-                throw new NotSupportedException("Adding non-nullable columns is not supported in SQLite.");
+                throw new NotSupportedException("Adding non-nullable columns is not supported bySQLite.");
             }
 
             base.AddColumn(tableName, columnName, dataType, true);
@@ -137,17 +137,17 @@ namespace Upgrader.SqLite
 
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
-            throw new NotSupportedException("Modifying column properties is not supported in SQLite.");
+            throw new NotSupportedException("Modifying column properties is not supported bySQLite.");
         }
 
         internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
-            throw new NotSupportedException("Renaming columns is not supported in SQLite.");
+            throw new NotSupportedException("Renaming columns is not supported bySQLite.");
         }
 
         internal override void RemoveColumn(string tableName, string columnName)
         {
-            throw new NotSupportedException("Removing columns is not supported in SQLite.");
+            throw new NotSupportedException("Removing columns is not supported bySQLite.");
         }
 
         internal override string GetPrimaryKeyName(string tableName)
@@ -176,12 +176,12 @@ namespace Upgrader.SqLite
 
         internal override void AddPrimaryKey(string tableName, string[] columnNames, string primaryKeyName)
         {
-            throw new NotSupportedException("Adding primary key to an already created table is not supported in SQLite.");
+            throw new NotSupportedException("Adding primary key to an already created table is not supported bySQLite.");
         }
 
         internal override void RemovePrimaryKey(string tableName, string primaryKeyName)
         {
-            throw new NotSupportedException("Removing the primary key is not supported in SQLite.");
+            throw new NotSupportedException("Removing the primary key is not supported bySQLite.");
         }
 
         internal override string[] GetForeignKeyNames(string tableName)
@@ -233,12 +233,12 @@ namespace Upgrader.SqLite
 
         internal override void AddForeignKey(string tableName, string[] columnNames, string foreignTableName, string[] foreignColumnNames, string foreignKeyName)
         {
-            throw new NotSupportedException("Adding foreign key after table creation is not supported in SQLite");
+            throw new NotSupportedException("Adding foreign key after table creation is not supported bySQLite");
         }
 
         internal override void RemoveForeignKey(string tableName, string foreignKeyName)
         {
-            throw new NotSupportedException("Removing foreign key is not supported in SQLite");
+            throw new NotSupportedException("Removing foreign key is not supported bySQLite");
         }
 
         internal override string[] GetIndexNames(string tableName)
@@ -263,6 +263,16 @@ namespace Upgrader.SqLite
                 .Query<IndexList>($"PRAGMA {escapedSchemaName}.index_info({escapedIndexName})")
                 .Select(tableInfo => tableInfo.Name)
                 .ToArray();
+        }
+
+        internal override void AddIndex(string tableName, string[] columnNames, bool unique, string indexName, string[] includeColumnNames)
+        {
+            if (includeColumnNames != null)
+            {
+                throw new NotSupportedException("Including columns in an index is not supported bySQLite.");
+            }
+
+            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
         }
 
         internal override bool GetIndexType(string tableName, string indexName)

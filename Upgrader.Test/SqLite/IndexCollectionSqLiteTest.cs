@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.SqLite;
 
 namespace Upgrader.Test.SqLite
@@ -8,6 +10,13 @@ namespace Upgrader.Test.SqLite
     {
         public IndexCollectionSqLiteTest() : base(new SqLiteDatabase("SqLite"))
         {            
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void AddAddsIndexWithIncludeColumn()
+        {
+            base.AddAddsIndexWithIncludeColumn();
         }
     }
 }

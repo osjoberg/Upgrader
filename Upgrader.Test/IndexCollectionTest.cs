@@ -30,7 +30,7 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void AddAddsIndexWithIncludeColumn()
+        public virtual void AddAddsIndexWithIncludeColumn()
         {
             database.Tables.Add("AddIndexWithIncludeColumn", new Column<int>("AddIndexId"), new Column<int>("IncludeColumn"));
             database.Tables["AddIndexWithIncludeColumn"].Indexes.Add("AddIndexId", includeColumnNames: new[] { "IncludeColumn" });
