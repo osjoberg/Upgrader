@@ -112,7 +112,7 @@ namespace Upgrader
                         database.Create();
                     }
 
-                    if (database.Tables[ExecutedStepsTable] == null)
+                    if (database.Tables.Exists(ExecutedStepsTable) == false)
                     {
                         database.Tables.Add(ExecutedStepsTable, new Column<string>("Step", 100), new Column<DateTime>("ExecutedAt"));
                     }

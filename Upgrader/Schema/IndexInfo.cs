@@ -27,11 +27,13 @@
         /// <summary>
         /// Gets column names.
         /// </summary>
-        public string[] ColumnNames => database.GetIndexColumnNames(TableName, IndexName);
+        /// <returns>Column names.</returns>
+        public string[] GetColumnNames() => database.GetIndexColumnNames(TableName, IndexName);
 
         /// <summary>
         /// Gets if index is unique.
         /// </summary>
-        public bool Unique => database.GetIndexType(TableName, IndexName);
+        /// <returns>True if the index is unique, otherwise False.</returns>
+        public bool IsUnique() => database.GetIndexType(TableName, IndexName);
     }
 }

@@ -33,7 +33,7 @@ namespace Upgrader.Schema
                 Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
                 Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
 
-                return database.GetColumnDataType(tableName, columnName) != null ? new ColumnInfo(database, tableName, columnName) : null;
+                return new ColumnInfo(database, tableName, columnName);
             }
         }
 
@@ -48,6 +48,16 @@ namespace Upgrader.Schema
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Checks if a column exists in the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <returns>True, if the column exists or False if it does not exist.</returns>
+        public bool Exists(string columnName)
+        {
+            return database.GetColumnDataType(tableName, columnName) != null;
         }
 
         /// <summary>
@@ -103,8 +113,9 @@ namespace Upgrader.Schema
             }
 
             var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
+            var initialValue = typeof(TType) == typeof(string) ? "" : (object)default(TType);
 
-            Add(columnName, dataType, nullable, default(TType));
+            Add(columnName, dataType, nullable, initialValue);
         }
 
         /// <summary>
@@ -149,7 +160,21 @@ namespace Upgrader.Schema
                 throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
             }
 
-            Add(columnName, dataType, nullable, default(TType));
+            object initialValue;
+            if (typeof(TType) == typeof(string) && nullable)
+            {
+                initialValue = null;
+            }
+            else if (typeof(TType) == typeof(string) && nullable == false)
+            {
+                initialValue = "";
+            }
+            else
+            {
+                initialValue = default(TType);
+            }
+                
+            Add(columnName, dataType, nullable, initialValue);
         }
 
         /// <summary>
@@ -197,8 +222,9 @@ namespace Upgrader.Schema
             }
 
             var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
+            var initialValue = typeof(TType) == typeof(string) ? "" : (object)default(TType);
 
-            Add(columnName, dataType, nullable, default(TType));
+            Add(columnName, dataType, nullable, initialValue);
         }
 
         /// <summary>

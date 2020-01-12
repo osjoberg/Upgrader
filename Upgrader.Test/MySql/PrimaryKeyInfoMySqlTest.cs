@@ -17,7 +17,7 @@ namespace Upgrader.Test.MySql
             Database.Tables.Add("PrimaryKeyName", new Column<int>("PrimaryKeyNameId"));
             Database.Tables["PrimaryKeyName"].AddPrimaryKey("PrimaryKeyNameId");
 
-            Assert.AreEqual("PRIMARY", Database.Tables["PrimaryKeyName"].PrimaryKey.PrimaryKeyName);
+            Assert.AreEqual("PRIMARY", Database.Tables["PrimaryKeyName"].GetPrimaryKey().PrimaryKeyName);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("NullableColumn", new Column<int?>("NullableColumnId"));
 
-            Assert.IsTrue(Database.Tables["NullableColumn"].Columns["NullableColumnId"].Nullable);
+            Assert.IsTrue(Database.Tables["NullableColumn"].Columns["NullableColumnId"].IsNullable());
         }
 
         [TestMethod]
@@ -49,7 +49,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("NonNullableColumn", new Column<int>("NonNullableColumnId"));
 
-            Assert.IsFalse(Database.Tables["NonNullableColumn"].Columns["NonNullableColumnId"].Nullable);
+            Assert.IsFalse(Database.Tables["NonNullableColumn"].Columns["NonNullableColumnId"].IsNullable());
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("TypeColumn", new Column<int>("TypeColumnId"));
 
-            Assert.AreEqual(Database.TypeMappings[typeof(int)], Database.Tables["TypeColumn"].Columns["TypeColumnId"].DataType);
+            Assert.AreEqual(Database.TypeMappings[typeof(int)], Database.Tables["TypeColumn"].Columns["TypeColumnId"].GetDataType());
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace Upgrader.Test
             Database.Tables.Add("ChangeDataType", new Column<int>("ChangeDataTypeId"));
             Database.Tables["ChangeDataType"].Columns["ChangeDataTypeId"].ChangeDataType<float>();
             
-            Assert.AreEqual(Database.TypeMappings[typeof(float)], Database.Tables["ChangeDataType"].Columns["ChangeDataTypeId"].DataType);
+            Assert.AreEqual(Database.TypeMappings[typeof(float)], Database.Tables["ChangeDataType"].Columns["ChangeDataTypeId"].GetDataType());
         }
 
         [TestMethod]
@@ -75,8 +75,8 @@ namespace Upgrader.Test
             Database.Tables.Add("ChangeDataTypeNullable", new Column<int>("ChangeDataTypeNullableId"));
             Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].ChangeDataType<float>();
 
-            Assert.AreEqual(Database.TypeMappings[typeof(float)], Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].DataType);
-            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].Nullable);
+            Assert.AreEqual(Database.TypeMappings[typeof(float)], Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].GetDataType());
+            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable"].Columns["ChangeDataTypeNullableId"].IsNullable());
         }
 
         [TestMethod]
@@ -85,8 +85,8 @@ namespace Upgrader.Test
             Database.Tables.Add("ChangeDataTypeNullable2", new Column<int>("ChangeDataTypeNullable2Id"));
             Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].ChangeDataType<double>();
             
-            Assert.AreEqual(Database.TypeMappings[typeof(double)], Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].DataType);
-            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].Nullable);
+            Assert.AreEqual(Database.TypeMappings[typeof(double)], Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].GetDataType());
+            Assert.IsFalse(Database.Tables["ChangeDataTypeNullable2"].Columns["ChangeDataTypeNullable2Id"].IsNullable());
         }
 
         [TestMethod]
@@ -95,8 +95,8 @@ namespace Upgrader.Test
             Database.Tables.Add("RenameAutoIncrementPrimaryKeyColumn", new Column<int>("id", ColumnModifier.AutoIncrementPrimaryKey));
             Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns.Rename("id", "RenameAutoIncrementPrimaryKeyColumnId");
 
-            Assert.IsNotNull(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].PrimaryKey);
-            Assert.IsTrue(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["RenameAutoIncrementPrimaryKeyColumnId"].AutoIncrement);
+            Assert.IsNotNull(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].GetPrimaryKey());
+            Assert.IsTrue(Database.Tables["RenameAutoIncrementPrimaryKeyColumn"].Columns["RenameAutoIncrementPrimaryKeyColumnId"].IsAutoIncrement());
         }
 
         [TestMethod]
@@ -105,7 +105,7 @@ namespace Upgrader.Test
             Database.Tables.Add("RenamePrimaryKeyColumn", new Column<int>("id", ColumnModifier.PrimaryKey));
             Database.Tables["RenamePrimaryKeyColumn"].Columns.Rename("id", "RenamePrimaryKeyColumnId");
 
-            Assert.IsNotNull(Database.Tables["RenamePrimaryKeyColumn"].PrimaryKey);
+            Assert.IsNotNull(Database.Tables["RenamePrimaryKeyColumn"].GetPrimaryKey());
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("AutoIncrement", new Column<int>("AutoIncrementId", ColumnModifier.AutoIncrementPrimaryKey));
 
-            Assert.IsTrue(Database.Tables["AutoIncrement"].Columns["AutoIncrementId"].AutoIncrement);
+            Assert.IsTrue(Database.Tables["AutoIncrement"].Columns["AutoIncrementId"].IsAutoIncrement());
         }
 
         [TestMethod]
@@ -121,7 +121,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("NoAutoIncrement", new Column<int>("NoAutoIncrementId"));
 
-            Assert.IsFalse(Database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].AutoIncrement);
+            Assert.IsFalse(Database.Tables["NoAutoIncrement"].Columns["NoAutoIncrementId"].IsAutoIncrement());
         }
 
         [TestMethod]
@@ -129,7 +129,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("VarcharLength", new Column<string>("VarcharLengthId", 10));
            
-            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(string), 10), Database.Tables["VarcharLength"].Columns["VarcharLengthId"].DataType);
+            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(string), 10), Database.Tables["VarcharLength"].Columns["VarcharLengthId"].GetDataType());
         }
 
         [TestMethod]
@@ -137,7 +137,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("DecimalPrecision", new Column<decimal>("DecimalPrecisionId", 9, 0));
 
-            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(decimal), 9, 0), Database.Tables["DecimalPrecision"].Columns["DecimalPrecisionId"].DataType);
+            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(decimal), 9, 0), Database.Tables["DecimalPrecision"].Columns["DecimalPrecisionId"].GetDataType());
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("DecimalPrecisionAndScale", new Column<decimal>("DecimalPrecisionAndScaleId", 8, 2));
 
-            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(decimal), 8, 2), Database.Tables["DecimalPrecisionAndScale"].Columns["DecimalPrecisionAndScaleId"].DataType);
+            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(decimal), 8, 2), Database.Tables["DecimalPrecisionAndScale"].Columns["DecimalPrecisionAndScaleId"].GetDataType());
         }
 
         [TestMethod]
@@ -153,7 +153,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("SingleChar", new Column<char>("SingleCharId"));
 
-            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(char)), Database.Tables["SingleChar"].Columns["SingleCharId"].DataType);
+            Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(char)), Database.Tables["SingleChar"].Columns["SingleCharId"].GetDataType());
         }
     }
 }

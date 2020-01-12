@@ -67,19 +67,19 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void ReturnsNullWhenColumnDoesNotExist()
+        public void ExistsReturnsFalseWhenColumnDoesNotExist()
         {
             Database.Tables.Add("DoesNotContainColumn", new Column<int>("ContainsColumnId"));
 
-            Assert.IsNull(Database.Tables["DoesNotContainColumn"].Columns["ContainsColumnId2"]);
+            Assert.IsFalse(Database.Tables["DoesNotContainColumn"].Columns.Exists("ContainsColumnId2"));
         }
 
         [TestMethod]
-        public void ReturnsNotNullTrueWhenColumnDoesExist()
+        public void ExistsReturnsTrueWhenColumnDoesExist()
         {
             Database.Tables.Add("ContainsColumn", new Column<int>("ContainsColumnId"));
 
-            Assert.IsNotNull(Database.Tables["ContainsColumn"].Columns["ContainsColumnId"]);
+            Assert.IsTrue(Database.Tables["ContainsColumn"].Columns.Exists("ContainsColumnId"));
         }
 
         [TestMethod]
@@ -89,7 +89,7 @@ namespace Upgrader.Test
             Database.Tables["CanAddNotNullColumn"].Rows.Add(new { CanAddNotNullColumnId  = 1 });
             Database.Tables["CanAddNotNullColumn"].Columns.Add("NewNotNullColumn", 5);
 
-            Assert.IsFalse(Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].Nullable);
+            Assert.IsFalse(Database.Tables["CanAddNotNullColumn"].Columns["NewNotNullColumn"].IsNullable());
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ namespace Upgrader.Test
             Database.Tables.Add("CanAddNullableColumn", new Column<int?>("CanAddNullableColumnId"));
             Database.Tables["CanAddNullableColumn"].Columns.Add<int?>("NullableColumn");
 
-            Assert.IsTrue(Database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].Nullable);
+            Assert.IsTrue(Database.Tables["CanAddNullableColumn"].Columns["NullableColumn"].IsNullable());
         }
     }
 }

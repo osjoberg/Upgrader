@@ -20,16 +20,18 @@ namespace Upgrader.Infrastructure
         {
             var escapedTableName = database.EscapeIdentifier(tableName);
 
-            var columns = database.Tables[tableName].Columns;
+            var columns = database.Tables[tableName].Columns.ToArray();
 
-            var escapedColumnNames = columns.Where(column => column.AutoIncrement == false).Select(column => database.EscapeIdentifier(column.ColumnName));
+            var autoIncrementedColumn = columns.SingleOrDefault(column => column.IsAutoIncrement());
+
+            var escapedColumnNames = columns.Where(column => column != autoIncrementedColumn).Select(column => database.EscapeIdentifier(column.ColumnName));
             var escapedCommaSeparatedColumnNames = string.Join(", ", escapedColumnNames);
-            var parameterNames = columns.Where(column => column.AutoIncrement == false).Select(column => "@" + column.ColumnName);
+            var parameterNames = columns.Where(column => column != autoIncrementedColumn).Select(column => "@" + column.ColumnName);
             var commaSeparatedParameterNames = string.Join(", ", parameterNames);
 
             var sql = $"INSERT INTO {escapedTableName} ({escapedCommaSeparatedColumnNames}) VALUES ({commaSeparatedParameterNames})";
 
-            var writableAutoIncrementProperty = GetWritableAutoIncrementProperty(typeof(T), columns);
+            var writableAutoIncrementProperty = GetWritableAutoIncrementProperty(typeof(T), autoIncrementedColumn);
             if (writableAutoIncrementProperty != null)
             {
                 sql += database.GetLastInsertedAutoIncrementedPrimaryKeyIdentity(writableAutoIncrementProperty.Name);
@@ -60,7 +62,7 @@ namespace Upgrader.Infrastructure
 
         internal void Update<T>(string tableName, IEnumerable<T> rows)
         {
-            var primaryKeyColumnNames = database.Tables[tableName].PrimaryKey?.ColumnNames;           
+            var primaryKeyColumnNames = database.Tables[tableName].GetPrimaryKey()?.GetColumnNames();           
             if (primaryKeyColumnNames == null)
             {
                 throw new ArgumentException("");                
@@ -71,7 +73,7 @@ namespace Upgrader.Infrastructure
             var columns = database.Tables[tableName].Columns;
 
             var columnNames = columns
-                .Where(column => column.AutoIncrement == false)
+                .Where(column => column.IsAutoIncrement() == false)
                 .Select(column => column.ColumnName)
                 .Except(primaryKeyColumnNames);
 
@@ -91,7 +93,7 @@ namespace Upgrader.Infrastructure
 
         internal void Delete<T>(string tableName, IEnumerable<T> rows)
         {
-            var primaryKeyColumnNames = database.Tables[tableName].PrimaryKey?.ColumnNames;
+            var primaryKeyColumnNames = database.Tables[tableName].GetPrimaryKey().GetColumnNames();
             if (primaryKeyColumnNames == null)
             {
                 throw new ArgumentException("");
@@ -118,15 +120,14 @@ namespace Upgrader.Infrastructure
             Update(tableName, rows.Select(updateFunc));
         }
 
-        private static PropertyInfo GetWritableAutoIncrementProperty(Type type, ColumnCollection columnCollection)
+        private static PropertyInfo GetWritableAutoIncrementProperty(Type type, ColumnInfo autoIncrementColumn)
         {
-            var autoIncrementColumnInfo = columnCollection.SingleOrDefault(column => column.AutoIncrement);
-            if (autoIncrementColumnInfo == null)
+            if (autoIncrementColumn == null)
             {
                 return null;
             }
             
-            var propertyInfo = type.GetProperty(autoIncrementColumnInfo.ColumnName);
+            var propertyInfo = type.GetProperty(autoIncrementColumn.ColumnName);
             if (propertyInfo == null || propertyInfo.CanWrite == false)
             {
                 return null;

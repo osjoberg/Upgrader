@@ -23,7 +23,7 @@ namespace Upgrader.Test
         [TestInitialize]
         public void Initialize()
         {
-            if (database.Tables["ForeignTable"] == null)
+            if (database.Tables.Exists("ForeignTable") == false)
             { 
                 database.Tables.Add("ForeignTable", new Column<int>("ForeignTableId", ColumnModifier.PrimaryKey));
                 database.Tables.Add(
@@ -36,7 +36,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void AddAddsForeignKey()
         {
-            Assert.AreEqual("ForeignTableId", database.Tables["ParentTable"].ForeignKeys["FK_ParentTable_ForeignTableId_ForeignTable"].ColumnNames.Single());
+            Assert.AreEqual("ForeignTableId", database.Tables["ParentTable"].ForeignKeys["FK_ParentTable_ForeignTableId_ForeignTable"].GetColumnNames().Single());
         }
 
         [TestMethod]
@@ -46,15 +46,15 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void ReturnsNotNullForExistingForeignKey()
+        public void ExistsReturnsTrueForExistingForeignKey()
         {
-            Assert.IsNotNull(database.Tables["ParentTable"].ForeignKeys["FK_ParentTable_ForeignTableId_ForeignTable"]);
+            Assert.IsTrue(database.Tables["ParentTable"].ForeignKeys.Exists("FK_ParentTable_ForeignTableId_ForeignTable"));
         }
 
         [TestMethod]
-        public void ReturnsNullForNonExistingForeignKey()
+        public void ExistsReturnsFalseForNonExistingForeignKey()
         {
-            Assert.IsNull(database.Tables["ParentTable"].ForeignKeys["FK_ParentTable_ForeignTableId_ForeignTable_ForeignTableId2"]);
+            Assert.IsFalse(database.Tables["ParentTable"].ForeignKeys.Exists("FK_ParentTable_ForeignTableId_ForeignTable_ForeignTableId2"));
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace Upgrader.Test
 
             database.Tables["RemoveForeignKeyTable"].ForeignKeys.Remove("DuplicateFK");
 
-            Assert.IsNull(database.Tables["RemoveForeignKeyTable"].ForeignKeys["DuplicateFK"]);
+            Assert.IsFalse(database.Tables["RemoveForeignKeyTable"].ForeignKeys.Exists("DuplicateFK"));
         }
     }
 }

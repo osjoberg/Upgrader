@@ -27,6 +27,7 @@
         /// <summary>
         /// Gets column names.
         /// </summary>
-        public string[] ColumnNames => database.GetPrimaryKeyColumnNames(TableName, PrimaryKeyName);
+        /// <returns>Column names.</returns>
+        public string[] GetColumnNames() => database.GetPrimaryKeyColumnNames(TableName, PrimaryKeyName);
     }
 }

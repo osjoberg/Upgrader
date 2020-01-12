@@ -24,7 +24,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("PrimaryKeyTableName", new Column<int>("PrimaryKeyTableNameId", ColumnModifier.PrimaryKey));
             
-            Assert.AreEqual("PrimaryKeyTableName", Database.Tables["PrimaryKeyTableName"].PrimaryKey.TableName);
+            Assert.AreEqual("PrimaryKeyTableName", Database.Tables["PrimaryKeyTableName"].GetPrimaryKey().TableName);
         }
 
         [TestMethod]
@@ -32,7 +32,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("PrimaryKeyName", new Column<int>("PrimaryKeyNameId", ColumnModifier.PrimaryKey));
 
-            Assert.AreEqual("PK_PrimaryKeyName_PrimaryKeyNameId", Database.Tables["PrimaryKeyName"].PrimaryKey.PrimaryKeyName);
+            Assert.AreEqual("PK_PrimaryKeyName_PrimaryKeyNameId", Database.Tables["PrimaryKeyName"].GetPrimaryKey().PrimaryKeyName);
         }
     }
 }

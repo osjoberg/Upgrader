@@ -23,7 +23,7 @@ namespace Upgrader.Test
         [TestInitialize]
         public void Initialize()
         {
-            if (database.Tables["ForeignTable2"] == null)
+            if (database.Tables.Exists("ForeignTable2") == false)
             {
                 database.Tables.Add("ForeignTable2", new Column<int>("ForeignTable2Id", ColumnModifier.PrimaryKey));
                 database.Tables.Add(
@@ -50,19 +50,19 @@ namespace Upgrader.Test
         [TestMethod]
         public void ForeignTableContainsTheForeignTableName()
         {
-            Assert.AreEqual("ForeignTable2", database.Tables["ForeignTable2Child"].ForeignKeys.Single().ForeignTableName, true);
+            Assert.AreEqual("ForeignTable2", database.Tables["ForeignTable2Child"].ForeignKeys.Single().GetForeignTableName(), true);
         }
 
         [TestMethod]
         public void ColumnsContainsTheTableColumns()
         {
-            Assert.AreEqual("ForeignTable2ChildId", database.Tables["ForeignTable2Child"].ForeignKeys.Single().ColumnNames.Single());
+            Assert.AreEqual("ForeignTable2ChildId", database.Tables["ForeignTable2Child"].ForeignKeys.Single().GetColumnNames().Single());
         }
 
         [TestMethod]
         public void ForeignColumnsContainsTheForeignTableColumns()
         {
-            Assert.AreEqual("ForeignTable2Id", database.Tables["ForeignTable2Child"].ForeignKeys.Single().ForeignColumnNames.Single());
+            Assert.AreEqual("ForeignTable2Id", database.Tables["ForeignTable2Child"].ForeignKeys.Single().GetForeignColumnNames().Single());
         }
     }
 }

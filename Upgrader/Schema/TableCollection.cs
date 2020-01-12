@@ -31,7 +31,7 @@ namespace Upgrader.Schema
                 Validate.IsNotNullAndNotEmpty(tableName, nameof(tableName));
                 Validate.MaxLength(tableName, nameof(tableName), database.MaxIdentifierLength);
 
-                return database.GetColumnNames(tableName).Any() ? new TableInfo(database, tableName) : null;
+                return new TableInfo(database, tableName);
             }
         }
 
@@ -54,6 +54,16 @@ namespace Upgrader.Schema
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Checks if a table exists.
+        /// </summary>
+        /// <param name="tableName">Table name.</param>
+        /// <returns>True, if the table exists or False if it does not exist.</returns>
+        public bool Exists(string tableName)
+        {
+            return database.GetColumnNames(tableName).Any();
         }
 
         /// <summary>

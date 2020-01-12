@@ -33,8 +33,8 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("AddDecimalTable", new Column<decimal?>("AddDecimalTableId", 4, 2));
 
-            Assert.IsTrue(Database.Tables["AddDecimalTable"].Columns["AddDecimalTableId"].DataType.EndsWith("(4,2)"));
-            Assert.IsTrue(Database.Tables["AddDecimalTable"].Columns["AddDecimalTableId"].Nullable);
+            Assert.IsTrue(Database.Tables["AddDecimalTable"].Columns["AddDecimalTableId"].GetDataType().EndsWith("(4,2)"));
+            Assert.IsTrue(Database.Tables["AddDecimalTable"].Columns["AddDecimalTableId"].IsNullable());
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace Upgrader.Test
             Database.Tables["AddAutoIncrementTable"].Rows.Add(new { Data = 12345 });
 
             Assert.AreEqual(1, Database.Tables["AddAutoIncrementTable"].Rows.Query().Single().AddAutoIncrementTableId);
-            Assert.IsFalse(Database.Tables["AddAutoIncrementTable"].Columns["AddAutoIncrementTableId"].Nullable);
+            Assert.IsFalse(Database.Tables["AddAutoIncrementTable"].Columns["AddAutoIncrementTableId"].IsNullable());
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Upgrader.Test
             Database.Tables.Add("RemoveTable", new Column<int>("RemoveTableId"));
             Database.Tables.Remove("RemoveTable");
 
-            Assert.IsNull(Database.Tables["RemoveTable"]);
+            Assert.IsFalse(Database.Tables.Exists("RemoveTable"));
         }
 
         [TestMethod]
@@ -74,17 +74,17 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
-        public void ReturnsNullWhenTableDoesNotExist()
+        public void ExistsReturnsFalseWhenTableDoesNotExist()
         {
-            Assert.IsNull(Database.Tables["NonExistingTable"]);
+            Assert.IsFalse(Database.Tables.Exists("NonExistingTable"));
         }
 
         [TestMethod]
-        public void ReturnsNotNullWhenTableDoesExist()
+        public void ExistsReturnsTrueWhenTableDoesExist()
         {
             Database.Tables.Add("ExistingTable", new Column<int>("ExistingTableId"));
 
-            Assert.IsNotNull(Database.Tables["ExistingTable"]);
+            Assert.IsTrue(Database.Tables.Exists("ExistingTable"));
         }
     }
 }

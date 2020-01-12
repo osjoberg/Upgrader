@@ -31,8 +31,39 @@ namespace Upgrader.Schema
                 Validate.IsNotNullAndNotEmpty(foreignKeyName, nameof(foreignKeyName));
                 Validate.MaxLength(foreignKeyName, nameof(foreignKeyName), database.MaxIdentifierLength);
 
-                return database.GetForeignKeyForeignTableName(tableName, foreignKeyName) != null ? new ForeignKeyInfo(database, tableName, foreignKeyName) : null;
+                return new ForeignKeyInfo(database, tableName, foreignKeyName);
             }
+        }
+
+        /// <summary>
+        /// Gets an IEnumerator of all foreign keys.
+        /// </summary>
+        /// <returns>IEnumerator of all foreign keys.</returns>
+        public IEnumerator<ForeignKeyInfo> GetEnumerator()
+        {
+            return database
+                .GetForeignKeyNames(tableName)
+                .Select(constraintName => new ForeignKeyInfo(database, tableName, constraintName))
+                .GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an IEnumerator of all foreign keys.
+        /// </summary>
+        /// <returns>IEnumerator of all foreign keys.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Checks if a foreign key exists.
+        /// </summary>
+        /// <param name="foreignKeyName">Foreign key name.</param>
+        /// <returns>True, if the foreign key exists or False if it does not exist.</returns>
+        public bool Exists(string foreignKeyName)
+        {
+            return database.GetForeignKeyForeignTableName(tableName, foreignKeyName) != null;
         }
 
         /// <summary>
@@ -73,9 +104,9 @@ namespace Upgrader.Schema
             Validate.IsNotEmpty(foreignKeyName, nameof(foreignKeyName));
             Validate.MaxLength(foreignKeyName, nameof(foreignKeyName), database.MaxIdentifierLength);
 
-            var constaintName = foreignKeyName ?? database.NamingConvention.GetForeignKeyNamingConvention(tableName, columnNames, foreignTableName);
+            var constraintName = foreignKeyName ?? database.NamingConvention.GetForeignKeyNamingConvention(tableName, columnNames, foreignTableName);
 
-            database.AddForeignKey(tableName, columnNames, foreignTableName, foreignColumnNames ?? columnNames, constaintName);
+            database.AddForeignKey(tableName, columnNames, foreignTableName, foreignColumnNames ?? columnNames, constraintName);
         }
 
         /// <summary>
@@ -99,27 +130,6 @@ namespace Upgrader.Schema
             {
                 Remove(foreignKey.ForeignKeyName);
             }
-        }
-
-        /// <summary>
-        /// Gets an IEnumerator of all foreign keys.
-        /// </summary>
-        /// <returns>IEnumerator of all foreign keys.</returns>
-        public IEnumerator<ForeignKeyInfo> GetEnumerator()
-        {
-            return database
-                .GetForeignKeyNames(tableName)
-                .Select(constraintName => new ForeignKeyInfo(database, tableName, constraintName))
-                .GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets an IEnumerator of all foreign keys.
-        /// </summary>
-        /// <returns>IEnumerator of all foreign keys.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

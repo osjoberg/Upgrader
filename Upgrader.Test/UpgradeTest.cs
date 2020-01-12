@@ -138,11 +138,11 @@ namespace Upgrader.Test
             {
                 new Step(
                     "NonAtomic", 
-                    () =>
-                        {
-                            database.Tables.Add("NonAtomicTable", new Column<int>("NonAtomicTableId"));
-                            throw new InvalidOperationException("Injected fault");
-                        })
+                    () => 
+                    {
+                        database.Tables.Add("NonAtomicTable", new Column<int>("NonAtomicTableId"));
+                        throw new InvalidOperationException("Injected fault");
+                    })
             };
 
             try
@@ -153,7 +153,7 @@ namespace Upgrader.Test
             {
             }
 
-            Assert.IsNotNull(database.Tables["NonAtomicTable"]);
+            Assert.IsTrue(database.Tables.Exists("NonAtomicTable"));
         }
 
         protected void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(string overrideConnectionStringOrName)
@@ -183,7 +183,7 @@ namespace Upgrader.Test
             {
             }
 
-            Assert.IsNull(database.Tables["AtomicTable"]);
+            Assert.IsFalse(database.Tables.Exists("AtomicTable"));
         }
     }
 }

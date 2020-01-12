@@ -70,8 +70,6 @@ namespace Upgrader
 
         internal abstract int MaxIdentifierLength { get; }
 
-        internal virtual bool InsertNullForAutoIncrementingPrimaryKey => false;
-
         internal Infrastructure.Dapper Dapper { get; }
 
         [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "This implementation is enough for now.")]

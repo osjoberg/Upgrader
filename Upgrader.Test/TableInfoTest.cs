@@ -26,7 +26,7 @@ namespace Upgrader.Test
             Database.Tables.Add("AddPrimaryKey", new Column<int>("AddPrimaryKeyId"));
             Database.Tables["AddPrimaryKey"].AddPrimaryKey("AddPrimaryKeyId");
             
-            Assert.AreEqual("AddPrimaryKeyId", Database.Tables["AddPrimaryKey"].PrimaryKey.ColumnNames.Single());
+            Assert.AreEqual("AddPrimaryKeyId", Database.Tables["AddPrimaryKey"].GetPrimaryKey().GetColumnNames().Single());
         }
 
         [TestMethod]
@@ -35,7 +35,7 @@ namespace Upgrader.Test
             Database.Tables.Add("AddPrimaryKeyMultiple", new Column<int>("AddPrimaryKeyMultipleId"), new Column<int>("Multiple"));
             Database.Tables["AddPrimaryKeyMultiple"].AddPrimaryKey(new[] { "AddPrimaryKeyMultipleId", "Multiple" });
 
-            CollectionAssert.AreEqual(new[] { "AddPrimaryKeyMultipleId", "Multiple" }, Database.Tables["AddPrimaryKeyMultiple"].PrimaryKey.ColumnNames);
+            CollectionAssert.AreEqual(new[] { "AddPrimaryKeyMultipleId", "Multiple" }, Database.Tables["AddPrimaryKeyMultiple"].GetPrimaryKey().GetColumnNames());
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace Upgrader.Test
         {
             Database.Tables.Add("GetPrimaryKeyColumns", new Column<int>("GetPrimaryKeyColumnsId"));
 
-            Assert.IsNull(Database.Tables["GetPrimaryKeyColumns"].PrimaryKey);
+            Assert.IsNull(Database.Tables["GetPrimaryKeyColumns"].GetPrimaryKey());
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace Upgrader.Test
             Database.Tables["RemovePrimaryKey"].AddPrimaryKey("RemovePrimaryKeyId");
             Database.Tables["RemovePrimaryKey"].RemovePrimaryKey();
 
-            Assert.IsNull(Database.Tables["RemovePrimaryKey"].PrimaryKey);
+            Assert.IsNull(Database.Tables["RemovePrimaryKey"].GetPrimaryKey());
         }
 
         [TestMethod]

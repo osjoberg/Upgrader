@@ -19,21 +19,6 @@ namespace Upgrader.Schema
         }
 
         /// <summary>
-        /// Gets column SQL data type.
-        /// </summary>
-        public string DataType => database.GetColumnDataType(TableName, ColumnName);
-
-        /// <summary>
-        /// Gets if column is nullable.
-        /// </summary>
-        public bool Nullable => database.GetColumnNullable(TableName, ColumnName);
-
-        /// <summary>
-        /// Gets if column is configured to auto increment.
-        /// </summary>
-        public bool AutoIncrement => database.GetColumnAutoIncrement(TableName, ColumnName);
-
-        /// <summary>
         /// Gets column name.
         /// </summary>
         public string ColumnName { get; }
@@ -44,6 +29,24 @@ namespace Upgrader.Schema
         public string TableName { get; }
 
         /// <summary>
+        /// Gets column SQL data type.
+        /// </summary>
+        /// <returns>Column SQL data type.</returns>
+        public string GetDataType() => database.GetColumnDataType(TableName, ColumnName);
+
+        /// <summary>
+        /// Gets if column is nullable.
+        /// </summary>
+        /// <returns>True if column is nullable, otherwise False.</returns>
+        public bool IsNullable() => database.GetColumnNullable(TableName, ColumnName);
+
+        /// <summary>
+        /// Gets if column is configured to auto increment.
+        /// </summary>
+        /// <returns>True if the column is auto incremented, otherwise False.</returns>
+        public bool IsAutoIncrement() => database.GetColumnAutoIncrement(TableName, ColumnName);
+
+        /// <summary>
         /// Change data type of column.
         /// </summary>
         /// <param name="dataType">SQL data type.</param>
@@ -51,7 +54,7 @@ namespace Upgrader.Schema
         {
             Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
 
-            database.ChangeColumn(TableName, ColumnName, dataType, Nullable);
+            database.ChangeColumn(TableName, ColumnName, dataType, IsNullable());
         }
 
         /// <summary>
@@ -75,11 +78,11 @@ namespace Upgrader.Schema
             var dataType = database.TypeMappings.GetDataType(typeof(TType));
             if (dataType == null)
             {
-                var type = System.Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
                 throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
             }
 
-            var nullable = System.Nullable.GetUnderlyingType(typeof(TType)) != null;
+            var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
 
             ChangeDataType(dataType, nullable);
         }
@@ -95,7 +98,7 @@ namespace Upgrader.Schema
             var dataType = database.TypeMappings.GetDataType(typeof(TType), length);
             if (dataType == null)
             {
-                var type = System.Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
                 throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
             }
 
@@ -113,11 +116,11 @@ namespace Upgrader.Schema
             var dataType = database.TypeMappings.GetDataType(typeof(TType), scale, precision);
             if (dataType == null)
             {
-                var type = System.Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
                 throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
             }
 
-            var nullable = System.Nullable.GetUnderlyingType(typeof(TType)) != null;
+            var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
 
             ChangeDataType(dataType, nullable);
         }

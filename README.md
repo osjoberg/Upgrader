@@ -48,7 +48,7 @@ upgrade.PerformUpgrade(steps);
 
 ```c#
 // Check if a table named "Customer" exists.
-if (database.Tables["Customer"] != null)
+if (database.Tables.Exists("Customer"))
 {
 	...
 }
@@ -76,7 +76,7 @@ database.Tables.Remove("Customers");
 ## Column manipulation examples
 ```c#
 // Check if column "Name" exists in table "Customer".
-if (database.Tables["Customer"].Columns["Name"] != null)
+if (database.Tables["Customer"].Columns.Exists("Name"))
 {
 	...
 }
@@ -112,13 +112,13 @@ database.Tables["Customer"].Columns.Remove("Profit");
 ## Primary key manipulation examples
 ```c#
 // Check if primary key exists for table "Customer".
-if (database.Tables["Customer"].PrimaryKey != null)
+if (database.Tables["Customer"].GetPrimaryKey() != null)
 {
 	...
 }
 
 // Get primary key information for "Customer" table.
-database.Tables["Customer"].PrimaryKey.ColumnNames.ToList().ForEach(columnName => Console.WriteLine(columnName));
+database.Tables["Customer"].GetPrimaryKey().GetColumnNames().ToList().ForEach(columnName => Console.WriteLine(columnName));
 
 // Add a primary key for table "Customer" on column "CustomerId".
 database.Tables["Customer"].AddPrimaryKey("CustomerId");
@@ -130,13 +130,13 @@ database.Tables["Customer"].RemovePrimaryKey();
 ## Foreign key manipulation examples
 ```c#
 // Check if foreign key "FK_Customer_Address" exists for table "Customer".
-if (database.Tables["Customer"].ForeignKeys["FK_Customer_CustomerId_Address"] != null)
+if (database.Tables["Customer"].ForeignKeys.Exists("FK_Customer_CustomerId_Address"))
 {
 	...
 }
 
 // Enumerate foreign keys for table "Customer".
-database.Tables["Customer"].ForeignKeys.ToList().ForEach(foreignKey => Console.WriteLine(foreignKey.ForeignTable));
+database.Tables["Customer"].ForeignKeys.ToList().ForEach(foreignKey => Console.WriteLine(foreignKey.GetForeignTable()));
 
 // Add a foreign key for table "Customer" on column "CustomerId" to column "CustomerId" in foreign table "Address".
 database.Tables["Customer"].ForeignKeys.Add("CustomerId", "Address");
@@ -148,7 +148,7 @@ database.Tables["Customer"].ForeignKeys.Remove("FK_Customer_CustomerId_Address")
 ## Index manipulation examples
 ```c#
 // Check if index named "IX_Customer_Profit" exists for table "Customer".
-if (database.Tables["Customer"].Indexes["IX_Customer_Profit"] != null)
+if (database.Tables["Customer"].Indexes.Exists("IX_Customer_Profit"))
 {
 	...
 }

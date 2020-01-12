@@ -21,6 +21,21 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
+        public void ExistsReturnsTrueForExistingIndex()
+        {
+            database.Tables.Add("ExistsIndex", new Column<int>("ExistsIndexId"));
+            database.Tables["ExistsIndex"].Indexes.Add("ExistsIndexId");
+
+            Assert.IsTrue(database.Tables["ExistsIndex"].Indexes.Exists("IX_ExistsIndex_ExistsIndexId"));
+        }
+
+        [TestMethod]
+        public void ExistsReturnsFalseForNonExistingIndex()
+        {
+            Assert.IsFalse(database.Tables["ExistsIndex"].Indexes.Exists("IX_ExistsIndex_ExistsIndexId2"));
+        }
+
+        [TestMethod]
         public void AddAddsIndex()
         {
             database.Tables.Add("AddIndex", new Column<int>("AddIndexId"));
@@ -44,7 +59,7 @@ namespace Upgrader.Test
             database.Tables.Add("AddIndexMultiple", new Column<int>("AddIndexMultipleId"), new Column<int>("Multiple"));
             database.Tables["AddIndexMultiple"].Indexes.Add(new[] { "AddIndexMultipleId", "Multiple" });
 
-            CollectionAssert.AreEqual(new[] { "AddIndexMultipleId", "Multiple" }, database.Tables["AddIndexMultiple"].Indexes.Single().ColumnNames);
+            CollectionAssert.AreEqual(new[] { "AddIndexMultipleId", "Multiple" }, database.Tables["AddIndexMultiple"].Indexes.Single().GetColumnNames());
         }
 
         [TestMethod]

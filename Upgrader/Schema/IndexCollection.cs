@@ -36,6 +36,37 @@ namespace Upgrader.Schema
         }
 
         /// <summary>
+        /// Gets an IEnumerator of all indexes.
+        /// </summary>
+        /// <returns>IEnumerator of all indexes.</returns>
+        public IEnumerator<IndexInfo> GetEnumerator()
+        {
+            return database
+                .GetIndexNames(tableName)
+                .Select(indexName => new IndexInfo(database, tableName, indexName))
+                .GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an IEnumerator of all indexes.
+        /// </summary>
+        /// <returns>IEnumerator of all indexes.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Checks if an index exists for the table.
+        /// </summary>
+        /// <param name="indexName">Index name.</param>
+        /// <returns>True, if the index exists or False if it does not exist.</returns>
+        public bool Exists(string indexName)
+        {
+            return database.GetIndexColumnNames(tableName, indexName).Any();
+        }
+
+        /// <summary>
         /// Adds an index to the table.
         /// </summary>
         /// <param name="columnName">Column name.</param>
@@ -88,27 +119,6 @@ namespace Upgrader.Schema
             {
                 Remove(index.IndexName);
             }
-        }
-
-        /// <summary>
-        /// Gets an IEnumerator of all indexes.
-        /// </summary>
-        /// <returns>IEnumerator of all indexes.</returns>
-        public IEnumerator<IndexInfo> GetEnumerator()
-        {
-            return database
-                .GetIndexNames(tableName)
-                .Select(indexName => new IndexInfo(database, tableName, indexName))
-                .GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets an IEnumerator of all indexes.
-        /// </summary>
-        /// <returns>IEnumerator of all indexes.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

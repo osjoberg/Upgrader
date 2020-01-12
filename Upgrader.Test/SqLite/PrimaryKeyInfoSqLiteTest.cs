@@ -16,7 +16,7 @@ namespace Upgrader.Test.SqLite
         {
             Database.Tables.Add("PrimaryKeyName", new Column<int>("PrimaryKeyNameId", ColumnModifier.PrimaryKey));
 
-            Assert.AreEqual("", Database.Tables["PrimaryKeyName"].PrimaryKey.PrimaryKeyName);
+            Assert.AreEqual("", Database.Tables["PrimaryKeyName"].GetPrimaryKey().PrimaryKeyName);
         }
     }
 }

@@ -50,18 +50,11 @@ namespace Upgrader.Schema
         /// <summary>
         /// Gets primary key information. Returns null if no primary key is present.
         /// </summary>
-        public PrimaryKeyInfo PrimaryKey
+        /// <returns>Primary key information if a primary key exists. Otherwise null.</returns>
+        public PrimaryKeyInfo GetPrimaryKey()
         {
-            get
-            {
-                var constraintName = database.GetPrimaryKeyName(TableName);
-                if (constraintName == null)
-                {
-                    return null;
-                }
-
-                return new PrimaryKeyInfo(database, TableName, constraintName);
-            }
+            var primaryKeyName = database.GetPrimaryKeyName(TableName);
+            return primaryKeyName == null ? null : new PrimaryKeyInfo(database, TableName, primaryKeyName);
         }
 
         /// <summary>

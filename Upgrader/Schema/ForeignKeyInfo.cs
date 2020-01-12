@@ -27,16 +27,19 @@ namespace Upgrader.Schema
         /// <summary>
         /// Gets column names.
         /// </summary>
-        public string[] ColumnNames => database.GetForeignKeyColumnNames(TableName, ForeignKeyName);
+        /// <returns>Column names.</returns>
+        public string[] GetColumnNames() => database.GetForeignKeyColumnNames(TableName, ForeignKeyName);
 
         /// <summary>
         /// Gets foreign table name.
         /// </summary>
-        public string ForeignTableName => database.GetForeignKeyForeignTableName(TableName, ForeignKeyName);
+        /// <returns>Foreign table name.</returns>
+        public string GetForeignTableName() => database.GetForeignKeyForeignTableName(TableName, ForeignKeyName);
 
         /// <summary>
         /// Gets foreign column names.
         /// </summary>
-        public string[] ForeignColumnNames => database.GetForeignKeyForeignColumnNames(TableName, ForeignKeyName);
+        /// <returns>Foreign column names.</returns>
+        public string[] GetForeignColumnNames() => database.GetForeignKeyForeignColumnNames(TableName, ForeignKeyName);
     }
 }

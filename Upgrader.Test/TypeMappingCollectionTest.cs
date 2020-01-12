@@ -86,13 +86,13 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void TestAddStringColumnDefaultLength()
         {
-            TestAddType("", new string('a', 50), new string(Enumerable.Range(10000, 50).Select(i => (char)i).ToArray()));
+            TestAddStringType(-1, false, new string('a', 50), new string(Enumerable.Range(10000, 50).Select(i => (char)i).ToArray()));
         }
 
         [TestMethod]
         public virtual void TestAddStringColumnSpecifiedLength()
         {
-            this.TestAddStringType(10, false, new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
+            TestAddStringType(10, false, new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
         }
 
         [TestMethod]
@@ -170,13 +170,13 @@ namespace Upgrader.Test
         [TestMethod]
         public void TestAddNullableStringColumnDefaultLength()
         {
-            this.TestAddStringType(50, true, null, "", new string('a', 50), new string(Enumerable.Range(10000, 50).Select(i => (char)i).ToArray()));
+            TestAddStringType(50, true, null, "", new string('a', 50), new string(Enumerable.Range(10000, 50).Select(i => (char)i).ToArray()));
         }
 
         [TestMethod]
         public void TestAddNullableStringColumnSpecifiedLength()
         {
-            this.TestAddStringType(10, true, null, "", new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
+            TestAddStringType(10, true, null, "", new string('a', 10), new string(Enumerable.Range(10000, 10).Select(i => (char)i).ToArray()));
         }
 
         [TestMethod]
@@ -205,14 +205,14 @@ namespace Upgrader.Test
                 var dataType = database.TypeMappings[Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType)];
                 if (length == 1)
                 {
-                    Assert.AreEqual(dataType, database.Tables[tableName].Columns[columnName].DataType);
+                    Assert.AreEqual(dataType, database.Tables[tableName].Columns[columnName].GetDataType());
                 }
                 else
                 {
-                    Assert.AreEqual(dataType.Substring(0, dataType.IndexOf('(')) + $"({length})", database.Tables[tableName].Columns[columnName].DataType);
+                    Assert.AreEqual(dataType.Substring(0, dataType.IndexOf('(')) + $"({length})", database.Tables[tableName].Columns[columnName].GetDataType());
                 }
 
-                Assert.AreEqual(nullable, database.Tables[tableName].Columns[columnName].Nullable);
+                Assert.AreEqual(nullable, database.Tables[tableName].Columns[columnName].IsNullable());
             }
         }
 
@@ -226,7 +226,11 @@ namespace Upgrader.Test
             {
                 var columnName = "Value" + (values.ToList().IndexOf(value) + 1);
 
-                if (length == 1)
+                if (length == -1 && nullable == false)
+                {
+                    database.Tables[tableName].Columns.Add<TType>(columnName);
+                }
+                else if (length == -1)
                 {
                     database.Tables[tableName].Columns.Add(columnName, value);
                 }
@@ -236,16 +240,16 @@ namespace Upgrader.Test
                 }
 
                 var dataType = database.TypeMappings[Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType)];
-                if (length == 1)
+                if (length == -1)
                 {
-                    Assert.AreEqual(dataType, database.Tables[tableName].Columns[columnName].DataType);
+                    Assert.AreEqual(dataType, database.Tables[tableName].Columns[columnName].GetDataType());
                 }
                 else
                 {
-                    Assert.AreEqual(dataType.Substring(0, dataType.IndexOf('(')) + $"({length})", database.Tables[tableName].Columns[columnName].DataType);
+                    Assert.AreEqual(dataType.Substring(0, dataType.IndexOf('(')) + $"({length})", database.Tables[tableName].Columns[columnName].GetDataType());
                 }
 
-                Assert.AreEqual(nullable, database.Tables[tableName].Columns[columnName].Nullable);
+                Assert.AreEqual(nullable, database.Tables[tableName].Columns[columnName].IsNullable());
             }
         }
 
