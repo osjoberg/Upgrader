@@ -67,7 +67,7 @@ namespace Upgrader.Schema
         /// <param name="dataType">SQL data type.</param>
         /// <param name="nullable">True to allow null values.</param>
         /// <param name="initialValue">Initial value to set to all existing rows.</param>
-        public void Add(string columnName, string dataType, bool nullable = false, object initialValue = null)
+        public void Add(string columnName, string dataType, bool nullable, object initialValue)
         {
             Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
             Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
@@ -94,6 +94,27 @@ namespace Upgrader.Schema
             {
                 database.ChangeColumn(tableName, columnName, dataType, false);
             }
+        }
+
+        /// <summary>
+        /// Adds a column to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="dataType">SQL data type.</param>
+        /// <param name="nullable">True to allow null values.</param>
+        public void Add(string columnName, string dataType, bool nullable)
+        {
+            Add(columnName, dataType, nullable, null);
+        }
+
+        /// <summary>
+        /// Adds a column to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="dataType">SQL data type.</param>
+        public void Add(string columnName, string dataType)
+        {
+            Add(columnName, dataType, false, null);
         }
 
         /// <summary>
