@@ -3,15 +3,17 @@
     <metadata>
         <id>$id$</id>
         <version>$version$</version>
-        <title>$id$</title>
-        <iconUrl>http://oskarsjoberg.se/LinqCache.png</iconUrl>
+        <title>$id$</title>       
         <authors>Oskar Sjöberg</authors>
         <owners />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <summary>Upgrader.</summary>
 		<description>$description$</description>
-		<licenseUrl>https://github.com/osjoberg/Upgrader/blob/master/License.txt</licenseUrl>
 		<projectUrl>https://github.com/osjoberg/Upgrader</projectUrl>
 		<tags>upgrader</tags>
+    <dependencies>
+      <dependency id="Dapper" version="2.0.30" />
+      <dependency id="System.Configuration.ConfigurationManager" version="4.7.0" />
+    </dependencies>
 	</metadata>
 </package>

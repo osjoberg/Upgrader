@@ -2,16 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.8.4.0</Version>
-    <Copyright>Copyright ©  2017-2019</Copyright>
+    <Version>1.0.1.0</Version>
+    <Copyright>Copyright ©  2017-2020</Copyright>
     <RepositoryUrl>https://github.com/osjoberg/Upgrader</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/osjoberg/Upgrader/blob/master/LICENSE.MD</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/osjoberg/Upgrader</PackageProjectUrl>
     <Description>Upgrader keeps your database schema in sync with your source code as your development project evolves. Changes to the database schema are expressed as Upgrader Steps. Each Step that successfully have been deployed is tracked in a table. Typically you use Upgrader on application startup or in an installer.</Description>
     <Product />
     <Authors>Oskar Sjöberg</Authors>
     <Company>N/A</Company>
     <RepositoryType>GIT</RepositoryType>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
