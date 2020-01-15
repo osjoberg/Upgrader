@@ -111,6 +111,16 @@ namespace Upgrader.Infrastructure
             }
         }
 
+        internal void Delete(string tableName, string where)
+        {
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var whereStatement = string.IsNullOrEmpty(where) ? "" : $" WHERE {where}";
+
+            var sql = $"DELETE FROM {escapedTableName} {whereStatement}";
+
+            database.Dapper.Execute(sql);
+        }
+
         internal void Update<T>(string tableName, Func<T, T> updateFunc)
         {
             var escapedTableName = database.EscapeIdentifier(tableName);

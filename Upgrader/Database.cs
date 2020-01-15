@@ -170,6 +170,16 @@ namespace Upgrader
             dataManipulationLanguage.Delete(tableName, rows);
         }
 
+        internal void DeleteRows(string tableName, string where)
+        {
+            dataManipulationLanguage.Delete(tableName, where);
+        }
+
+        internal virtual void Truncate(string tableName)
+        {
+            dataDefinitionLanguage.Truncate(tableName);
+        }
+
         internal virtual string[] GetColumnNames(string tableName)
         {
             return InformationSchema.GetColumnNames(tableName);

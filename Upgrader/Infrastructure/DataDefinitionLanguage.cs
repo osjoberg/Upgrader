@@ -153,10 +153,17 @@ namespace Upgrader.Infrastructure
             var escapedIndexName = database.EscapeIdentifier(indexName);
             var escapedTableName = database.EscapeIdentifier(tableName);
             var escapedCommaSeparatedColumnNames = string.Join(", ", columnNames.Select(columnName => database.EscapeIdentifier(columnName)));
-            var escapedincludeColumnNames = string.Join(", ", (includeColumnNames ?? Enumerable.Empty<string>()).Select(includeColumnName => database.EscapeIdentifier(includeColumnName)));
-            var includeStatement = includeColumnNames != null ? $"INCLUDE ({escapedincludeColumnNames})" : "";
+            var escapedIncludeColumnNames = string.Join(", ", (includeColumnNames ?? Enumerable.Empty<string>()).Select(includeColumnName => database.EscapeIdentifier(includeColumnName)));
+            var includeStatement = includeColumnNames != null ? $"INCLUDE ({escapedIncludeColumnNames})" : "";
 
             database.Dapper.Execute($"CREATE {uniqueStatement}INDEX {escapedIndexName} ON {escapedTableName} ({escapedCommaSeparatedColumnNames}) {includeStatement}");
+        }
+
+        internal void Truncate(string tableName)
+        {
+            var escapedTableName = database.EscapeIdentifier(tableName);
+
+            database.Dapper.Execute($"TRUNCATE TABLE {escapedTableName}");
         }
 
         private static string GetNullableStatement(bool nullable)

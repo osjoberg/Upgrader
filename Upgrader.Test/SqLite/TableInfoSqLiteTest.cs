@@ -30,5 +30,12 @@ namespace Upgrader.Test.SqLite
         {         
             base.RemovePrimaryKeyRemovesPrimaryKey();   
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void TruncateTruncatesTable()
+        {
+            base.TruncateTruncatesTable();
+        }
     }
 }

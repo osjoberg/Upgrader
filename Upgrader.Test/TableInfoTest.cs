@@ -65,5 +65,16 @@ namespace Upgrader.Test
 
             Assert.IsNotNull(Database.Tables["NewTableName"]);
         }
+
+        [TestMethod]
+        public virtual void TruncateTruncatesTable()
+        {
+            Database.Tables.Add("TruncateTruncatesTable", new Column<int>("TruncateTruncatesTableId", ColumnModifier.PrimaryKey), new Column<int>("Value"));
+
+            Database.Tables["TruncateTruncatesTable"].Rows.Add(new { TruncateTruncatesTableId = 2, Value = 2 });
+            Database.Tables["TruncateTruncatesTable"].Truncate();
+
+            Assert.AreEqual(0, Database.Tables["TruncateTruncatesTable"].Rows.Query().Count());
+        }
     }
 }

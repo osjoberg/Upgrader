@@ -76,6 +76,11 @@ namespace Upgrader.SqLite
                 .ToArray();
         }
 
+        internal override void Truncate(string tableName)
+        {
+            throw new NotSupportedException("Truncating tables is not supported bySQLite.");
+        }
+
         internal override string[] GetColumnNames(string tableName)
         {
             var escapedTableName = EscapeIdentifier(tableName);

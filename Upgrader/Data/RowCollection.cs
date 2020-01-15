@@ -105,6 +105,15 @@ namespace Upgrader.Data
         }
 
         /// <summary>
+        /// Delete rows in the table.
+        /// </summary>
+        /// <param name="where">Optional where criteria to filter specific rows.</param>
+        public void Remove(string where = null)
+        {
+            database.DeleteRows(tableName, where);
+        }
+
+        /// <summary>
         /// Get rows from the table.
         /// </summary>
         /// <typeparam name="T">Type with properties matching the table column names.</typeparam>

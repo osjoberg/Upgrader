@@ -102,5 +102,13 @@ namespace Upgrader.Schema
 
             database.RemovePrimaryKey(TableName, constraintName);
         }
+
+        /// <summary>
+        /// Truncate table.
+        /// </summary>
+        public void Truncate()
+        {
+            database.Truncate(TableName);
+        }
     }
 }
