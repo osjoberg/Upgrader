@@ -7,7 +7,7 @@ namespace Upgrader.SqlServer
 {
     public class SqlServerDatabase : Database
     {
-        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory(new AdoProvider("Microsoft.Data.SqlClient.dll", "Microsoft.Data.SqlClient.SqlConnection"), new AdoProvider("System.Data.SqlClient.dll", "System.Data.SqlClient.SqlConnection")));
+        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory(new AdoProvider("Microsoft.Data.SqlClient.dll", "Microsoft.Data.SqlClient.SqlConnection"), new AdoProvider("System.Data.SqlClient.dll", "System.Data.SqlClient.SqlConnection"), new AdoProvider("System.Data.dll", "System.Data.SqlClient.SqlConnection")));
         private readonly string connectionStringOrName;
 
         /// <summary>
