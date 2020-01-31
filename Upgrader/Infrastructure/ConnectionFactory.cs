@@ -14,23 +14,28 @@ namespace Upgrader.Infrastructure
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            var adoAssembly = assemblies
-                .FirstOrDefault(assembly => adoProviders.Any(ap => ap.AssemblyFileName == assembly.ManifestModule.Name));
+            var adoProviderAssembly = assemblies
+                .Select(a => new AdoProviderAssembly(adoProviders.FirstOrDefault(ap => ap.AssemblyFileName == a.ManifestModule.Name), a))
+                .Where(apa => apa.AdoProvider != null)
+                .OrderBy(apa => Array.IndexOf(adoProviders, apa.AdoProvider))
+                .FirstOrDefault() ;
 
-            var adoProvider = adoAssembly == null ? null : adoProviders.First(ap => ap.AssemblyFileName == adoAssembly.ManifestModule.Name);
-
-            if (adoAssembly == null)
+            if (adoProviderAssembly == null)
             {
-                adoProvider = adoProviders.FirstOrDefault(ap => File.Exists(ap.AssemblyFileName));
-                if (adoProvider == null)
-                {
-                    throw UpgraderException.CannotFindAssembly(adoProviders.Select(ap => ap.AssemblyFileName).ToArray());
-                }
-
-                adoAssembly = Assembly.LoadFrom(adoProvider.AssemblyFileName);
+                adoProviderAssembly = adoProviders.Where(ap => File.Exists(ap.AssemblyFileName))
+                    .Select(ap => new AdoProviderAssembly(ap, Assembly.LoadFrom(ap.AssemblyFileName)))
+                    .FirstOrDefault();
             }
 
-            connectionType = adoAssembly.GetTypes().SingleOrDefault(type => type.Namespace + "." + type.Name == adoProvider.ConnectionTypeName);
+            if (adoProviderAssembly == null)
+            {
+                throw UpgraderException.CannotFindAssembly(adoProviders.Select(ap => ap.AssemblyFileName).ToArray());
+            }
+
+            var adoProvider = adoProviderAssembly.AdoProvider;
+            var assembly = adoProviderAssembly.Assembly;
+
+            connectionType = assembly.GetTypes().SingleOrDefault(type => type.Namespace + "." + type.Name == adoProvider.ConnectionTypeName);
             if (connectionType == null)
             {
                 throw UpgraderException.CannotCreateInstance(adoProvider.ConnectionTypeName, adoProvider.AssemblyFileName);
@@ -44,6 +49,19 @@ namespace Upgrader.Infrastructure
         public IDbConnection CreateConnection(string connectionString)
         {
             return (IDbConnection)Activator.CreateInstance(connectionType, connectionString);
+        }
+
+        internal class AdoProviderAssembly
+        {
+            public AdoProviderAssembly(AdoProvider adoProvider, Assembly assembly)
+            {
+                AdoProvider = adoProvider;
+                Assembly = assembly;
+            }
+
+            public AdoProvider AdoProvider { get; }
+
+            public Assembly Assembly { get; }
         }
     }
 }

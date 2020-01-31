@@ -7,7 +7,7 @@
         <authors>Oskar Sjöberg</authors>
         <owners />
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <summary>Upgrader.</summary>
+        <summary>Upgrader keeps your database schema in sync with your source code as your development project evolves. Changes to the database schema are expressed as Upgrader Steps. Each Step that successfully have been deployed is tracked in a table. Typically you use Upgrader on application startup or in an installer.</summary>
 		<description>$description$</description>
 		<projectUrl>https://github.com/osjoberg/Upgrader</projectUrl>
 		<tags>upgrader</tags>
