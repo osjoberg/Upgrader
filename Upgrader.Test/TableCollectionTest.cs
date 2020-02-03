@@ -29,6 +29,38 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
+        public virtual void AddWithComputedColumnCreatesTable()
+        {
+            Database.Tables.Add("AddComputedTable", new Column<int>("AddComputedTableId"), new ComputedColumn<int>("Computed", Database.EscapeIdentifier("AddComputedTableId")));
+
+            Assert.IsNotNull(Database.Tables["AddComputedTable"]);
+        }
+
+        [TestMethod]
+        public virtual void AddWithNullableComputedColumnCreatesTable()
+        {
+            Database.Tables.Add("AddNullableComputedTable", new Column<int?>("AddNullableComputedTableId"), new ComputedColumn<int?>("Computed", Database.EscapeIdentifier("AddNullableComputedTableId")));
+
+            Assert.IsNotNull(Database.Tables["AddNullableComputedTable"]);
+        }
+
+        [TestMethod]
+        public virtual void AddWithPersistedComputedColumnCreatesTable()
+        {
+            Database.Tables.Add("AddPersistedComputedTable", new Column<int>("AddPersistedComputedTableId"), new ComputedColumn<int>("Computed", Database.EscapeIdentifier("AddPersistedComputedTableId"), true));
+
+            Assert.IsNotNull(Database.Tables["AddPersistedComputedTable"]);
+        }
+
+        [TestMethod]
+        public virtual void AddWithPersistedNullableComputedColumnCreatesTable()
+        {
+            Database.Tables.Add("AddPersistedNullableComputedTable", new Column<int?>("AddPersistedNullableComputedTableId"), new ComputedColumn<int?>("Computed", Database.EscapeIdentifier("AddPersistedNullableComputedTableId"), true));
+
+            Assert.IsNotNull(Database.Tables["AddPersistedNullableComputedTable"]);
+        }
+
+        [TestMethod]
         public void AddWithPrecisionCreatesTable()
         {
             Database.Tables.Add("AddDecimalTable", new Column<decimal?>("AddDecimalTableId", 4, 2));

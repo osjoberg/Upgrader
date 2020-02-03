@@ -140,6 +140,8 @@ namespace Upgrader
             methodInfo.Invoke(null, new object[] { connection });
         }
 
+        internal abstract string GetCreateComputedStatement(string dataType, bool nullable, string expression, bool persisted);
+
         internal virtual string[] GetTableNames()
         {
             return InformationSchema.GetTableNames();
@@ -195,6 +197,11 @@ namespace Upgrader
         internal virtual void AddColumn(string tableName, string columnName, string dataType, bool nullable)
         {
             dataDefinitionLanguage.AddColumn(tableName, columnName, dataType, nullable);
+        }
+
+        internal void AddComputedColumn(string tableName, string columnName, string dataType, bool nullable, string expression, bool persisted)
+        {
+            dataDefinitionLanguage.AddComputedColumn(tableName, columnName, dataType, nullable, expression, persisted);
         }
 
         internal virtual void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)

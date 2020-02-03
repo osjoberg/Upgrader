@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Upgrader.PostgreSql;
 
 namespace Upgrader.Test.PostgreSql
@@ -8,6 +10,20 @@ namespace Upgrader.Test.PostgreSql
     {
         public ColumnCollectionPostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"))
         {            
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void AddComputedAddsVirtualComputedColumn()
+        {
+            base.AddComputedAddsVirtualComputedColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void AddNullableComputedAddsVirtualComputedColumn()
+        {
+            base.AddNullableComputedAddsVirtualComputedColumn();
         }
     }
 }

@@ -86,6 +86,16 @@ namespace Upgrader.Schema
         {
             return DataType;
         }
+
+        internal virtual string GetExpression()
+        {
+            return null;
+        }
+
+        internal virtual bool GetPersisted()
+        {
+            return false;
+        }
     }
 
     /// <inheritdoc />

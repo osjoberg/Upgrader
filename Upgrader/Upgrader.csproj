@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.1.3.0</Version>
+    <Version>1.2.0.0</Version>
     <Copyright>Copyright ©  2017-2020</Copyright>
     <RepositoryUrl>https://github.com/osjoberg/Upgrader</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
@@ -12,8 +12,8 @@
     <Authors>Oskar Sjöberg</Authors>
     <Company>N/A</Company>
     <RepositoryType>GIT</RepositoryType>
-    <AssemblyVersion>1.1.3.0</AssemblyVersion>
-    <FileVersion>1.1.3.0</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 

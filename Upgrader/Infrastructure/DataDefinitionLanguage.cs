@@ -41,7 +41,7 @@ namespace Upgrader.Infrastructure
 
             var escapedTableName = database.EscapeIdentifier(tableName);
 
-            var columnDefinitions = string.Join(", ", columnsShallowClone.Select(column => $"{database.EscapeIdentifier(column.ColumnName)} {column.GetDataType(database.TypeMappings)} {GetNullableStatement(column.Nullable)} {GetAutoIncrementStatement(column.Modifier == ColumnModifier.AutoIncrementPrimaryKey)}"));
+            var columnDefinitions = string.Join(", ", columnsShallowClone.Select(GetColumnDefinition));
 
             var sql = $"CREATE TABLE {escapedTableName} ({columnDefinitions}";
 
@@ -90,6 +90,16 @@ namespace Upgrader.Infrastructure
             var nullableStatement = GetNullableStatement(nullable);
 
             database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD {escapedColumnName} {dataType} {nullableStatement}");
+        }
+
+        internal void AddComputedColumn(string tableName, string columnName, string dataType, bool nullable, string expression, bool persisted)
+        {
+            var escapedTableName = database.EscapeIdentifier(tableName);
+            var escapedColumnName = database.EscapeIdentifier(columnName);
+
+            var createComputedStatement = database.GetCreateComputedStatement(dataType, nullable, expression, persisted);
+
+            database.Dapper.Execute($"ALTER TABLE {escapedTableName} ADD {escapedColumnName} {createComputedStatement}");
         }
 
         internal void RemoveColumn(string tableName, string columnName)
@@ -171,9 +181,18 @@ namespace Upgrader.Infrastructure
             return nullable ? "NULL" : "NOT NULL";
         }
 
-        private string GetAutoIncrementStatement(bool autoIncrement)
+        private string GetColumnDefinition(Column column)
         {
-            return autoIncrement ? database.AutoIncrementStatement : "";
+            var escapedColumnName = database.EscapeIdentifier(column.ColumnName);
+
+            if (column.GetExpression() == null)
+            {
+                var autoIncrementStatement = column.Modifier == ColumnModifier.AutoIncrementPrimaryKey ? database.AutoIncrementStatement : "";
+
+                return $"{escapedColumnName} {column.GetDataType(database.TypeMappings)} {GetNullableStatement(column.Nullable)} {autoIncrementStatement}";
+            }
+
+            return $"{escapedColumnName} {database.GetCreateComputedStatement(column.GetDataType(database.TypeMappings), column.Nullable, column.GetExpression(), column.GetPersisted())}";
         }
     }
 }

@@ -155,8 +155,6 @@ namespace Upgrader.PostgreSql
                 new { indexName });
         }
 
-
-
         internal override string[] GetIndexColumnNames(string tableName, string indexName)
         {
             return Dapper.Query<string>(
@@ -202,7 +200,7 @@ namespace Upgrader.PostgreSql
             var isColumnAutoIncrement = GetColumnAutoIncrement(tableName, columnName);
             if (isColumnAutoIncrement)
             {
-                throw new NotSupportedException("Renaming a serial column is not supported byPostgreSql.");
+                throw new NotSupportedException("Renaming a serial column is not supported by PostgreSql.");
             }
 
             var escapedTableName = EscapeIdentifier(tableName);
@@ -210,6 +208,16 @@ namespace Upgrader.PostgreSql
             var escapedNewColumnName = EscapeIdentifier(newColumnName);
 
             Dapper.Execute($"ALTER TABLE {escapedTableName} RENAME {escapedColumnName} TO {escapedNewColumnName}");
+        }
+
+        internal override string GetCreateComputedStatement(string dataType, bool nullable, string expression, bool persisted)
+        {
+            if (persisted == false)
+            {
+                throw new NotSupportedException("Only persisted columns are supported by PostgreSql.");
+            }
+
+            return $"{dataType} GENERATED ALWAYS AS ({expression}) STORED";
         }
 
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)

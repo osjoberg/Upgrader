@@ -20,6 +20,34 @@ namespace Upgrader.Test.SqLite
 
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
+        public override void AddComputedAddsStoredComputedColumn()
+        {
+            base.AddComputedAddsStoredComputedColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void AddComputedAddsVirtualComputedColumn()
+        {
+            base.AddComputedAddsVirtualComputedColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void AddNullableComputedAddsStoredComputedColumn()
+        {
+            base.AddNullableComputedAddsStoredComputedColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public override void AddNullableComputedAddsVirtualComputedColumn()
+        {
+            base.AddNullableComputedAddsVirtualComputedColumn();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
         public override void RenameRenamesColumn()
         {
             base.RenameRenamesColumn();

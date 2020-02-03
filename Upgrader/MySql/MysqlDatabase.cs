@@ -93,6 +93,13 @@ namespace Upgrader.MySql
             return columnInformation.data_type + (usedParameters.Any() ? "(" + string.Join(",", usedParameters) + ")" : "") + unsigned;
         }
 
+        internal override string GetCreateComputedStatement(string dataType, bool nullable, string expression, bool persisted)
+        {
+            var persistedExpression = persisted ? " STORED" : "";
+
+            return $"{dataType} GENERATED ALWAYS AS ({expression}){persistedExpression}";
+        }
+
         internal override void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
             var escapedTableName = EscapeIdentifier(tableName);
@@ -207,7 +214,7 @@ namespace Upgrader.MySql
         {
             if (includeColumnNames != null)
             {
-                throw new NotSupportedException("Including columns in an index is not supported bySQLite.");
+                throw new NotSupportedException("Including columns in an index is not supported by MySql.");
             }
 
             dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, null);

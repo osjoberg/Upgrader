@@ -67,6 +67,13 @@ namespace Upgrader.SqlServer
             return InformationSchema.GetColumnDataType(tableName, columnName, "decimal", "nvarchar", "nchar", "varchar", "char", "time");
         }
 
+        internal override string GetCreateComputedStatement(string dataType, bool nullable, string expression, bool persisted)
+        {
+            var persistedStatement = persisted ? " PERSISTED" : "";
+
+            return $"AS ({expression}){persistedStatement}";
+        }
+
         internal override void RenameColumn(string tableName, string columnName, string newColumnName)
         {
             Dapper.Execute($"sp_RENAME '{tableName}.{columnName}', '{newColumnName}', 'COLUMN'");

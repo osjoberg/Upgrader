@@ -31,6 +31,42 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
+        public virtual void AddComputedAddsStoredComputedColumn()
+        {
+            Database.Tables.Add("AddStoredComputedColumn", new Column<int>("AddStoredComputedColumnId"));
+            Database.Tables["AddStoredComputedColumn"].Columns.AddComputed<int>("AddedComputedColumn", Database.EscapeIdentifier("AddStoredComputedColumnId"), true);
+
+            Assert.AreEqual(2, Database.Tables["AddStoredComputedColumn"].Columns.Count());
+        }
+
+        [TestMethod]
+        public virtual void AddComputedAddsVirtualComputedColumn()
+        {
+            Database.Tables.Add("AddVirtualComputedColumn", new Column<int>("AddVirtualComputedColumnId"));
+            Database.Tables["AddVirtualComputedColumn"].Columns.AddComputed<int>("AddedComputedColumn", Database.EscapeIdentifier("AddVirtualComputedColumnId"));
+
+            Assert.AreEqual(2, Database.Tables["AddVirtualComputedColumn"].Columns.Count());
+        }
+
+        [TestMethod]
+        public virtual void AddNullableComputedAddsStoredComputedColumn()
+        {
+            Database.Tables.Add("AddNullableStoredComputedColumn", new Column<int?>("AddNullableStoredComputedColumnId"));
+            Database.Tables["AddNullableStoredComputedColumn"].Columns.AddComputed<int?>("AddedNullableComputedColumn", Database.EscapeIdentifier("AddNullableStoredComputedColumnId"), true);
+
+            Assert.AreEqual(2, Database.Tables["AddNullableStoredComputedColumn"].Columns.Count());
+        }
+
+        [TestMethod]
+        public virtual void AddNullableComputedAddsVirtualComputedColumn()
+        {
+            Database.Tables.Add("AddNullableVirtualComputedColumn", new Column<int?>("AddNullableVirtualComputedColumnId"));
+            Database.Tables["AddNullableVirtualComputedColumn"].Columns.AddComputed<int?>("AddedNullableComputedColumn", Database.EscapeIdentifier("AddNullableVirtualComputedColumnId"));
+
+            Assert.AreEqual(2, Database.Tables["AddNullableVirtualComputedColumn"].Columns.Count());
+        }
+
+        [TestMethod]
         public virtual void RenameRenamesColumn()
         {
             Database.Tables.Add("RenameColumn", new Column<int>("RenameColumnId"));

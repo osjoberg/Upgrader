@@ -275,13 +275,127 @@ namespace Upgrader.Schema
         }
 
         /// <summary>
+        /// Adds a computed column to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="dataType">SQL data type.</param>
+        /// <param name="nullable">True to allow null values.</param>
+        /// <param name="expression">SQL expression used to compute computed value.</param>
+        /// <param name="persisted">True to store the computed value in the table.</param>
+        public void AddComputed(string columnName, string dataType, bool nullable, string expression, bool persisted = false)
+        {
+            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
+            Validate.IsNotNullAndNotEmpty(dataType, nameof(dataType));
+            Validate.IsNotNullAndNotEmpty(expression, nameof(expression));
+
+            database.AddComputedColumn(tableName, columnName, dataType, nullable, expression, persisted);
+        }
+
+        /// <summary>
+        /// Adds a computed column to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="expression">SQL expression used to compute computed value.</param>
+        /// <param name="persisted">True to store the computed value in the table.</param>
+        public void AddComputed(string columnName, string expression, bool persisted = false)
+        {
+            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.MaxLength(columnName, nameof(columnName), database.MaxIdentifierLength);
+            Validate.IsNotNullAndNotEmpty(expression, nameof(expression));
+
+            database.AddComputedColumn(tableName, columnName, null, false, expression, persisted);
+        }
+
+        /// <summary>
+        /// Adds a computed column to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="expression">SQL expression used to compute computed value.</param>
+        /// <param name="persisted">True to store the computed value in the table.</param>
+        /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
+        public void AddComputed<TType>(string columnName, string expression, bool persisted = false)
+        {
+            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.IsNotNullAndNotEmpty(expression, nameof(expression));
+
+            var dataType = database.TypeMappings.GetDataType(typeof(TType));
+            if (dataType == null)
+            {
+                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
+            }
+
+            var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
+
+            AddComputed(columnName, dataType, nullable, expression, persisted);
+        }
+
+        /// <summary>
+        /// Adds a computed column to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="length">Length of string data type.</param>
+        /// <param name="nullable">True to allow null values.</param>
+        /// <param name="expression">SQL expression used to compute computed value.</param>
+        /// <param name="persisted">True to store the computed value in the table.</param>
+        /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
+        public void AddComputed<TType>(string columnName, int length, bool nullable, string expression, bool persisted = false)
+        {
+            Validate.IsNotNullable(typeof(TType), nameof(TType));
+            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.IsEqualOrGreaterThan(length, 1, nameof(length));
+            Validate.IsNotNullAndNotEmpty(expression, nameof(expression));
+
+            var dataType = database.TypeMappings.GetDataType(typeof(TType), length);
+            if (dataType == null)
+            {
+                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
+            }
+
+            AddComputed(columnName, dataType, nullable, expression, persisted);
+        }
+
+        /// <summary>
+        /// Adds a computed column to the table.
+        /// </summary>
+        /// <param name="columnName">Column name.</param>
+        /// <param name="scale">Scale of numeric data type.</param>
+        /// <param name="precision">Precision of numeric data type.</param>
+        /// <param name="expression">SQL expression used to compute computed value.</param>
+        /// <param name="persisted">True to store the computed value in the table.</param>
+        /// <typeparam name="TType">CLR data typed to resolve SQL data type from.</typeparam>
+        public void AddComputed<TType>(string columnName, int scale, int precision, string expression, bool persisted = false)
+        {
+            Validate.IsNotNullAndNotEmpty(columnName, nameof(columnName));
+            Validate.IsEqualOrGreaterThan(scale, 1, nameof(scale));
+            Validate.IsEqualOrGreaterThan(precision, 0, nameof(precision));
+            Validate.IsNotNullAndNotEmpty(expression, nameof(expression));
+
+            var dataType = database.TypeMappings.GetDataType(typeof(TType), scale, precision);
+            if (dataType == null)
+            {
+                var type = Nullable.GetUnderlyingType(typeof(TType)) ?? typeof(TType);
+                throw new ArgumentException($"No type mapping could be found for type \"{type.FullName}\".", nameof(TType));
+            }
+
+            var nullable = Nullable.GetUnderlyingType(typeof(TType)) != null;
+
+            AddComputed(columnName, dataType, nullable, expression, persisted);
+        }
+
+        /// <summary>
         /// Rename a column in the table.
         /// </summary>
         /// <param name="currentColumnName">Current name of column.</param>
         /// <param name="newColumnName">New name of column.</param>
         public void Rename(string currentColumnName, string newColumnName)
         {
+            Validate.IsNotNullAndNotEmpty(currentColumnName, nameof(currentColumnName));
+            Validate.MaxLength(currentColumnName, nameof(currentColumnName), database.MaxIdentifierLength);
             Validate.IsNotNullAndNotEmpty(newColumnName, nameof(newColumnName));
+            Validate.MaxLength(newColumnName, nameof(newColumnName), database.MaxIdentifierLength);
 
             database.RenameColumn(tableName, currentColumnName, newColumnName);
         }
