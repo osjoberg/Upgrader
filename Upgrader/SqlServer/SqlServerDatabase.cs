@@ -8,15 +8,15 @@ namespace Upgrader.SqlServer
     public class SqlServerDatabase : Database
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory(new AdoProvider("Microsoft.Data.SqlClient.dll", "Microsoft.Data.SqlClient.SqlConnection"), new AdoProvider("System.Data.SqlClient.dll", "System.Data.SqlClient.SqlConnection"), new AdoProvider("System.Data.dll", "System.Data.SqlClient.SqlConnection")));
-        private readonly string connectionStringOrName;
+        private readonly string connectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlServerDatabase"/> class.
         /// </summary>
-        /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public SqlServerDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Initial Catalog", "master"))
+        /// <param name="connectionString">Connection string.</param>
+        public SqlServerDatabase(string connectionString) : base(ConnectionFactory.Value.CreateConnection(connectionString), GetMasterConnectionString(connectionString, "Initial Catalog", "master"))
         {
-            this.connectionStringOrName = connectionStringOrName;
+            this.connectionString = connectionString;
 
             TypeMappings.Add<bool>("bit");
             TypeMappings.Add<byte>("tinyint");
@@ -167,7 +167,7 @@ namespace Upgrader.SqlServer
 
         internal override Database Clone()
         {
-            return new SqlServerDatabase(connectionStringOrName);
+            return new SqlServerDatabase(connectionString);
         }
     }
 }

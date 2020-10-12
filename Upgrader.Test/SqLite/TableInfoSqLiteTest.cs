@@ -7,7 +7,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class TableInfoSqLiteTest : TableInfoTest
     {
-        public TableInfoSqLiteTest() : base(new SqLiteDatabase("SqLite"))
+        public TableInfoSqLiteTest() : base(new SqLiteDatabase(AssemblyInitialize.SqLiteConnectionString))
         {
         }
 

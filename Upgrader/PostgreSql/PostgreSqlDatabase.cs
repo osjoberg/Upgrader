@@ -13,15 +13,15 @@ namespace Upgrader.PostgreSql
     public class PostgreSqlDatabase : Database
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("Npgsql.dll", "Npgsql.NpgsqlConnection"));
-        private readonly string connectionStringOrName;
+        private readonly string connectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PostgreSqlDatabase"/> class.
         /// </summary>
-        /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public PostgreSqlDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Database", "postgres"))
+        /// <param name="connectionString">Connection string.</param>
+        public PostgreSqlDatabase(string connectionString) : base(ConnectionFactory.Value.CreateConnection(connectionString), GetMasterConnectionString(connectionString, "Database", "postgres"))
         {
-            this.connectionStringOrName = connectionStringOrName;
+            this.connectionString = connectionString;
 
             // No type mapping for byte.
             TypeMappings.Add<bool>("boolean");
@@ -62,7 +62,7 @@ namespace Upgrader.PostgreSql
         {
             var builder = new DbConnectionStringBuilder
             {
-                ConnectionString = GetConnectionString(connectionStringOrName)
+                ConnectionString = connectionString
             };
 
             if (builder.ContainsKey("enlist") == false || string.Equals(builder["enlist"].ToString(), "true", StringComparison.InvariantCultureIgnoreCase) == false)
@@ -246,7 +246,7 @@ namespace Upgrader.PostgreSql
 
         internal override Database Clone()
         {
-            return new PostgreSqlDatabase(connectionStringOrName);
+            return new PostgreSqlDatabase(connectionString);
         }
     }
 }

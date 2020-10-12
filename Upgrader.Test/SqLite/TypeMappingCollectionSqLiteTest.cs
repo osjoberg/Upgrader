@@ -9,7 +9,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class TypeMappingCollectionSqLiteTest : TypeMappingCollectionTest
     {
-        public TypeMappingCollectionSqLiteTest() : base(new SqLiteDatabase("SqLite"))
+        public TypeMappingCollectionSqLiteTest() : base(new SqLiteDatabase(AssemblyInitialize.SqLiteConnectionString))
         {           
         }
 

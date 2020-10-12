@@ -7,7 +7,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class RowCollectionSqLiteTest : RowCollectionTest
     {
-        public RowCollectionSqLiteTest() : base(new SqLiteDatabase("SqLite"))
+        public RowCollectionSqLiteTest() : base(new SqLiteDatabase(AssemblyInitialize.SqLiteConnectionString))
         {
         }
     }

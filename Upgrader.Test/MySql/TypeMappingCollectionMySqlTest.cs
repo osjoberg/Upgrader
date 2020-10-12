@@ -9,7 +9,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class TypeMappingCollectionMySqlTest : TypeMappingCollectionTest
     {
-        public TypeMappingCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
+        public TypeMappingCollectionMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString))
         {           
         }
 

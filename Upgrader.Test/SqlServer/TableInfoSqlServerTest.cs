@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class TableInfoSqlServerTest : TableInfoTest
     {
-        public TableInfoSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
+        public TableInfoSqlServerTest() : base(new SqlServerDatabase(AssemblyInitialize.SqlServerConnectionString))
         {
         }
     }

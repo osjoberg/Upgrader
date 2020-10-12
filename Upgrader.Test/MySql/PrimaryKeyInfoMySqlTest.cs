@@ -7,7 +7,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class PrimaryKeyInfoMySqlTest : PrimaryKeyInfoTest
     {
-        public PrimaryKeyInfoMySqlTest() : base(new MySqlDatabase("MySql"))
+        public PrimaryKeyInfoMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString))
         {
         }
 

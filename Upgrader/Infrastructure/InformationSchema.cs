@@ -11,6 +11,25 @@ namespace Upgrader.Infrastructure
             this.database = database;
         }
 
+        internal bool GetTableExists(string tableName)
+        {
+            var schemaName = database.GetSchema(null);
+            var tableCatalog = database.GetCatalog();
+
+            return database.Dapper.Query<string>(
+                @"
+                    SELECT
+                        TABLE_NAME
+                    FROM INFORMATION_SCHEMA.TABLES
+                    WHERE 
+                        TABLE_NAME = @tableName AND 
+                        TABLE_SCHEMA = @schemaName AND
+                        TABLE_CATALOG = @tableCatalog AND
+                        TABLE_TYPE = 'BASE TABLE'
+                ",
+                new { tableName, schemaName, tableCatalog }).Any();
+        }
+
         internal string[] GetTableNames()
         {
             var schemaName = database.GetSchema(null);
@@ -23,7 +42,8 @@ namespace Upgrader.Infrastructure
                     FROM INFORMATION_SCHEMA.TABLES
                     WHERE 
                         TABLE_SCHEMA = @schemaName AND
-                        TABLE_CATALOG = @tableCatalog
+                        TABLE_CATALOG = @tableCatalog AND
+                        TABLE_TYPE = 'BASE TABLE'
                 ", 
                 new { schemaName, tableCatalog }).ToArray();
         }
@@ -31,6 +51,7 @@ namespace Upgrader.Infrastructure
         internal string[] GetColumnNames(string tableName)
         {
             var schemaName = database.GetSchema(tableName);
+            var tableCatalog = database.GetCatalog();
 
             return database.Dapper.Query<string>(
                 @"
@@ -39,15 +60,17 @@ namespace Upgrader.Infrastructure
                     FROM INFORMATION_SCHEMA.COLUMNS 
                     WHERE 
                         TABLE_NAME = @tableName AND 
-                        TABLE_SCHEMA = @schemaName
+                        TABLE_SCHEMA = @schemaName AND 
+                        TABLE_CATALOG = @tableCatalog
                     ORDER BY ORDINAL_POSITION
                 ", 
-                new { tableName, schemaName }).ToArray();
+                new { tableName, schemaName, tableCatalog }).ToArray();
         }
 
         internal string GetColumnDataType(string tableName, string columnName, params string[] includePrecisionOnTypes)
         {
             var schemaName = database.GetSchema(tableName);
+            var tableCatalog = database.GetCatalog();
 
             var columnInformation = database.Dapper.Query<Column>(
                 @"
@@ -61,9 +84,10 @@ namespace Upgrader.Infrastructure
                     WHERE 
                         COLUMN_NAME = @columnName AND
                         TABLE_NAME = @tableName AND 
-                        TABLE_SCHEMA = @schemaName
+                        TABLE_SCHEMA = @schemaName AND 
+                        TABLE_CATALOG = @tableCatalog
                 ", 
-                new { tableName, schemaName, columnName }).SingleOrDefault();
+                new { tableName, schemaName, columnName, tableCatalog }).SingleOrDefault();
 
             if (columnInformation == null)
             {
@@ -85,6 +109,7 @@ namespace Upgrader.Infrastructure
         internal bool GetColumnNullable(string tableName, string columnName)
         {
             var schemaName = database.GetSchema(tableName);
+            var tableCatalog = database.GetCatalog();
 
             return database.Dapper.Query<string>(
                 @"
@@ -94,9 +119,10 @@ namespace Upgrader.Infrastructure
                     WHERE 
                         COLUMN_NAME = @columnName AND
                         TABLE_NAME = @tableName AND 
-                        TABLE_SCHEMA = @schemaName
+                        TABLE_SCHEMA = @schemaName AND 
+                        TABLE_CATALOG = @tableCatalog
                 ", 
-                new { tableName, schemaName, columnName }).Single() == "YES";
+                new { tableName, schemaName, columnName, tableCatalog }).Single() == "YES";
         }
 
         internal string[] GetForeignKeyColumnNames(string tableName, string foreignKeyName)
@@ -191,6 +217,7 @@ namespace Upgrader.Infrastructure
         private string[] GetConstraintColumnNames(string tableName, string constraintName)
         {
             var schemaName = database.GetSchema(tableName);
+            var tableCatalog = database.GetCatalog();
 
             return database.Dapper.Query<string>(
                 @"
@@ -200,9 +227,10 @@ namespace Upgrader.Infrastructure
                     WHERE
 				        CONSTRAINT_NAME = @constraintName AND
                         TABLE_NAME = @tableName AND 
-                        TABLE_SCHEMA = @schemaName
+                        TABLE_SCHEMA = @schemaName AND 
+                        TABLE_CATALOG = @tableCatalog
                 ", 
-                new { tableName, schemaName, constraintName }).ToArray();
+                new { tableName, schemaName, constraintName, tableCatalog }).ToArray();
         }
 
         internal class Column

@@ -9,7 +9,7 @@ namespace Upgrader.Test.PostgreSql
     [TestClass]
     public class TypeMappingCollectionPostgreSqlTest : TypeMappingCollectionTest
     {
-        public TypeMappingCollectionPostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"))
+        public TypeMappingCollectionPostgreSqlTest() : base(new PostgreSqlDatabase(AssemblyInitialize.PostgreSqlConnectionString))
         {           
         }
 

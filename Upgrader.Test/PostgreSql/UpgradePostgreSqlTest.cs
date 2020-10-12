@@ -9,7 +9,7 @@ namespace Upgrader.Test.PostgreSql
     [TestClass]
     public class UpgradePostgreSqlTest : UpgradeTest<PostgreSqlDatabase>
     {
-        public UpgradePostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"), "PostgreSql")
+        public UpgradePostgreSqlTest() : base(new PostgreSqlDatabase(AssemblyInitialize.PostgreSqlConnectionString), AssemblyInitialize.PostgreSqlConnectionString)
         {
         }
 
@@ -21,9 +21,9 @@ namespace Upgrader.Test.PostgreSql
         }
 
         [TestMethod]
-        public void PerformUpgradeWithTransactioModeOneTransactionPerStepWithEnlistTrueDoesRollbackChangesWhenExceptionOccurs()
+        public void PerformUpgradeWithTransactionModeOneTransactionPerStepWithEnlistTrueDoesRollbackChangesWhenExceptionOccurs()
         {            
-            base.PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs("PostgreSqlEnlist");
+            base.PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(AssemblyInitialize.PostgreSqlEnlist);
         }
     }
 }

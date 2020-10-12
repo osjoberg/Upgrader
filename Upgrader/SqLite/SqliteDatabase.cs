@@ -12,15 +12,15 @@ namespace Upgrader.SqLite
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("System.Data.SQLite.dll", "System.Data.SQLite.SQLiteConnection"));
         private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private readonly string connectionStringOrName;
+        private readonly string connectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqLiteDatabase"/> class.
         /// </summary>
-        /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public SqLiteDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), null, (string)new DbConnectionStringBuilder { ConnectionString = GetConnectionString(connectionStringOrName) }["Data Source"])
+        /// <param name="connectionString">Connection string.</param>
+        public SqLiteDatabase(string connectionString) : base(ConnectionFactory.Value.CreateConnection(connectionString), null, (string)new DbConnectionStringBuilder { ConnectionString = connectionString }["Data Source"])
         {
-            this.connectionStringOrName = connectionStringOrName;
+            this.connectionString = connectionString;
 
             TypeMappings.Add<bool>("boolean");
             TypeMappings.Add<byte>("tinyint");
@@ -67,6 +67,13 @@ namespace Upgrader.SqLite
             }
 
             return tableName.Split('.').First();
+        }
+
+        internal override bool GetTableExists(string tableName)
+        {
+            return Dapper
+                .Query<string>("SELECT name FROM sqlite_master WHERE type = 'table' AND name = @tableName", new { tableName })
+                .Any();
         }
 
         internal override string[] GetTableNames()
@@ -282,7 +289,7 @@ namespace Upgrader.SqLite
                 throw new NotSupportedException("Including columns in an index is not supported by SQLite.");
             }
 
-            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, null);
+            this.DataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, null);
         }
 
         internal override bool GetIndexType(string tableName, string indexName)
@@ -313,7 +320,7 @@ namespace Upgrader.SqLite
 
         internal override Database Clone()
         {
-            return new SqLiteDatabase(connectionStringOrName);
+            return new SqLiteDatabase(connectionString);
         }
 
         private static string UnescapeIdentifier(string identifier)

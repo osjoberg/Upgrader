@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class ForeignKeyInfoSqLiteTest : ForeignKeyInfoTest
     {
-        public ForeignKeyInfoSqLiteTest() : base(new SqLiteDatabase("SqLite"))
+        public ForeignKeyInfoSqLiteTest() : base(new SqLiteDatabase(AssemblyInitialize.SqLiteConnectionString))
         {            
         }
     }

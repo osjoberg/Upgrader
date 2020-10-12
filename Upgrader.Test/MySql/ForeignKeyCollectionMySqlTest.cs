@@ -6,7 +6,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class ForeignKeyCollectionMySqlTest : ForeignKeyCollectionTest
     {
-        public ForeignKeyCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
+        public ForeignKeyCollectionMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString))
         {            
         }
     }

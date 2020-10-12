@@ -1,5 +1,9 @@
 ﻿using System.Linq;
+
+using Dapper;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Upgrader.Schema;
 
 namespace Upgrader.Test
@@ -98,6 +102,14 @@ namespace Upgrader.Test
         }
 
         [TestMethod]
+        public virtual void EnumeratedTablesDoesNotIncludeViews()
+        {
+            Database.Connection.Execute("CREATE VIEW EnumerateView AS SELECT 1 AS Value");
+
+            Assert.AreEqual(0, Database.Tables.Count(table => table.TableName == "EnumerateView"));
+        }
+
+        [TestMethod]
         public void TablesCanBeAccessedByName()
         {
             Database.Tables.Add("SpecificTable", new Column<int>("SpecificTableId"));
@@ -117,6 +129,14 @@ namespace Upgrader.Test
             Database.Tables.Add("ExistingTable", new Column<int>("ExistingTableId"));
 
             Assert.IsTrue(Database.Tables.Exists("ExistingTable"));
+        }
+
+        [TestMethod]
+        public void ExistsReturnsFalseWhenViewDoesExist()
+        {
+            Database.Connection.Execute("CREATE VIEW ExistingView AS SELECT 1 AS Value");
+
+            Assert.IsFalse(Database.Tables.Exists("ExistingView"));
         }
     }
 }

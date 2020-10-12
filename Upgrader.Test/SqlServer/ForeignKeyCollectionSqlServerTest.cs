@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class ForeignKeyCollectionSqlServerTest : ForeignKeyCollectionTest
     {
-        public ForeignKeyCollectionSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
+        public ForeignKeyCollectionSqlServerTest() : base(new SqlServerDatabase(AssemblyInitialize.SqlServerConnectionString))
         {            
         }
     }

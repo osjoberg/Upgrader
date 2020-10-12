@@ -6,7 +6,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class ColumnCollectionMySqlTest : ColumnCollectionTest
     {
-        public ColumnCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
+        public ColumnCollectionMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString))
         {            
         }
     }

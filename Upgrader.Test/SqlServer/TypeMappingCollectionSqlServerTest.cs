@@ -10,7 +10,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class TypeMappingCollectionSqlServerTest : TypeMappingCollectionTest
     {
-        public TypeMappingCollectionSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
+        public TypeMappingCollectionSqlServerTest() : base(new SqlServerDatabase(AssemblyInitialize.SqlServerConnectionString))
         {           
         }
 

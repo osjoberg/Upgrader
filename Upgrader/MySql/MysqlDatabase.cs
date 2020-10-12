@@ -7,16 +7,15 @@ namespace Upgrader.MySql
     public class MySqlDatabase : Database
     {
         private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("MySql.Data.dll", "MySql.Data.MySqlClient.MySqlConnection"));
-
-        private readonly string connectionStringOrName;
+        private readonly string connectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MySqlDatabase"/> class.
         /// </summary>
-        /// <param name="connectionStringOrName">Connection string or name of the connection string to use as defined in App/Web.config.</param>
-        public MySqlDatabase(string connectionStringOrName) : base(ConnectionFactory.Value.CreateConnection(GetConnectionString(connectionStringOrName)), GetMasterConnectionString(connectionStringOrName, "Database", "mysql"))
+        /// <param name="connectionString">Connection string.</param>
+        public MySqlDatabase(string connectionString) : base(ConnectionFactory.Value.CreateConnection(connectionString), GetMasterConnectionString(connectionString, "Database", "mysql"))
         {
-            this.connectionStringOrName = connectionStringOrName;
+            this.connectionString = connectionString;
 
             TypeMappings.Add<bool>("bit");
             TypeMappings.Add<byte>("tinyint unsigned");
@@ -217,7 +216,7 @@ namespace Upgrader.MySql
                 throw new NotSupportedException("Including columns in an index is not supported by MySql.");
             }
 
-            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, null);
+            this.DataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, null);
         }
 
         internal override bool GetIndexType(string tableName, string indexName)
@@ -312,7 +311,7 @@ namespace Upgrader.MySql
 
         internal override Database Clone()
         {
-            return new MySqlDatabase(connectionStringOrName);           
+            return new MySqlDatabase(connectionString);           
         }
     }
 }

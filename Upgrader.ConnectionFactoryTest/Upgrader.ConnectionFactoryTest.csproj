@@ -1,10 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="1.1.0" />
@@ -18,16 +24,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Upgrader\Upgrader.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <Target Name="CopyAppConfig" AfterTargets="Build" DependsOnTargets="Build">
-    <CreateItem Include="$(OutputPath)$(AssemblyName).dll.config">
-      <Output TaskParameter="Include" ItemName="FilesToCopy" />
-    </CreateItem>
-    <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="$(OutputPath)testhost.dll.config" />
-  </Target>
 
 </Project>

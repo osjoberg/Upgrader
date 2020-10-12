@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class IndexInfoSqLiteTest : IndexInfoTest
     {
-        public IndexInfoSqLiteTest() : base(new SqLiteDatabase("SqLite"))
+        public IndexInfoSqLiteTest() : base(new SqLiteDatabase(AssemblyInitialize.SqLiteConnectionString))
         {            
         }
     }

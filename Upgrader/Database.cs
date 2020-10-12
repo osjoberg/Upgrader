@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
@@ -18,7 +17,7 @@ namespace Upgrader
     public abstract class Database : IDisposable
     {
         internal readonly InformationSchema InformationSchema;
-        internal readonly DataDefinitionLanguage dataDefinitionLanguage;
+        internal readonly DataDefinitionLanguage DataDefinitionLanguage;
         internal readonly string DatabaseName;
         private readonly DataManipulationLanguage dataManipulationLanguage;
         private readonly StructuredQueryLanguage structuredQueryLanguage;
@@ -35,7 +34,7 @@ namespace Upgrader
             Dapper = new Infrastructure.Dapper(connection);
             Tables = new TableCollection(this);
             NamingConvention = new NamingConvention(MaxIdentifierLength);
-            dataDefinitionLanguage = new DataDefinitionLanguage(this);
+            DataDefinitionLanguage = new DataDefinitionLanguage(this);
             dataManipulationLanguage = new DataManipulationLanguage(this);
             structuredQueryLanguage = new StructuredQueryLanguage(this);
             InformationSchema = new InformationSchema(this);
@@ -84,7 +83,7 @@ namespace Upgrader
         public virtual void Create()
         {
             UseMainDatabase();
-            dataDefinitionLanguage.CreateDatabase(DatabaseName);
+            this.DataDefinitionLanguage.CreateDatabase(DatabaseName);
             UseConnectedDatabase();
         }
 
@@ -94,19 +93,12 @@ namespace Upgrader
         public virtual void Remove()
         {
             UseMainDatabase();
-            dataDefinitionLanguage.RemoveDatabase(DatabaseName);
+            this.DataDefinitionLanguage.RemoveDatabase(DatabaseName);
             UseConnectedDatabase();
         }
 
-        internal static string GetConnectionString(string connectionStringOrName)
+        internal static string GetMasterConnectionString(string connectionString, string keyword, string overrideDatabaseName)
         {
-            return connectionStringOrName.Contains("=") ? connectionStringOrName : ConfigurationManager.ConnectionStrings[connectionStringOrName].ConnectionString;
-        }
-
-        internal static string GetMasterConnectionString(string connectionStringOrName, string keyword, string overrideDatabaseName)
-        {
-            var connectionString = GetConnectionString(connectionStringOrName);
-
             var connectionStringBuilder = new DbConnectionStringBuilder
             {
                 ConnectionString = connectionString,
@@ -142,6 +134,11 @@ namespace Upgrader
 
         internal abstract string GetCreateComputedStatement(string dataType, bool nullable, string expression, bool persisted);
 
+        internal virtual bool GetTableExists(string tableName)
+        {
+            return InformationSchema.GetTableExists(tableName);
+        }
+
         internal virtual string[] GetTableNames()
         {
             return InformationSchema.GetTableNames();
@@ -149,12 +146,12 @@ namespace Upgrader
 
         internal virtual void AddTable(string tableName, IEnumerable<Column> columns, IEnumerable<ForeignKey> foreignKeys)
         {
-            dataDefinitionLanguage.AddTable(tableName, columns, foreignKeys);
+            this.DataDefinitionLanguage.AddTable(tableName, columns, foreignKeys);
         }
 
         internal void RemoveTable(string tableName)
         {
-            dataDefinitionLanguage.RemoveTable(tableName);
+            this.DataDefinitionLanguage.RemoveTable(tableName);
         }
 
         internal void InsertRows<T>(string tableName, IEnumerable<T> rows)
@@ -179,7 +176,7 @@ namespace Upgrader
 
         internal virtual void Truncate(string tableName)
         {
-            dataDefinitionLanguage.Truncate(tableName);
+            this.DataDefinitionLanguage.Truncate(tableName);
         }
 
         internal virtual string[] GetColumnNames(string tableName)
@@ -196,22 +193,22 @@ namespace Upgrader
 
         internal virtual void AddColumn(string tableName, string columnName, string dataType, bool nullable)
         {
-            dataDefinitionLanguage.AddColumn(tableName, columnName, dataType, nullable);
+            this.DataDefinitionLanguage.AddColumn(tableName, columnName, dataType, nullable);
         }
 
         internal void AddComputedColumn(string tableName, string columnName, string dataType, bool nullable, string expression, bool persisted)
         {
-            dataDefinitionLanguage.AddComputedColumn(tableName, columnName, dataType, nullable, expression, persisted);
+            this.DataDefinitionLanguage.AddComputedColumn(tableName, columnName, dataType, nullable, expression, persisted);
         }
 
         internal virtual void ChangeColumn(string tableName, string columnName, string dataType, bool nullable)
         {
-            dataDefinitionLanguage.ChangeColumn(tableName, columnName, dataType, nullable);
+            this.DataDefinitionLanguage.ChangeColumn(tableName, columnName, dataType, nullable);
         }
 
         internal virtual void RemoveColumn(string tableName, string columnName)
         {
-            dataDefinitionLanguage.RemoveColumn(tableName, columnName);
+            this.DataDefinitionLanguage.RemoveColumn(tableName, columnName);
         }
 
         internal virtual string GetPrimaryKeyName(string tableName)
@@ -226,12 +223,12 @@ namespace Upgrader
 
         internal virtual void AddPrimaryKey(string tableName, string[] columnNames, string primaryKeyName)
         {
-            dataDefinitionLanguage.AddPrimaryKey(tableName, columnNames, primaryKeyName);
+            this.DataDefinitionLanguage.AddPrimaryKey(tableName, columnNames, primaryKeyName);
         }
 
         internal virtual void RemovePrimaryKey(string tableName, string primaryKeyName)
         {
-            dataDefinitionLanguage.RemovePrimaryKey(tableName, primaryKeyName);
+            this.DataDefinitionLanguage.RemovePrimaryKey(tableName, primaryKeyName);
         }
 
         internal virtual string[] GetForeignKeyNames(string tableName)
@@ -256,12 +253,12 @@ namespace Upgrader
 
         internal virtual void AddForeignKey(string tableName, string[] columnNames, string foreignTableName, string[] foreignColumnNames, string foreignKeyName)
         {
-            dataDefinitionLanguage.AddForeignKey(tableName, columnNames, foreignTableName, foreignColumnNames, foreignKeyName);
+            this.DataDefinitionLanguage.AddForeignKey(tableName, columnNames, foreignTableName, foreignColumnNames, foreignKeyName);
         }
 
         internal virtual void RemoveForeignKey(string tableName, string foreignKeyName)
         {
-            dataDefinitionLanguage.RemoveForeignKey(tableName, foreignKeyName);
+            this.DataDefinitionLanguage.RemoveForeignKey(tableName, foreignKeyName);
         }
 
         internal abstract string[] GetIndexNames(string tableName);
@@ -272,7 +269,7 @@ namespace Upgrader
 
         internal virtual void AddIndex(string tableName, string[] columnNames, bool unique, string indexName, string[] includeColumnNames)
         {
-            dataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
+            this.DataDefinitionLanguage.AddIndex(tableName, columnNames, unique, indexName, includeColumnNames);
         }
 
         internal abstract void RemoveIndex(string tableName, string indexName);
@@ -285,7 +282,7 @@ namespace Upgrader
 
         internal virtual void RenameTable(string tableName, string newTableName)
         {
-            dataDefinitionLanguage.RenameTable(tableName, newTableName);
+            this.DataDefinitionLanguage.RenameTable(tableName, newTableName);
         }
 
         internal void SetColumnValue(string tableName, string columnName, object value)

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Data.SQLite;
 
@@ -18,6 +19,23 @@ namespace Upgrader.Test
     [TestClass]
     public static class AssemblyInitialize
     {
+        public static readonly string SqlServerConnectionString;
+        public static readonly string MySqlConnectionString;
+        public static readonly string PostgreSqlConnectionString;
+        public static readonly string SqLiteConnectionString;
+        public static readonly string PostgreSqlEnlist;
+
+        static AssemblyInitialize()
+        {
+            var connectionStrings = ConfigurationManager.OpenExeConfiguration("Upgrader.Test.dll").ConnectionStrings.ConnectionStrings;
+
+            SqlServerConnectionString = connectionStrings["SqlServer"].ConnectionString;
+            MySqlConnectionString = connectionStrings["MySql"].ConnectionString;
+            PostgreSqlConnectionString = connectionStrings["PostgreSql"].ConnectionString;
+            SqLiteConnectionString = connectionStrings["SqLite"].ConnectionString;
+            PostgreSqlEnlist = connectionStrings["PostgreSqlEnlist"].ConnectionString;
+        }
+
         [AssemblyInitialize]
         public static void Initialize(TestContext context)
         {
@@ -26,14 +44,14 @@ namespace Upgrader.Test
 
             var databases = new Database[]
             {
-                new SqlServerDatabase("SqlServer"),
-                new MySqlDatabase("MySql"), 
-                new PostgreSqlDatabase("PostgreSql"),
-                new SqLiteDatabase("SqLite") 
+                new SqlServerDatabase(SqlServerConnectionString),
+                new MySqlDatabase(MySqlConnectionString),
+                new PostgreSqlDatabase(PostgreSqlConnectionString),
+                new SqLiteDatabase(SqLiteConnectionString)
             };
 
             foreach (var database in databases)
-            {                
+            {
                 try
                 {
                     if (database.Exists)

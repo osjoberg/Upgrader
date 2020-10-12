@@ -11,12 +11,12 @@ namespace Upgrader.Test
     public abstract class UpgradeTest<TDatabase> where TDatabase : Database
     {
         private readonly TDatabase database;
-        private readonly string connectionStringOrName;
+        private readonly string connectionString;
 
-        protected UpgradeTest(TDatabase database, string connectionStringOrName)
+        protected UpgradeTest(TDatabase database, string connectionString)
         {
             this.database = database;
-            this.connectionStringOrName = connectionStringOrName;
+            this.connectionString = connectionString;
         }
 
         [TestCleanup]
@@ -33,7 +33,7 @@ namespace Upgrader.Test
                 database.Remove();
             }
 
-            var upgrade = new Upgrade<TDatabase>(connectionStringOrName);
+            var upgrade = new Upgrade<TDatabase>(connectionString);
             upgrade.PerformUpgrade(Enumerable.Empty<IStep>());
 
             Assert.IsTrue(database.Exists);
@@ -44,7 +44,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeCreatesTableIfItDoesNotExist()
         {
-            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
+            var upgrade = new Upgrade<TDatabase>(connectionString)
             {
                 ExecutedStepsTable = "UpgradeCreatesTable"
             };
@@ -57,7 +57,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeExecutesSteps()
         {
-            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
+            var upgrade = new Upgrade<TDatabase>(connectionString)
             {
                 ExecutedStepsTable = "UpgradeExecutesSteps"
             };
@@ -77,7 +77,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeRecordsExecutedStepName()
         {
-            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
+            var upgrade = new Upgrade<TDatabase>(connectionString)
             {
                 ExecutedStepsTable = "UpgradeExecutesStepsRecords"
             };
@@ -95,7 +95,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeDoesNotExecutesAlreadyExecutedSteps()
         {
-            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
+            var upgrade = new Upgrade<TDatabase>(connectionString)
             {
                 ExecutedStepsTable = "UpgradeExecutesNotExecutedSteps"
             };
@@ -116,7 +116,7 @@ namespace Upgrader.Test
         [TestMethod]
         public virtual void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs()
         {
-            PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(connectionStringOrName);
+            PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(connectionString);
         }
 
         [TestMethod]
@@ -128,7 +128,7 @@ namespace Upgrader.Test
         [TestMethod]
         public void PerformUpgradeWithTransactionModeNoneDoesNotRollbackChangesWhenExceptionOccurs()
         {
-            var upgrade = new Upgrade<TDatabase>(connectionStringOrName)
+            var upgrade = new Upgrade<TDatabase>(connectionString)
             {
                 ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep", 
                 TransactionMode = TransactionMode.None               
@@ -156,9 +156,9 @@ namespace Upgrader.Test
             Assert.IsTrue(database.Tables.Exists("NonAtomicTable"));
         }
 
-        protected void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(string overrideConnectionStringOrName)
+        protected void PerformUpgradeWithTransactionModeOneTransactionPerStepDoesRollbackChangesWhenExceptionOccurs(string overrideConnectionString)
         {
-            var upgrade = new Upgrade<TDatabase>(overrideConnectionStringOrName)
+            var upgrade = new Upgrade<TDatabase>(overrideConnectionString)
             {
                 ExecutedStepsTable = "UpgradeTransactionModeOneTransactionPerStep",
                 TransactionMode = TransactionMode.OneTransactionPerStep

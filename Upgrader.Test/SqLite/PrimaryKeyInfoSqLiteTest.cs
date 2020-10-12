@@ -7,7 +7,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class PrimaryKeyInfoSqLiteTest : PrimaryKeyInfoTest
     {
-        public PrimaryKeyInfoSqLiteTest() : base(new SqLiteDatabase("SqLite"))
+        public PrimaryKeyInfoSqLiteTest() : base(new SqLiteDatabase(AssemblyInitialize.SqLiteConnectionString))
         {
         }
 

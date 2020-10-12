@@ -8,7 +8,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class UprgradeMySqlTest : UpgradeTest<MySqlDatabase>
     {
-        public UprgradeMySqlTest() : base(new MySqlDatabase("MySql"), "MySql")
+        public UprgradeMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString), AssemblyInitialize.MySqlConnectionString)
         {            
         }
 

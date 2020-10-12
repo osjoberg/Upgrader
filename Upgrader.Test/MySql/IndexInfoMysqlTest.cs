@@ -6,7 +6,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class IndexInfoMySqlTest : IndexInfoTest
     {
-        public IndexInfoMySqlTest() : base(new MySqlDatabase("MySql"))
+        public IndexInfoMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString))
         {            
         }
     }

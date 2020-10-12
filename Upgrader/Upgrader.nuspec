@@ -11,9 +11,9 @@
 		<description>$description$</description>
 		<projectUrl>https://github.com/osjoberg/Upgrader</projectUrl>
 		<tags>upgrader</tags>
-    <dependencies>
-      <dependency id="Dapper" version="2.0.30" />
-      <dependency id="System.Configuration.ConfigurationManager" version="4.7.0" />
-    </dependencies>
+
 	</metadata>
+	<dependencies>
+		<dependency id="Dapper" version="2.0.30" />
+	</dependencies>
 </package>

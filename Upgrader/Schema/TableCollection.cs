@@ -63,7 +63,7 @@ namespace Upgrader.Schema
         /// <returns>True, if the table exists or False if it does not exist.</returns>
         public bool Exists(string tableName)
         {
-            return database.GetColumnNames(tableName).Any();
+            return database.GetTableExists(tableName);
         }
 
         /// <summary>

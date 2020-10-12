@@ -9,7 +9,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class TableCollectionMySqlTest : TableCollectionTest
     {
-        public TableCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
+        public TableCollectionMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString))
         {
         }
 

@@ -8,7 +8,7 @@ namespace Upgrader.Test.SqLite
     [TestClass]
     public class IndexCollectionSqLiteTest : IndexCollectionTest
     {
-        public IndexCollectionSqLiteTest() : base(new SqLiteDatabase("SqLite"))
+        public IndexCollectionSqLiteTest() : base(new SqLiteDatabase(AssemblyInitialize.SqLiteConnectionString))
         {            
         }
 

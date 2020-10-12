@@ -6,7 +6,7 @@ namespace Upgrader.Test.PostgreSql
     [TestClass]
     public class ForeignKeyCollectionPostgreSqlTest : ForeignKeyCollectionTest
     {
-        public ForeignKeyCollectionPostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"))
+        public ForeignKeyCollectionPostgreSqlTest() : base(new PostgreSqlDatabase(AssemblyInitialize.PostgreSqlConnectionString))
         {            
         }
     }

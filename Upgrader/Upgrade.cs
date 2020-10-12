@@ -17,18 +17,17 @@ namespace Upgrader
 
     public class Upgrade<TDatabase> where TDatabase : Database
     {
-        private readonly TDatabase obsoleteDatabase;
-        private readonly string connectionStringOrName;
+        private readonly string connectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Upgrade{TDatabase}"/> class.
         /// </summary>
-        /// <param name="connectionStringOrName"> The connection string or connection name to get connection string for.</param>
-        public Upgrade(string connectionStringOrName)
+        /// <param name="connectionString"> The connection string.</param>
+        public Upgrade(string connectionString)
         {
-            Validate.IsNotNullAndNotEmpty(connectionStringOrName, nameof(connectionStringOrName));
+            Validate.IsNotNullAndNotEmpty(connectionString, nameof(connectionString));
 
-            this.connectionStringOrName = connectionStringOrName;
+            this.connectionString = connectionString;
         }
 
         /// <summary>
@@ -39,20 +38,12 @@ namespace Upgrader
         public Upgrade(TDatabase database)
         {
             Validate.IsNotNull(database, nameof(database));
-
-            obsoleteDatabase = database;
         }
 
         /// <summary>
         /// Gets or sets the table name used for tracking executed steps.
         /// </summary>
         public string ExecutedStepsTable { get; set; } = "ExecutedSteps";
-
-        /// <summary>
-        /// Gets the current database instance in use.
-        /// </summary>
-        [Obsolete]
-        public TDatabase Database => this.obsoleteDatabase;
 
         /// <summary>
         /// Gets or sets the Transaction Mode to use when migrating.
@@ -98,7 +89,7 @@ namespace Upgrader
             Database database = null;
             try
             {
-                database = obsoleteDatabase ?? CreateDatabaseInstance();
+                database = CreateDatabaseInstance();
 
                 using (new MutexScope("PerformUpgrade" + database.DatabaseName.ToLowerInvariant()))
                 {
@@ -138,10 +129,7 @@ namespace Upgrader
             }
             finally
             {
-                if (obsoleteDatabase == null)
-                {
-                    database?.Dispose();
-                }
+                database?.Dispose();
             }
         }
 
@@ -155,22 +143,22 @@ namespace Upgrader
         {
             if (typeof(TDatabase) == typeof(SqlServerDatabase))
             {
-                return new SqlServerDatabase(connectionStringOrName);
+                return new SqlServerDatabase(connectionString);
             }
 
             if (typeof(TDatabase) == typeof(PostgreSqlDatabase))
             {
-                return new PostgreSqlDatabase(connectionStringOrName);
+                return new PostgreSqlDatabase(connectionString);
             }
 
             if (typeof(TDatabase) == typeof(MySqlDatabase))
             {
-                return new MySqlDatabase(connectionStringOrName);
+                return new MySqlDatabase(connectionString);
             }
 
             if (typeof(TDatabase) == typeof(SqLiteDatabase))
             {
-                return new SqLiteDatabase(connectionStringOrName);
+                return new SqLiteDatabase(connectionString);
             }
 
             throw new NotSupportedException();

@@ -8,7 +8,7 @@ namespace Upgrader.Test.MySql
     [TestClass]
     public class IndexCollectionMySqlTest : IndexCollectionTest
     {
-        public IndexCollectionMySqlTest() : base(new MySqlDatabase("MySql"))
+        public IndexCollectionMySqlTest() : base(new MySqlDatabase(AssemblyInitialize.MySqlConnectionString))
         {            
         }
 

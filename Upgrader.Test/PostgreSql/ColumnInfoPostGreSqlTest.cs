@@ -7,7 +7,7 @@ namespace Upgrader.Test.PostgreSql
     [TestClass]
     public class ColumnInfoPostgreSqlTest : ColumnInfoTest
     {
-        public ColumnInfoPostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"))
+        public ColumnInfoPostgreSqlTest() : base(new PostgreSqlDatabase(AssemblyInitialize.PostgreSqlConnectionString))
         {
         }
 

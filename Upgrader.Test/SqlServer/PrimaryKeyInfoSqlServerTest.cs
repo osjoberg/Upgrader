@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class PrimaryKeyInfoSqlServerTest : PrimaryKeyInfoTest
     {
-        public PrimaryKeyInfoSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
+        public PrimaryKeyInfoSqlServerTest() : base(new SqlServerDatabase(AssemblyInitialize.SqlServerConnectionString))
         {
         }
     }

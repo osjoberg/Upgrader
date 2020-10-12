@@ -8,7 +8,7 @@ namespace Upgrader.Test.PostgreSql
     [TestClass]
     public class TableCollectionPostgreSqlTest : TableCollectionTest
     {
-        public TableCollectionPostgreSqlTest() : base(new PostgreSqlDatabase("PostgreSql"))
+        public TableCollectionPostgreSqlTest() : base(new PostgreSqlDatabase(AssemblyInitialize.PostgreSqlConnectionString))
         {
         }
 

@@ -6,7 +6,7 @@ namespace Upgrader.Test.SqlServer
     [TestClass]
     public class IndexCollectionSqlServerTest : IndexCollectionTest
     {
-        public IndexCollectionSqlServerTest() : base(new SqlServerDatabase("SqlServer"))
+        public IndexCollectionSqlServerTest() : base(new SqlServerDatabase(AssemblyInitialize.SqlServerConnectionString))
         {            
         }
     }
