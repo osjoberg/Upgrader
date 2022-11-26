@@ -48,6 +48,8 @@ namespace Upgrader.SqlServer
             }
         }
 
+        internal override string[] GeneratedTypes => new[] { "timestamp" };
+
         internal override string AutoIncrementStatement => "IDENTITY";
 
         internal override int MaxIdentifierLength => 128;

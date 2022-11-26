@@ -49,6 +49,8 @@ namespace Upgrader.PostgreSql
             }
         }
 
+        internal override string[] GeneratedTypes => new string[] { };
+
         internal override string AutoIncrementStatement => "";
 
         internal override int MaxIdentifierLength => 63;
@@ -233,7 +235,8 @@ namespace Upgrader.PostgreSql
         {
             const string Suffix = "_seq";
             var maxLength = MaxIdentifierLength - Suffix.Length;
-            var sequenceName = $"{StringHelper.Truncate($"{tableName}_{columnName}", maxLength)}{Suffix}";
+
+            var sequenceName = tableName.Length >= 30 && columnName.Length >= 30 ? $"{StringHelper.Truncate(tableName, 29)}_{StringHelper.Truncate(columnName, 29)}{Suffix}" : $"{StringHelper.Truncate($"{tableName}_{columnName}", maxLength)}{Suffix}";
 
             return Dapper.ExecuteScalar<int>("SELECT COUNT(*) FROM pg_class WHERE relkind = 'S' AND relname = @sequenceName", new { sequenceName }) == 1;
         }

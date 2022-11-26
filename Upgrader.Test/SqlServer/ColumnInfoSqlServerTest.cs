@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Upgrader.Schema;
 using Upgrader.SqlServer;
 
 namespace Upgrader.Test.SqlServer
@@ -8,6 +10,13 @@ namespace Upgrader.Test.SqlServer
     {
         public ColumnInfoSqlServerTest() : base(new SqlServerDatabase(AssemblyInitialize.SqlServerConnectionString))
         {            
+        }
+
+        [TestMethod]
+        public void IsGeneratedIsTrueForGeneratedColumn()
+        {
+            Database.Tables.Add("IsGeneratedIsTrueForGeneratedColumn", new Column("Generated", "rowversion"));
+            Assert.IsTrue(Database.Tables["IsGeneratedIsTrueForGeneratedColumn"].Columns["Generated"].IsGenerated());
         }
     }
 }

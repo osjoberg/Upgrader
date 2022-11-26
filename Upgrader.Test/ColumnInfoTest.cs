@@ -155,5 +155,19 @@ namespace Upgrader.Test
 
             Assert.AreEqual(Database.TypeMappings.GetDataType(typeof(char)), Database.Tables["SingleChar"].Columns["SingleCharId"].GetDataType());
         }
+
+        [TestMethod]
+        public void IsGeneratedIsFalseForRegularColumn()
+        {
+            Database.Tables.Add("IsGeneratedIsFalseForRegularColumn", new Column<int>("RegularColumn"));
+            Assert.IsFalse(Database.Tables["IsGeneratedIsFalseForRegularColumn"].Columns["RegularColumn"].IsGenerated());
+        }
+
+        [TestMethod]
+        public void IsGeneratedIsTrueForAutoIncrementedPrimaryKey()
+        {
+            Database.Tables.Add("IsGeneratedIsTrueForAutoIncrementedPrimaryKey", new Column<int>("IsGeneratedIsTrueForAutoIncrementedPrimaryKeyId", ColumnModifier.AutoIncrementPrimaryKey));
+            Assert.IsTrue(Database.Tables["IsGeneratedIsTrueForAutoIncrementedPrimaryKey"].Columns["IsGeneratedIsTrueForAutoIncrementedPrimaryKeyId"].IsGenerated());
+        }
     }
 }

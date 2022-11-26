@@ -40,6 +40,8 @@ namespace Upgrader.SqLite
 
         public override bool Exists => File.Exists(DatabaseName);
 
+        internal override string[] GeneratedTypes => new string[] { };
+
         internal override string AutoIncrementStatement => "";
 
         internal override int MaxIdentifierLength => 64;

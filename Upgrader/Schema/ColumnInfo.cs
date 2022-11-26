@@ -47,6 +47,12 @@ namespace Upgrader.Schema
         public bool IsAutoIncrement() => database.GetColumnAutoIncrement(TableName, ColumnName);
 
         /// <summary>
+        /// Gets if column s configured to be generated, i.e. read-only.
+        /// </summary>
+        /// <returns>True if the column is generated, otherwise false.</returns>
+        public bool IsGenerated() => database.IsGenerated(TableName, ColumnName);
+
+        /// <summary>
         /// Change data type of column.
         /// </summary>
         /// <param name="dataType">SQL data type.</param>

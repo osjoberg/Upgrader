@@ -24,9 +24,11 @@ namespace Upgrader.Infrastructure
 
             var autoIncrementedColumn = columns.SingleOrDefault(column => column.IsAutoIncrement());
 
-            var escapedColumnNames = columns.Where(column => column != autoIncrementedColumn).Select(column => database.EscapeIdentifier(column.ColumnName));
+            var generatedColumns = columns.Where(column => column.IsGenerated()).ToArray();
+
+            var escapedColumnNames = columns.Except(generatedColumns).Select(column => database.EscapeIdentifier(column.ColumnName));
             var escapedCommaSeparatedColumnNames = string.Join(", ", escapedColumnNames);
-            var parameterNames = columns.Where(column => column != autoIncrementedColumn).Select(column => "@" + column.ColumnName);
+            var parameterNames = columns.Except(generatedColumns).Select(column => "@" + column.ColumnName);
             var commaSeparatedParameterNames = string.Join(", ", parameterNames);
 
             var sql = $"INSERT INTO {escapedTableName} ({escapedCommaSeparatedColumnNames}) VALUES ({commaSeparatedParameterNames})";
@@ -70,12 +72,14 @@ namespace Upgrader.Infrastructure
 
             var escapedTableName = database.EscapeIdentifier(tableName);
 
-            var columns = database.Tables[tableName].Columns;
+            var columns = database.Tables[tableName].Columns.ToArray();
+
+            var generatedColumns = columns.Where(column => column.IsGenerated()).ToArray();
 
             var columnNames = columns
-                .Where(column => column.IsAutoIncrement() == false)
+                .Except(generatedColumns)
                 .Select(column => column.ColumnName)
-                .Except(primaryKeyColumnNames);
+                .ToArray();
 
             var setStatements = columnNames.Select(columnName => $"{database.EscapeIdentifier(columnName)} = @{columnName}");
             var setStatement = string.Join(", ", setStatements);

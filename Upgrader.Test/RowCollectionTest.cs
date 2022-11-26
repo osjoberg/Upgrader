@@ -19,7 +19,7 @@ namespace Upgrader.Test
         [TestCleanup]
         public void Cleanup()
         {
-            this.Database.Dispose();
+            Database.Dispose();
         }
 
         [TestMethod]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 
 using Upgrader.Infrastructure;
@@ -68,6 +69,8 @@ namespace Upgrader
         internal abstract string AutoIncrementStatement { get; }
 
         internal abstract int MaxIdentifierLength { get; }
+
+        internal abstract string[] GeneratedTypes { get; }
 
         internal Infrastructure.Dapper Dapper { get; }
 
@@ -291,6 +294,12 @@ namespace Upgrader
         }
 
         internal abstract bool GetColumnAutoIncrement(string tableName, string columnName);
+
+        internal virtual bool IsGenerated(string tableName, string columnName)
+        {
+            var columnDataType = GetColumnDataType(tableName, columnName);
+            return GeneratedTypes.Contains(columnDataType) || GetColumnAutoIncrement(tableName, columnName);
+        }
 
         internal virtual string GetCatalog()
         {

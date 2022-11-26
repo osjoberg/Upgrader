@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+
 using Upgrader.Infrastructure;
 
 namespace Upgrader.MySql
@@ -42,6 +43,8 @@ namespace Upgrader.MySql
                 return exists;
             }
         }
+
+        internal override string[] GeneratedTypes => new string[] { };
 
         internal override int MaxIdentifierLength => 64;
 
