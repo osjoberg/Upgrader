@@ -10,7 +10,7 @@ namespace Upgrader.SqLite
 {    
     public class SqLiteDatabase : Database
     {
-        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory("System.Data.SQLite.dll", "System.Data.SQLite.SQLiteConnection"));
+        private static readonly Lazy<ConnectionFactory> ConnectionFactory = new Lazy<ConnectionFactory>(() => new ConnectionFactory(new AdoProvider("System.Data.SQLite.dll", "System.Data.SQLite.SQLiteConnection"), new AdoProvider("Microsoft.Data.Sqlite.dll", "Microsoft.Data.Sqlite.SqliteConnection")));
         private static readonly Regex CreateTableSqlParser = new Regex(@"CONSTRAINT[\s]+([^ ]+)[\s]+FOREIGN[\s]+KEY[\s]*\(([^)]+)\)[\s]*REFERENCES[\s]+([^ ]+)[\s]*\(([^)]+)\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private readonly string connectionString;
 
