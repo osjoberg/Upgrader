@@ -108,10 +108,10 @@ namespace Upgrader.SqLite
             var schemaName = GetSchema(tableName);
             var escapedSchemaName = schemaName;
 
-            return Dapper
+            return Dapper 
                 .Query<TableInfo>($"PRAGMA {escapedSchemaName}.table_info({escapedTableName})")
                 .SingleOrDefault(tableInfo => tableInfo.Name == columnName)
-                ?.Type;
+                ?.Type?.ToLowerInvariant();
         }
 
         internal override bool GetColumnNullable(string tableName, string columnName)

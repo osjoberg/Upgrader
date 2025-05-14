@@ -16,7 +16,7 @@ namespace Upgrader.ConnectionFactoryTest
     public class ConnectionFactoryTest
     {
         // Reference to a MySqlConnection type so that the the assembly will be copied to the test bin directory.
-        private IDbConnection[] references = { new MySqlConnection(), new Microsoft.Data.SqlClient.SqlConnection(), new System.Data.SqlClient.SqlConnection() };
+        private IDbConnection[] references = { new MySqlConnection(), new Microsoft.Data.SqlClient.SqlConnection(), new Microsoft.Data.SqlClient.SqlConnection() };
         private readonly ConnectionStringSettingsCollection connectionStrings = ConfigurationManager.OpenExeConfiguration("Upgrader.ConnectionFactoryTest.dll").ConnectionStrings.ConnectionStrings;
 
         [TestMethod]
