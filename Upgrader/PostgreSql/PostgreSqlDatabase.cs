@@ -26,7 +26,7 @@ namespace Upgrader.PostgreSql
             // No type mapping for byte.
             TypeMappings.Add<bool>("boolean");
             TypeMappings.Add<char>("character(1)");
-            TypeMappings.Add<DateTime>("timestamp without time zone");
+            TypeMappings.Add<DateTime>("timestamp with time zone");
             TypeMappings.Add<decimal>("numeric(19,5)");
             TypeMappings.Add<double>("double precision");
             TypeMappings.Add<float>("real");

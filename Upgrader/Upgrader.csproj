@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.4.1.0</Version>
+    <Version>1.4.2.0</Version>
     <Copyright>Copyright ©  2017-2025</Copyright>
     <RepositoryUrl>https://github.com/osjoberg/Upgrader</RepositoryUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
@@ -11,8 +11,8 @@
     <Authors>Oskar Sjöberg</Authors>
     <Company>N/A</Company>
     <RepositoryType>GIT</RepositoryType>
-    <AssemblyVersion>1.4.1.0</AssemblyVersion>
-    <FileVersion>1.4.1.0</FileVersion>
+    <AssemblyVersion>1.4.2.0</AssemblyVersion>
+    <FileVersion>1.4.2.0</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
